@@ -1,0 +1,24 @@
+
+  [36m  0[1m[39m[[0m[31m|[1m[90m   [0m                        [1m[90m1.7%[39m][0m [36m  4[1m[39m[[90m  [0m                           [1m[90m0.0%[39m][0m
+  [36m  1[1m[39m[[0m[31m||[1m[90m  [0m                       [1m[90m 3.4%[39m][0m [36m  5[1m[39m[[0m[32m||[31m|[39m                          [1m[90m5.1%[39m][0m
+  [36m  2[1m[39m[[90m  [0m                          [1m[90m0.0%[39m][0m [36m  6[1m[39m[[0m[32m|[1m[90m [0m                           [1m[90m1.7%[39m][0m
+  [36m  3[1m[39m[[0m[32m|[31m|[39m                          [1m[90m3.3%[39m][0m [36m  7[1m[39m[[0m[32m|[31m|[39m                           [1m[90m3.4%[39m][0m
+  [36mMem[1m[39m[[0m[32m|||[35m|[1m[34m|[0m[33m||||||[1m[90m          1.07G/15.4G[39m][0m [36mTasks: [1m1[0m[36m, [1m[32m0[0m[36m thr[1m[90m, 0 kthr[0m[36m; [1m[32m2[0m[36m running[39m
+  [36mSwp[1m[39m[[0m                        [1m[90m0K/4.00G[39m][0m [36mLoad average: [1m[39m0.71 [36m0.75 [0m[36m0.45 [39m
+                                        [36mUptime: [1m02:15:05[0m
+
+  [32m[42m[[30mSetup[32m][39m[49m
+[30m[42mCategories      [39m[49m [30m[42mDisplay options[39m
+[30m[46mDisplay options [39m[49m [30m[47mFor current screen tab: Main[39m
+[49mHeader layout    [36m[[1m[39m [0m[36m]    [39mTree view
+Meters           [36m[[1m[39m [0m[36m]    [39m- Tree view is always sorted by PID (htop 2 behavior)
+Screens          [36m[[1m[39m [0m[36m]    [39m- Tree view is collapsed by default
+Colors           [1m[36mGlobal options:[0m
+                 [36m[[1m[39mx[0m[36m]    [39mShow tabs for screens
+                 [36m[[1m[39m [0m[36m]    [39mShadow other users' processes
+                 [36m[[1m[39mx[0m[36m]    [39mHide kernel threads
+                 [36m[[1m[39m [0m[36m]    [39mHide userland process threads
+                 [36m[[1m[39m [0m[36m]    [39mHide processes running in containers
+                 [36m[[1m[39mx[0m[36m]    [39mDisplay threads in a different color
+                 [36m[[1m[39m [0m[36m]    [39mShow custom thread names
+F1[30m[46m      [39m[49mF2[30m[46m      [39m[49mF3[30m[46m      [39m[49mF4[30m[46m      [39m[49mF5[30m[46m      [39m[49mF6[30m[46m      [39m[49mF7[30m[46m      [39m[49mF8[30m[46m      [39m[49mF9[30m[46m      [39m[49mF10[30m[46mDone[39m

@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 24,23
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# expect_app: htop
+# expect_mode: unknown
+# note: help screen: no anchors, press any key
+# ---
+htop 2.2.0 - (C) 2004-2019 Hisham Muhammad
+Released under the GNU GPL. See 'man' page for more info.
+
+CPU usage bar: [low-priority/normal/kernel/virtualiz               used%]
+Memory bar:    [used/buffers/cache                            used/total]
+Swap bar:      [used                                          used/total]
+Type and layout of header meters are configurable in the setup screen.
+
+ Status: R: running; S: sleeping; T: traced/stopped; Z: zombie; D: disk sleep
+ Arrows: scroll process list              Space: tag process
+ Digits: incremental PID search               c: tag process and its children
+   F3 /: incremental name search              U: untag all processes
+   F4 \: incremental name filtering        F9 k: kill process/tagged processes
+   F5 t: tree view                         F7 ]: higher priority (root only)
+      p: toggle program path               F8 [: lower priority (+ nice)
+      u: show processes of a single user      a: set CPU affinity
+      H: hide/show user process threads       e: show process environment
+      K: hide/show kernel threads             i: set IO priority
+      F: cursor follows process               l: list open files with lsof
+ F6 + -: expand/collapse tree                 s: trace syscalls with strace
+  P M T: sort by CPU%, MEM% or TIME
+      I: invert sort order               F2 C S: setup
+ F6 > .: select sort column                F1 h: show this help screen
+Press any key to return.                  F10 q: quit

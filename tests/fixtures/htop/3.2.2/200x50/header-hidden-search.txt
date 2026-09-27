@@ -1,0 +1,60 @@
+# tmux-modal fixture v1
+# size: 200x50
+# cursor: 40,49
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# expect_app: htop
+# expect_mode: insert
+# note: search with header hidden
+# ---
+    PID USER       PRI  NI  VIRT   RES   SHR S  CPU%▽MEM%   TIME+  Command
+      1 demo        20   0  5588  4468  3248 R   0.7  0.0  0:00.04 htop
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+F3Next  S-F3Prev   EscCancel    Search:

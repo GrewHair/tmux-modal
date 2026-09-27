@@ -1,0 +1,60 @@
+# tmux-modal fixture v1
+# size: 200x50
+# cursor: 0,0
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# expect_app: htop
+# expect_mode: insert
+# note: typing in search
+# ---
+
+    0[|||||||                                                                               7.4%]     4[|||                                                                                   3.1%]
+    1[|||||                                                                                 4.6%]     5[|||||||                                                                               6.0%]
+    2[|||||                                                                                 4.6%]     6[|||                                                                                   3.0%]
+    3[||||                                                                                  3.0%]     7[||||||                                                                                5.9%]
+  Mem[|||||||||||||||||||||||                                                        1.04G/15.4G]   Tasks: 1, 0 thr; 1 running
+  Swp[                                                                                  0K/4.00G]   Load average: 0.98 0.81 0.45
+                                                                                                    Uptime: 02:14:22
+
+    PID USER      PRI  NI  VIRT   RES   SHR S CPU%▽MEM%   TIME+  Command
+      1 demo       20   0  5900  4528  3284 R  0.0  0.0  0:00.11 htop
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+F3Next  S-F3Prev   EscCancel    Search: abc

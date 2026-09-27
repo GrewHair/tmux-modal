@@ -1,0 +1,60 @@
+# tmux-modal fixture v1
+# size: 200x50
+# cursor: 17,48
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# expect_app: htop
+# expect_mode: normal
+# note: F2 setup: navigable menu
+# ---
+
+    0[||                                                                                      1.7%]   4[                                                                                         0.0%]
+    1[                                                                                        0.0%]   5[                                                                                         0.0%]
+    2[||||||                                                                                  5.1%]   6[||                                                                                       1.7%]
+    3[                                                                                        0.0%]   7[||                                                                                       1.7%]
+  Mem[||||||||||||||||||||||||                                                         1.06G/15.4G] Tasks: 1, 0 thr, 0 kthr; 2 running
+  Swp[                                                                                    0K/4.00G] Load average: 0.67 0.74 0.44
+                                                                                                    Uptime: 02:14:53
+
+  [Setup]
+Categories       Display options
+Display options  For current screen tab: Main
+Header layout    [ ]    Tree view
+Meters           [ ]    - Tree view is always sorted by PID (htop 2 behavior)
+Screens          [ ]    - Tree view is collapsed by default
+Colors           Global options:
+                 [x]    Show tabs for screens
+                 [ ]    Shadow other users' processes
+                 [x]    Hide kernel threads
+                 [ ]    Hide userland process threads
+                 [ ]    Hide processes running in containers
+                 [x]    Display threads in a different color
+                 [ ]    Show custom thread names
+                 [x]    Show program path
+                 [ ]    Highlight program "basename"
+                 [x]    Highlight out-dated/removed programs (red) / libraries (yellow)
+                 [ ]    Shadow distribution path prefixes
+                 [ ]    Merge exe, comm and cmdline in Command
+                 [x]    - Try to find comm in cmdline (when Command is merged)
+                 [x]    - Try to strip exe from cmdline (when Command is merged)
+                 [x]    Highlight large numbers in memory counters
+                 [x]    Leave a margin around header
+                 [ ]    Detailed CPU time (System/IO-Wait/Hard-IRQ/Soft-IRQ/Steal/Guest)
+                 [ ]    Count CPUs from 1 instead of 0
+                 [ ]    Update process names on every refresh
+                 [ ]    Add guest time in CPU meter percentage
+                 [x]    Also show CPU percentage numerically
+                 [ ]    Also show CPU frequency
+                 [ ]    Also show CPU temperature (requires libsensors)
+                 [ ]    - Show temperature in degree Fahrenheit instead of Celsius
+                 [x]    Enable the mouse
+                 [1.5]  Update interval (in seconds)
+                 [ ]    Highlight new and old processes
+                 [5]    - Highlight time (in seconds)
+                 [0]    Hide main function bar (0 - off, 1 - on ESC until next input, 2 - permanently)
+
+
+
+
+F1      F2      F3      F4      F5      F6      F7      F8      F9      F10Done

@@ -1,0 +1,49 @@
+[1m[36mhtop 3.2.2 - (C) 2004-2019 Hisham Muhammad. (C) 2020-2023 htop dev team.[0m
+[1m[36mReleased under the GNU GPLv2+. See 'man' page for more info.[0m
+
+CPU usage bar: [1m[[34mlow[0m/[32mnormal[39m/[31mkernel[39m/[36mguest[39m                  [1m[90mused%[39m][0m
+Memory bar:    [1m[[0m[32mused[39m/[1m[34mbuffers[0m/[35mshared[39m/[33mcache[39m                     [1m[90mused[0m/[1m[90mtotal[39m][0m
+Swap bar:      [1m[[0m[31mused[39m/[33mcache[39m                                    [1m[90mused[0m/[1m[90mtotal[39m][0m
+
+Type and layout of header meters are configurable in the setup screen.
+
+Process state: [32mR[39m: running; [1m[90mS[0m: sleeping; [32mt[39m: traced/stopped; [1m[31mZ[0m: zombie; [1m[31mD[0m: disk sleep
+
+      [1m[36m #: [0mhide/show header meters[1m[36m          S-Tab: [0mswitch to previous screen tab
+    [1m[36m Tab: [0mswitch to next screen tab[1m[36m        Space: [0mtag process
+[1m[36m  Arrows: [0mscroll process list                  [1m[36mc: [0mtag process and its children
+[1m[36m  Digits: [0mincremental PID search               [1m[36mU: [0muntag all processes
+[1m[36m    F3 /: [0mincremental name search[1m[36m           F9 k: [0mkill process/tagged processes
+[1m[36m    F4 \: [0mincremental name filtering[1m[36m        F7 ]: [0mhigher priority (root only)
+[1m[36m    F5 t: [0mtree view                         [1m[36mF8 [: [0mlower priority (+ nice)
+      [1m[36m p: [0mtoggle program path                  [1m[36ma: [0mset CPU affinity
+      [1m[36m m: [0mtoggle merged command                [1m[36me: [0mshow process environment
+      [1m[36m Z: [0mpause/resume process updates[1m[36m         i: [0mset IO priority
+      [1m[36m u: [0mshow processes of a single user[1m[36m      l: [0mlist open files with lsof
+      [1m[36m H: [0mhide/show user process [32mthreads[1m[36m       x: [0mlist file locks of process
+      [1m[36m K: [0mhide/show kernel [32mthreads[1m[36m             s: [0mtrace syscalls with strace
+      [1m[36m F: [0mcursor follows process               [1m[36mw: [0mwrap process command in multiple lines
+[1m[36m   + - *: [0mexpand/collapse tree/toggle all[1m[36m F2 C S: [0msetup
+[1m[36m N P M T: [0msort by PID, CPU%, MEM% or TIME[1m[36m F1 h ?: [0mshow this help screen
+      [1m[36m I: [0minvert sort order                [1m[36mF10 q: [0mquit
+[1m[36m  F6 > .: [0mselect sort column
+
+[1m[36mPress any key to return.[0m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

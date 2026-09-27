@@ -1,0 +1,60 @@
+# tmux-modal fixture v1
+# size: 200x50
+# cursor: 0,0
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# expect_app: htop
+# expect_mode: normal
+# note: u user list: navigable
+# ---
+
+  1  [|||||||                                                                               6.7%]   5  [||||                                                                                  3.4%]
+  2  [||                                                                                    1.7%]   6  [                                                                                      0.0%]
+  3  [||                                                                                    1.7%]   7  [||                                                                                    1.7%]
+  4  [||                                                                                    1.7%]   8  [                                                                                      0.0%]
+  Mem[||||||||||||||||||||||                                                         1.01G/15.4G]   Tasks: 1, 0 thr; 1 running
+  Swp[                                                                                  0K/4.00G]   Load average: 1.11 0.81 0.45
+                                                                                                    Uptime: 02:14:02
+
+Show processes of:      PID USER      PRI  NI  VIRT   RES   SHR S CPU% MEM%   TIME+  Command
+All users                 1 demo       20   0  5732  4216  3016 R  0.0  0.0  0:00.03 htop
+demo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EnterShow   EscCancel

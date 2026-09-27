@@ -1,0 +1,49 @@
+[1m[36mhtop 2.2.0 - (C) 2004-2019 Hisham Muhammad[0m
+[1m[36mReleased under the GNU GPL. See 'man' page for more info.[0m
+
+CPU usage bar: [1m[[34mlow-priority/[0m[32mnormal/[31mkernel/[36mvirtualiz[39m               [1m[90mused%[39m][0m
+Memory bar:    [1m[[0m[32mused/[1m[34mbuffers/[0m[33mcache[39m                            [1m[90mused/total[39m][0m
+Swap bar:      [1m[[0m[31mused[39m                                          [1m[90mused/total[39m][0m
+Type and layout of header meters are configurable in the setup screen.
+
+ Status: R: running; S: sleeping; T: traced/stopped; Z: zombie; D: disk sleep
+[1m[36m Arrows: [0mscroll process list              [1m[36mSpace: [0mtag process
+[1m[36m Digits: [0mincremental PID search               [1m[36mc: [0mtag process and its children
+[1m[36m   F3 /: [0mincremental name search              [1m[36mU: [0muntag all processes
+[1m[36m   F4 \: [0mincremental name filtering[1m[36m        F9 k: [0mkill process/tagged processes
+[1m[36m   F5 t: [0mtree view                         [1m[36mF7 ]: [0mhigher priority (root only)
+     [1m[36m p: [0mtoggle program path               [1m[36mF8 [: [0mlower priority (+ nice)
+     [1m[36m u: [0mshow processes of a single user[1m[36m      a: [0mset CPU affinity
+     [1m[36m H: [0mhide/show user process [32mthreads[1m[36m       e: [0mshow process environment
+     [1m[36m K: [0mhide/show kernel [32mthreads[1m[36m             i: [0mset IO priority
+     [1m[36m F: [0mcursor follows process               [1m[36ml: [0mlist open files with lsof
+[1m[36m F6 + -: [0mexpand/collapse tree                 [1m[36ms: [0mtrace syscalls with strace
+[1m[36m  P M T: [0msort by CPU%, MEM% or TIME
+     [1m[36m I: [0minvert sort order               [1m[36mF2 C S: [0msetup
+[1m[36m F6 > .: [0mselect sort column                [1m[36mF1 h: [0mshow this help screen
+[1m[36mPress any key to return.[0m                  [1m[36mF10 q: [0mquit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,60 @@
+# tmux-modal fixture v1
+# size: 200x50
+# cursor: 0,0
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# expect_app: htop
+# expect_mode: normal
+# note: F2 setup: navigable menu
+# ---
+
+  1  [||||||||||||                                                                         12.7%]   5  [                                                                                      0.0%]
+  2  [||||||||||||||                                                                       13.8%]   6  [                                                                                      0.0%]
+  3  [||                                                                                    1.7%]   7  [||||                                                                                  3.4%]
+  4  [|||||                                                                                 5.3%]   8  [                                                                                      0.0%]
+  Mem[||||||||||||||||||||||                                                         1.00G/15.4G]   Tasks: 1, 0 thr; 1 running
+  Swp[                                                                                  0K/4.00G]   Load average: 1.11 0.81 0.45
+                                                                                                    Uptime: 02:14:03
+
+Setup            Left column          Right column         Available meters
+Meters           CPUs (1/2) [Bar]     CPUs (2/2) [Bar]     Clock
+Display options  Memory [Bar]         Task counter [Text]  Load averages: 1 minute, 5 minutes, 15 minutes
+Colors           Swap [Bar]           Load average [Text]  Load: average of ready processes in the last minute
+Columns                               Uptime [Text]        Memory
+                                                           Swap
+                                                           Task counter
+                                                           Uptime
+                                                           Battery
+                                                           Hostname
+                                                           CPUs (1/1): all CPUs
+                                                           CPUs (1&2/2): all CPUs in 2 shorter columns
+                                                           CPUs (1/2): first half of list
+                                                           CPUs (2/2): second half of list
+                                                           CPUs (1&2/4): first half in 2 shorter columns
+                                                           CPUs (3&4/4): second half in 2 shorter columns
+                                                           Blank
+                                                           CPU average
+                                                           CPU 1
+                                                           CPU 2
+                                                           CPU 3
+                                                           CPU 4
+                                                           CPU 5
+                                                           CPU 6
+                                                           CPU 7
+                                                           CPU 8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+F1      F2      F3      F4      F5      F6      F7      F8      F9      F10Done

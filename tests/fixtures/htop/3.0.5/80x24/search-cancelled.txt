@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 0,0
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# expect_app: htop
+# expect_mode: normal
+# note: search cancelled with Esc
+# ---
+
+    0[||                        2.9%]     4[|                         1.4%]
+    1[|                         1.4%]     5[                          0.0%]
+    2[|                         1.5%]     6[||                        2.8%]
+    3[||                        4.2%]     7[||                        4.3%]
+  Mem[|||||||||          1.04G/15.4G]   Tasks: 1, 0 thr; 1 running
+  Swp[                      0K/4.00G]   Load average: 0.83 0.78 0.45
+                                        Uptime: 02:14:35
+
+    PID USER      PRI  NI  VIRT   RES   SHR S CPU%▽MEM%   TIME+  Command
+      1 demo       20   0  5260  3900  3324 R  0.0  0.0  0:00.02 htop
+
+
+
+
+
+
+
+
+
+
+
+
+F1Help  F2Setup F3SearchF4FilterF5Tree  F6SortByF7Nice -F8Nice +F9Kill  F10Quit

@@ -1,0 +1,50 @@
+
+  [36m  0[1m[39m[[0m[31m||||[1m[90m    [0m                                                                              [1m[90m3.4%[39m][0m   [36m  4[1m[39m[[0m[31m||[1m[90m   [0m                                                                                 [1m[90m1.7%[39m][0m
+  [36m  1[1m[39m[[0m[31m||[1m[90m     [0m                                                                               [1m[90m1.7%[39m][0m   [36m  5[1m[39m[[90m  [0m                                                                                   [1m[90m 0.0%[39m][0m
+  [36m  2[1m[39m[[0m[31m||[39m                                                                                   [1m[90m 1.7%[39m][0m   [36m  6[1m[39m[[0m[32m||[1m[90m        [0m                                                                            [1m[90m1.8%[39m][0m
+  [36m  3[1m[39m[[0m[32m||||[39m                                                                                  [1m[90m3.4%[39m][0m   [36m  7[1m[39m[[0m[32m||[1m[90m    [0m                                                                                [1m[90m1.8%[39m][0m
+  [36mMem[1m[39m[[0m[32m||||||[34m|[33m|||||||||||||||[1m[90m [0m                                                        [1m[90m1.02G/15.4G[39m][0m   [36mTasks: [1m1[0m[36m, [1m[32m0[0m[32m thr[36m; [1m[32m1[0m[36m running[39m
+  [36mSwp[1m[39m[[0m                                                                                  [1m[90m0K/4.00G[39m][0m   [36mLoad average: [1m[39m0.90 [36m0.79 [0m[36m0.45 [39m
+                                                                                                    [36mUptime: [1m02:14:28[0m
+
+[30m[42mSetup           [39m[49m [30m[42mLeft column         [39m[49m [30m[42mRight column        [39m[49m [30m[42mAvailable meters[39m
+[30m[46mMeters          [39m[49m [30m[47mCPUs (1/2) [Bar]    [39m[49m [30m[47mCPUs (2/2) [Bar]    [39m[49m [30m[47mClock[39m
+[49mDisplay options  Memory [Bar]         Task counter [Text]  Date
+Colors           Swap [Bar]           Load average [Text]  Date and Time
+Columns                               Uptime [Text]        Load averages: 1 minute, 5 minutes, 15 minutes
+                                                           Load: average of ready processes in the last minute
+                                                           Memory
+                                                           Swap
+                                                           Task counter
+                                                           Uptime
+                                                           Battery
+                                                           Hostname
+                                                           CPUs (1/1): all CPUs
+                                                           CPUs (1&2/2): all CPUs in 2 shorter columns
+                                                           CPUs (1&2&3&4/4): all CPUs in 4 shorter columns
+                                                           CPUs (1-8/8): all CPUs in 8 shorter columns
+                                                           CPUs (1/2): first half of list
+                                                           CPUs (2/2): second half of list
+                                                           CPUs (1&2/4): first half in 2 shorter columns
+                                                           CPUs (3&4/4): second half in 2 shorter columns
+                                                           CPUs (1-4/8): first half in 4 shorter columns
+                                                           CPUs (5-8/8): second half in 4 shorter columns
+                                                           CPUs (1-8/16): first half in 8 shorter columns
+                                                           CPUs (9-16/16): second half in 8 shorter columns
+                                                           Blank
+                                                           Pressure Stall Information, some cpu
+                                                           Pressure Stall Information, some io
+                                                           Pressure Stall Information, full io
+                                                           Pressure Stall Information, some memory
+                                                           Pressure Stall Information, full memory
+                                                           ZFS ARC
+                                                           ZFS CARC: Compressed ARC statistics
+                                                           Zram
+                                                           Disk IO
+                                                           Network IO
+                                                           SELinux state overview
+                                                           Systemd system state and unit overview
+                                                           CPU average
+                                                           CPU 0
+                                                           CPU 1
+F1[30m[46m      [39m[49mF2[30m[46m      [39m[49mF3[30m[46m      [39m[49mF4[30m[46m      [39m[49mF5[30m[46m      [39m[49mF6[30m[46m      [39m[49mF7[30m[46m      [39m[49mF8[30m[46m      [39m[49mF9[30m[46m      [39m[49mF10[30m[46mDone[39m

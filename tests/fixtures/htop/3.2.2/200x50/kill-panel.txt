@@ -1,0 +1,60 @@
+# tmux-modal fixture v1
+# size: 200x50
+# cursor: 15,48
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# expect_app: htop
+# expect_mode: normal
+# note: F9 signal list: navigable
+# ---
+
+    0[|||||||                                                                                 7.4%]   4[|||||||||                                                                                8.9%]
+    1[|                                                                                       1.0%]   5[|                                                                                        1.0%]
+    2[                                                                                        0.0%]   6[|||                                                                                      3.0%]
+    3[|||                                                                                     3.0%]   7[|                                                                                        1.0%]
+  Mem[||||||||||||||||||||||||                                                         1.09G/15.4G] Tasks: 1, 0 thr, 0 kthr; 2 running
+  Swp[                                                                                    0K/4.00G] Load average: 0.60 0.73 0.44
+                                                                                                    Uptime: 02:15:15
+
+  [Main] [I/O]
+Send signal:       PID USER       PRI  NI  VIRT   RES   SHR S  CPU%▽MEM%   TIME+  Command
+ 0 Cancel            1 demo        20   0  5588  4388  3184 R   1.0  0.0  0:00.03 htop
+ 1 SIGHUP
+ 2 SIGINT
+ 3 SIGQUIT
+ 4 SIGILL
+ 5 SIGTRAP
+ 6 SIGABRT
+ 6 SIGIOT
+ 7 SIGBUS
+ 8 SIGFPE
+ 9 SIGKILL
+10 SIGUSR1
+11 SIGSEGV
+12 SIGUSR2
+13 SIGPIPE
+14 SIGALRM
+15 SIGTERM
+16 SIGSTKFLT
+17 SIGCHLD
+18 SIGCONT
+19 SIGSTOP
+20 SIGTSTP
+21 SIGTTIN
+22 SIGTTOU
+23 SIGURG
+24 SIGXCPU
+25 SIGXFSZ
+26 SIGVTALRM
+27 SIGPROF
+28 SIGWINCH
+29 SIGIO
+29 SIGPOLL
+30 SIGPWR
+31 SIGSYS
+34 SIGRTMIN
+35 SIGRTMIN+1
+36 SIGRTMIN+2
+37 SIGRTMIN+3
+EnterSend   EscCancel
