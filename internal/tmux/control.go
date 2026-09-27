@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"strings"
 	"sync"
@@ -43,12 +44,20 @@ type reply struct {
 
 var ErrClosed = errors.New("control client closed")
 
+// ClientLabel is what the daemon's control clients show as their terminal
+// type in `tmux list-clients`.
+const ClientLabel = "TMUX-MODAL-DAEMON"
+
 // Attach starts a control-mode client on session (a name or $id).
 // notify is called from the reader goroutine for every notification; it
 // must not block and must not issue commands on this client.
 func Attach(s Server, session string, notify func(Notification)) (*Control, error) {
 	args := append(s.base(), "-C", "attach-session", "-f", "ignore-size", "-t", session)
 	cmd := exec.Command(s.bin(), args...)
+	// A control client cannot choose its name, but tmux shows its TERM in
+	// `list-clients`, so this is how a user recognises the daemon's
+	// connection at a glance.
+	cmd.Env = append(os.Environ(), "TERM="+ClientLabel)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err

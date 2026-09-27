@@ -168,3 +168,14 @@ func TestRootBindingsCopied(t *testing.T) {
 		return out == "pressed"
 	})
 }
+
+// The daemon's own connection is unmistakable in `tmux list-clients`.
+func TestDaemonClientIsLabelled(t *testing.T) {
+	h := newHarness(t, opts{cmd: []string{keyecho}})
+	h.startDaemon()
+	h.expectState("main", "keyecho/normal/commanding", "modal-keyecho")
+	out := h.tmuxIn("list-clients")
+	if !strings.Contains(out, "TMUX-MODAL-DAEMON") {
+		t.Fatalf("list-clients does not show the daemon label:\n%s", out)
+	}
+}
