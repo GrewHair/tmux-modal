@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 41,12
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: vim
+# expect_mode: visual
+# note: three inner panes: visual in the bottom-right vim
+# ---
+alpha                                   xdemo@remote:/$
+alpine                                  x
+alps                                    x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+~                                       x
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+                      1,1           All x-- VISUAL -1         0,0-1         All
+[0] 0:vim*                                              "remote" 22:08 27-Sep-26

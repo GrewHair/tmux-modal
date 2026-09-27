@@ -82,8 +82,9 @@ func TestFixtures(t *testing.T) {
 			if strings.HasPrefix(rel, "nested"+string(filepath.Separator)) {
 				// With @modal_nested_remap off, a remapping app is never
 				// given a mode through a nested tmux.
+				// Hooks-only specs (vim) keep their modes.
 				res, _ := classify.PaneWith(set, f.Screen, "", classify.Options{NestedRemap: false})
-				if res.Mode != spec.ModeUnknown || res.Nested == "" {
+				if sp := set.Specs[res.App]; (sp == nil || sp.HasKeys()) && (res.Mode != spec.ModeUnknown || res.Nested == "") {
 					t.Errorf("%s [nested_remap off]: got %s/%s nested=%q, want unknown", rel, orDash(res.App), res.Mode, res.Nested)
 				}
 			}

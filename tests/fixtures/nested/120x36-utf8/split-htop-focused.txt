@@ -1,28 +1,30 @@
 # tmux-modal fixture v1
 # size: 120x36
-# cursor: 76,0
-# cursor_visible: 1
+# cursor: 59,35
+# cursor_visible: 0
 # alternate_on: 1
 # command: docker
 # title: fixture
+# expect_app: htop
 # expect_mode: unknown
-# note: inner split with status line, the shell has the keyboard
+# note: inner split, htop has the keyboard: its cursor is hidden, so nothing shows which inner pane is focused
 # ---
                                                             │demo@remote:/$
-    0[||||             11.6%]   4[||                 2.6%]  │
-    1[||                3.4%]   5[|||                6.6%]  │
-    2[||                3.9%]   6[||                 2.7%]  │
-    3[||                3.9%]   7[||                 1.8%]  │
-  Mem[|||||||||||2.26G/15.4G] Tasks: 4, 0 thr, 0 kthr; 1 r  │
+    0[|||              10.2%]   4[||                 5.2%]  │
+    1[||                3.9%]   5[||                 3.4%]  │
+    2[||                4.0%]   6[||                 4.6%]  │
+    3[||                2.3%]   7[||                 2.8%]  │
+  Mem[|||||||||||2.28G/15.4G] Tasks: 3, 0 thr, 0 kthr; 2 r  │
   Swp[||            4K/4.00G] Load average: 0.19 1.05 0.96  │
-                              Uptime: 13:13:47              │
+                              Uptime: 13:13:45              │
                                                             │
   [Main] [I/O]                                              │
     PID USER       PRI  NI  VIRT   RES   SHR S  CPU%▽MEM%   │
-      8 demo        20   0 14208  4732  3536 S   0.4  0.0  0│
+      9 demo        20   0  9876  4280  3516 R   0.6  0.0  0│
       1 demo        20   0 13676  5336  4640 S   0.0  0.0  0│
-      9 demo        20   0  9876  4336  3516 R   0.0  0.0  0│
-     11 demo        20   0  9428  4204  3576 S   0.0  0.0  0│
+      8 demo        20   0 14208  4716  3536 S   0.0  0.0  0│
+                                                            │
+                                                            │
                                                             │
                                                             │
                                                             │
@@ -43,4 +45,3 @@
                                                             │
                                                             │
 F1Help  F2Setup F3SearchF4FilterF5Tree  F6SortByF7Nice -F8Ni│
-[0] 0:bash*                                                                                     "remote" 22:08 27-Sep-26

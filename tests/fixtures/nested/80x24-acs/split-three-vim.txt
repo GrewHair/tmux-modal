@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 41,12
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: vim
+# expect_mode: normal
+# note: three inner panes: a second vim, bottom right, has the keyboard
+# ---
+alpha                                   xdemo@remote:/$
+alpine                                  x
+alps                                    x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       x
+~                                       tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+~                                       x
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+~                                       x~
+                      1,1           All x<xt" [New]           0,0-1         All
+[0] 0:bash*                                             "remote" 22:08 27-Sep-26

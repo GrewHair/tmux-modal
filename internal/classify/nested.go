@@ -23,6 +23,17 @@ type Nested struct {
 	// Split is true when inner pane borders divide the screen, so the
 	// captured grid mixes several inner panes.
 	Split bool
+	// Focus is the inner pane that has the keyboard, in the coordinates of
+	// the screen without the inner status line; nil when Split and the
+	// screen does not show which one it is.
+	Focus *Rect
+}
+
+// Rect is an area of the screen: an inner pane.
+type Rect struct{ X, Y, W, H int }
+
+func (r Rect) contains(x, y int) bool {
+	return x >= r.X && x < r.X+r.W && y >= r.Y && y < r.Y+r.H
 }
 
 // Multiplexers are local commands that mean the pane shows another
@@ -90,6 +101,7 @@ func DetectNested(set *spec.Set, s *screen.Screen) Nested {
 		if n.Evidence == "" {
 			n.Evidence = "borders"
 		}
+		n.Focus = focusedPane(s.WithoutRow(n.StatusRow))
 	}
 	if n.Evidence == "" && titleRE.MatchString(s.Title) {
 		n.Evidence = "title"
@@ -150,7 +162,7 @@ func hasBorders(s *screen.Screen, statusRow int) bool {
 			}
 			c += screen.RuneWidth(ch)
 		}
-		if r > first && r < last && c == s.Width && hcount == s.Width && hPlain[row[0]] && hPlain[row[s.Width-1]] {
+		if r > first && r < last && c == s.Width && hcount == s.Width && borderRow(row) {
 			return true
 		}
 		grid = append(grid, row)
@@ -164,6 +176,89 @@ func hasBorders(s *screen.Screen, statusRow int) bool {
 		}
 	}
 	return false
+}
+
+// borderRow reports a horizontal border across a whole area: border
+// characters only, plain lines at both ends.
+func borderRow(row []rune) bool {
+	if len(row) < 2 || !hPlain[row[0]] || !hPlain[row[len(row)-1]] {
+		return false
+	}
+	for _, ch := range row {
+		if !hBorder[ch] && !vBorder[ch] {
+			return false
+		}
+	}
+	return true
+}
+
+// focusedPane finds the inner pane that has the keyboard. tmux draws the
+// terminal cursor only in the active pane, and only while that pane shows
+// it: a visible cursor is inside the focused pane. A hidden cursor (htop,
+// btop) or one outside every pane (the inner command prompt, on the status
+// line removed from s) says nothing, and nothing is guessed. The active
+// border colour would tell more, but depends on the inner tmux's version
+// and theme (backlog).
+func focusedPane(s *screen.Screen) *Rect {
+	if !s.Cursor.Visible {
+		return nil
+	}
+	for _, p := range innerPanes(s) {
+		if p.contains(s.Cursor.X, s.Cursor.Y) {
+			return &p
+		}
+	}
+	return nil
+}
+
+// innerPanes cuts a full-screen grid without the inner status line into
+// the inner panes the way tmux lays them out: every split spans the whole
+// of the area it divides (the window first, then each part), so a border
+// running across an area cuts it in two and each part is cut again.
+func innerPanes(s *screen.Screen) []Rect {
+	grid := make([][]rune, len(s.Lines))
+	for r, line := range s.Lines {
+		row := make([]rune, s.Width)
+		c := 0
+		for _, ch := range line {
+			if c >= s.Width {
+				break
+			}
+			row[c] = ch
+			c += screen.RuneWidth(ch)
+		}
+		for ; c < s.Width; c++ {
+			row[c] = ' '
+		}
+		grid[r] = row
+	}
+	var out []Rect
+	var cut func(a Rect, depth int)
+	cut = func(a Rect, depth int) {
+		if depth < 8 && a.W >= 3 && a.H >= 3 {
+			for y := a.Y + 1; y < a.Y+a.H-1; y++ {
+				if borderRow(grid[y][a.X : a.X+a.W]) {
+					cut(Rect{a.X, a.Y, a.W, y - a.Y}, depth+1)
+					cut(Rect{a.X, y + 1, a.W, a.Y + a.H - y - 1}, depth+1)
+					return
+				}
+			}
+			area := make([][]rune, a.H)
+			for i := range area {
+				area[i] = grid[a.Y+i][a.X : a.X+a.W]
+			}
+			for x := 1; x < a.W-1; x++ {
+				if borderColumn(area, x) {
+					cut(Rect{a.X, a.Y, x, a.H}, depth+1)
+					cut(Rect{a.X + x + 1, a.Y, a.W - x - 1, a.H}, depth+1)
+					return
+				}
+			}
+		}
+		out = append(out, a)
+	}
+	cut(Rect{0, 0, s.Width, len(grid)}, 0)
+	return out
 }
 
 // acsLetter reports the VT100 line-drawing letters that double as text.

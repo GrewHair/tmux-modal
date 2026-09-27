@@ -9,21 +9,21 @@
 # expect_mode: normal
 # note: inner status line on top: htop's bottom bar is on our last row
 # ---
-[0] 0:htop*                                                                                     "remote" 13:58 27-Sep-26
+[0] 0:htop*                                                                                     "remote" 22:08 27-Sep-26
 
-    0[||||||                                          9.1%]   4[|                                                1.3%]
-    1[||                                              2.5%]   5[|                                                0.6%]
-    2[||                                              1.9%]   6[|                                                0.6%]
-    3[                                                0.0%]   7[||                                               1.9%]
-  Mem[|||||||||||||                            1.13G/15.4G] Tasks: 3, 0 thr, 0 kthr; 2 running
-  Swp[                                            0K/4.00G] Load average: 0.19 0.26 0.19
-                                                            Uptime: 05:06:08
+    0[|||||                                           7.6%]   4[||                                               2.1%]
+    1[|||                                             4.1%]   5[||                                               2.6%]
+    2[|||                                             4.2%]   6[|||                                              3.8%]
+    3[|||                                             5.1%]   7[||                                               0.9%]
+  Mem[|||||||||||||||||||||||||||||||||||||||||2.28G/15.4G] Tasks: 3, 0 thr, 0 kthr; 4 running
+  Swp[||                                          4K/4.00G] Load average: 0.21 1.07 0.97
+                                                            Uptime: 13:13:43
 
   [Main] [I/O]
     PID USER       PRI  NI  VIRT   RES   SHR S  CPU%▽MEM%   TIME+  Command
-      1 demo        20   0  9276  5320  4620 S   0.0  0.0  0:00.01 tmux new-session htop
-      8 demo        20   0  9808  4780  3596 S   0.0  0.0  0:00.00 tmux new-session htop
-      9 demo        20   0  5508  4256  3492 R   0.0  0.0  0:00.00 htop
+      1 demo        20   0 13676  5336  4640 S   0.0  0.0  0:00.03 tmux new-session htop
+      8 demo        20   0 14208  4716  3536 S   0.0  0.0  0:00.00 tmux new-session htop
+      9 demo        20   0  9908  4280  3516 R   0.0  0.0  0:00.00 htop
 
 
 

@@ -141,8 +141,8 @@ func TestVimHookLatency(t *testing.T) {
 // vim and neovim over SSH inside a remote tmux. With a status line (bottom
 // or top) the daemon removes it and reads vim's own last row: every mode,
 // low confidence. With the status line off the remote tmux is invisible
-// and it is plain SSH. With the remote window split the mode is unknown:
-// the outer screen cannot tell which inner pane has the keyboard. Escape
+// and it is plain SSH. With the remote window split, the inner pane with
+// the cursor is read. Escape
 // is slow here (the inner tmux's escape-time, 500 ms on 3.4) but within
 // expectState's wait. The remote tmux outlives the SSH connection, so each
 // case runs its own remote tmux server on a file of its own (a second vim
@@ -191,18 +191,42 @@ func TestNestedTmuxVim(t *testing.T) {
 			}
 		})
 	}
+	// A split remote window: the inner pane with the cursor is the one
+	// with the keyboard. vim shows its cursor in every mode, so it is read
+	// while focused; the shell beside it (no spec) is unknown, and so is
+	// htop, which hides the cursor.
 	t.Run("split", func(t *testing.T) {
 		tmux, file := remoteTmux(t)
 		h := newHarness(t, opts{w: 100, h: 30,
 			cmd: sshCmd(`printf 'alpha\n' >` + file + ` && ` + tmux + ` new-session vim ` + file + ` \; split-window -h -d`)})
 		h.startDaemon()
-		h.waitFor("unknown with the inner split seen", 8*time.Second, func() bool {
-			return strings.HasSuffix(h.state("main"), "/unknown/unknown") && h.option("main", "@modal_nested") != ""
-		})
-		h.typeKeys("i")
-		time.Sleep(500 * time.Millisecond)
-		if st := h.state("main"); !strings.HasSuffix(st, "/unknown/unknown") {
-			t.Errorf("inner split, after i: %s, want unknown", st)
+		h.expectState("main", "vim/normal/commanding", "root")
+		if n := h.option("main", "@modal_nested"); n != "status-line" {
+			t.Errorf("@modal_nested = %q, want status-line", n)
 		}
+		for _, step := range []struct{ keys, state string }{
+			{"i", "vim/insert/typing"},
+			{"Escape", "vim/normal/commanding"},
+			{"v", "vim/visual/commanding"},
+			{"Escape", "vim/normal/commanding"},
+		} {
+			h.typeKeys(step.keys)
+			h.expectState("main", step.state, "root")
+		}
+		// Focus the shell on the right: C-b twice, the local tmux sends one on
+		// to the remote tmux.
+		h.typeKeys("C-b", "C-b", "Right")
+		h.waitFor("unknown with the shell focused", 8*time.Second, func() bool {
+			return strings.HasSuffix(h.state("main"), "/unknown/unknown")
+		})
+		h.typeKeys("htop", "Enter")
+		time.Sleep(time.Second)
+		if st := h.state("main"); !strings.HasSuffix(st, "/unknown/unknown") {
+			t.Errorf("htop focused in an inner split: %s, want unknown", st)
+		}
+		h.typeKeys("q")
+		time.Sleep(500 * time.Millisecond) // htop gone, back at the prompt
+		h.typeKeys("C-b", "C-b", "Left")
+		h.expectState("main", "vim/normal/commanding", "root")
 	})
 }

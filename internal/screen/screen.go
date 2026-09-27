@@ -173,3 +173,56 @@ func (s *Screen) WithoutRow(r int) *Screen {
 	}
 	return &c
 }
+
+// Sub returns a view of a full-screen capture's rectangle (x, y, w, h) as
+// a screen of its own: one inner pane of a nested multiplexer. A wide
+// character cut by the rectangle's edge becomes a blank.
+func (s *Screen) Sub(x, y, w, h int) *Screen {
+	if s.Top != 0 || x < 0 || y < 0 || w <= 0 || h <= 0 || x+w > s.Width || y+h > len(s.Lines) {
+		return s
+	}
+	c := *s
+	c.Width, c.Height = w, h
+	c.Lines = make([]string, h)
+	for i := range c.Lines {
+		c.Lines[i] = sliceCols(s.Lines[y+i], x, x+w)
+	}
+	if s.Cells != nil {
+		c.Cells = make([][]Cell, h)
+		for i := range c.Cells {
+			if y+i >= len(s.Cells) {
+				break
+			}
+			row := s.Cells[y+i]
+			if x < len(row) {
+				c.Cells[i] = row[x:min(len(row), x+w)]
+			}
+		}
+	}
+	c.Cursor.X, c.Cursor.Y = s.Cursor.X-x, s.Cursor.Y-y
+	if c.Cursor.X < 0 || c.Cursor.X >= w || c.Cursor.Y < 0 || c.Cursor.Y >= h {
+		c.Cursor.Visible = false
+	}
+	return &c
+}
+
+// sliceCols returns the columns [a, b) of a line, right-trimmed.
+func sliceCols(line string, a, b int) string {
+	var sb strings.Builder
+	c := 0
+	for _, r := range line {
+		rw := RuneWidth(r)
+		switch {
+		case c >= b:
+		case c >= a && c+rw <= b:
+			sb.WriteRune(r)
+		case c+rw > a:
+			sb.WriteString(strings.Repeat(" ", min(c+rw, b)-max(c, a)))
+		}
+		c += rw
+		if c >= b {
+			break
+		}
+	}
+	return strings.TrimRightFunc(sb.String(), unicode.IsSpace)
+}

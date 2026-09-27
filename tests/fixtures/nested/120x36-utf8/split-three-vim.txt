@@ -1,0 +1,47 @@
+# tmux-modal fixture v1
+# size: 120x36
+# cursor: 61,18
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: vim
+# expect_mode: normal
+# note: three inner panes: a second vim, bottom right, has the keyboard
+# ---
+alpha                                                       │demo@remote:/$
+alpine                                                      │
+alps                                                        │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           │
+~                                                           ├───────────────────────────────────────────────────────────
+~                                                           │
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+~                                                           │~
+                                          1,1           All │"/tmp/second.txt" [New]                  0,0-1         All
+[0] 0:bash*                                                                                     "remote" 22:08 27-Sep-26

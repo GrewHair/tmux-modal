@@ -234,13 +234,17 @@ func Pane(set *spec.Set, s *screen.Screen, stickyApp string) (Result, []Trace) {
 //
 // A pane showing an inner multiplexer is classified on the screen minus
 // the inner status line, with low confidence. When the inner window is
-// split, the mode is unknown: the outer screen mixes several inner panes
-// and does not show which one has the keyboard. A key-remapping spec is
+// split, only the inner pane with the cursor is classified; with no
+// visible cursor the mode is unknown: the outer screen mixes several inner
+// panes and does not show which one has the keyboard. A key-remapping spec is
 // also unknown there unless opt.NestedRemap.
 func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (Result, []Trace) {
 	n := DetectNested(set, s)
 	if n.StatusRow >= 0 {
 		s = s.WithoutRow(n.StatusRow)
+	}
+	if n.Focus != nil {
+		s = s.Sub(n.Focus.X, n.Focus.Y, n.Focus.W, n.Focus.H)
 	}
 	res, traces := pane(set, s, stickyApp)
 	if n.Evidence == "" {
@@ -250,9 +254,13 @@ func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (R
 	sp := set.Specs[res.App]
 	switch {
 	case res.App == "" || res.Mode == spec.ModeUnknown || res.Mode == spec.ModeNone:
-	case n.Split || sp == nil || (sp.HasKeys() && !opt.NestedRemap):
+	case (n.Split && n.Focus == nil) || sp == nil || (sp.HasKeys() && !opt.NestedRemap):
 		res.Reason = fmt.Sprintf("nested multiplexer (%s): would be %s, but %s", n.Evidence, res.Mode, nestedWhy(n))
 		res.Mode, res.Bucket, res.Confidence = spec.ModeUnknown, spec.ModeUnknown, Low
+	case n.Focus != nil:
+		res.Confidence = Low
+		res.Reason = fmt.Sprintf("nested multiplexer (%s), the inner pane %dx%d at %d,%d has the cursor: %s",
+			n.Evidence, n.Focus.W, n.Focus.H, n.Focus.X, n.Focus.Y, res.Reason)
 	default:
 		res.Confidence = Low
 		res.Reason = fmt.Sprintf("nested multiplexer (%s): %s", n.Evidence, res.Reason)
@@ -261,8 +269,8 @@ func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (R
 }
 
 func nestedWhy(n Nested) string {
-	if n.Split {
-		return "the inner window is split"
+	if n.Split && n.Focus == nil {
+		return "the inner window is split and shows no cursor"
 	}
 	return "@modal_nested_remap is off"
 }

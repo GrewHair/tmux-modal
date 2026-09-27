@@ -1,12 +1,13 @@
 # tmux-modal fixture v1
 # size: 80x24
-# cursor: 56,0
-# cursor_visible: 1
+# cursor: 39,23
+# cursor_visible: 0
 # alternate_on: 1
 # command: docker
 # title: fixture
+# expect_app: htop
 # expect_mode: unknown
-# note: inner window split, no status: htop on the left, a shell on the right has the keyboard (no spec reads a shell in an inner pane)
+# note: inner split, htop has the keyboard: its cursor is hidden, so nothing shows which inner pane is focused
 # ---
                                         xdemo@remote:/$
     0[||      8.7%]   4[||       4.0%]  x
