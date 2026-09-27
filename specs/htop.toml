@@ -1,0 +1,92 @@
+# htop — the reference key-remapping spec.
+#
+# Verified against htop 2.2.0, 3.0.5, 3.2.2 and 3.3.0 at 200x50 and 80x24
+# (tests/fixtures/htop). The prompts do NOT start in column 0: the function
+# bar on the last row is replaced by a prompt bar, e.g.
+#   F3Next  S-F3Prev   EscCancel    Search: abc     (3.x)
+#   F3Next  EscCancel    Search: abc                (2.2: no S-F3Prev)
+#   EnterDone  EscClear    Filter: xy
+# The kill (F9), user (u) and setup (F2) panels are navigable lists and
+# stay normal mode. cursor_flag is 1 exactly while a prompt is open in
+# every version, but only 3.2+ parks the cursor on the prompt row (2.2 and
+# 3.0 leave it at 0,0), so the cursor rule is corroboration, not primary.
+name     = "htop"
+priority = 50
+extends  = "curses-tui"
+modes    = ["normal", "insert"]
+translated = false                # htop ships no translations
+
+[match]
+command             = ["htop"]
+requires_alt_screen = true
+combine             = "weighted"
+threshold           = 100
+
+  # Process-list column header. Columns are configurable, but PID first
+  # followed by USER is the long-standing default.
+  [[match.clause]]
+  regex  = '^ *PID +USER +'
+  rows   = [0, 40]
+  weight = 50
+
+  # The bottom bar, in every state htop draws one: the function-key bar,
+  # the search/filter prompts, and the kill / user / setup panels.
+  [[match.clause]]
+  regex  = '^(F1Help +F2Setup +F3Search|F3Next +(S-F3Prev +)?Esc ?Cancel +Search:|Enter ?Done +Esc ?Clear +Filter:|Enter ?Send +Esc ?Cancel$|Enter ?Show +Esc ?Cancel$|F1 +F2 +F3 +.*F10Done$)'
+  rows   = [-1, -1]
+  weight = 60
+
+  # Header meters (configurable, so supporting evidence only).
+  [[match.clause]]
+  regex  = '^ +(Mem|Swp)\[.*\]'
+  rows   = [0, 20]
+  weight = 30
+
+  [[match.clause]]
+  regex  = 'Tasks: [0-9]+, [0-9]+ thr'
+  rows   = [0, 20]
+  weight = 30
+
+  # Keycap labels on the bottom bar are black on cyan in the default
+  # theme of every version captured. Bonus only: htop is often rethemed.
+  [[match.clause]]
+  row    = -1
+  col    = 2
+  fg     = "black"
+  bg     = "cyan"
+  weight = "bonus"
+
+# --- mode detection: first hit wins, no hit => normal -----------------
+[[insert_when]]
+name  = "search"
+regex = 'F3Next +(S-F3Prev +)?Esc ?Cancel +Search:( |$)'
+rows  = [-1, -1]
+col   = 0
+
+[[insert_when]]
+name  = "filter"
+regex = 'Enter ?Done +Esc ?Clear +Filter:( |$)'
+rows  = [-1, -1]
+col   = 0
+
+# (inherited from curses-tui: cursor-on-prompt)
+
+[keys]
+h     = "Left"
+j     = "Down"
+k     = "Up"
+l     = "Right"
+g     = "Home"
+G     = "End"
+"C-d" = "PageDown"
+"C-u" = "PageUp"
+
+[escape]
+leader = "_"
+
+# htop's own bindings that the map shadows; reach them with the leader
+# (_h, _k, _l). Documentation only.
+[shadowed]
+h = "help"
+k = "kill"
+l = "list open files (lsof)"
