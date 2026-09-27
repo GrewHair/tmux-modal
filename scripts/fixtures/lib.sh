@@ -17,6 +17,8 @@ start() {
 	shift 2
 	t -f /dev/null new-session -d -x "$w" -y "$h" "$@"
 	t set-option -g status off
+	# tmux's default pane title is the host name; never record it.
+	t select-pane -t %0 -T fixture
 	t resize-window -x "$w" -y "$h" 2>/dev/null || true
 }
 
