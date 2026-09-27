@@ -56,8 +56,8 @@ func (d *Daemon) syncKeyTables(r tmux.Runner, panes []tmux.PaneInfo, humans map[
 			if ss.own == "" && !strings.HasPrefix(current, "modal-") {
 				cmds = append(cmds, d.saveOriginal(r, sid)...)
 			}
-			cmds = append(cmds, tmux.Command("set-option", "-t", sid, "key-table", desired))
-			cmds = append(cmds, d.repointClients(sid, current, desired)...)
+			cmds = append(cmds, oneLine(tmux.Command("set-option", "-t", sid, "key-table", desired),
+				d.repointClients(sid, current, desired)))
 			ss.own = desired
 			d.log.Infof("session %s: key-table %s -> %s", sid, current, desired)
 		case desired == "" && (ss.own != "" || strings.HasPrefix(current, "modal-")):
@@ -89,6 +89,16 @@ func (d *Daemon) repointClients(sid, from, to string) []string {
 	return cmds
 }
 
+// oneLine joins a key-table change and the client re-points into a single
+// command list. tmux runs one list without handling other clients' input
+// in between, so no keystroke can arrive after the option changed but
+// before its client was moved: such a key would be discarded (see
+// repointClients). The option comes first, so a failing re-point (a
+// client that just detached) cannot prevent it.
+func oneLine(set string, repoint []string) string {
+	return strings.Join(append([]string{set}, repoint...), " ; ")
+}
+
 func (d *Daemon) saveOriginal(r tmux.Runner, sid string) []string {
 	val := "inherit"
 	if lines, err := r.Run("show-options", "-qv", "-t", sid, "key-table"); err == nil && len(lines) > 0 && lines[0] != "" {
@@ -103,13 +113,12 @@ func (d *Daemon) restoreCommands(r tmux.Runner, sid, current string) []string {
 	if lines, err := r.Run("show-options", "-qv", "-t", sid, savedOpt); err == nil && len(lines) > 0 {
 		saved = lines[0]
 	}
-	var cmds []string
-	target := ""
+	var set, target string
 	if strings.HasPrefix(saved, "local:") {
 		target = strings.TrimPrefix(saved, "local:")
-		cmds = append(cmds, tmux.Command("set-option", "-t", sid, "key-table", target))
+		set = tmux.Command("set-option", "-t", sid, "key-table", target)
 	} else {
-		cmds = append(cmds, tmux.Command("set-option", "-u", "-t", sid, "key-table"))
+		set = tmux.Command("set-option", "-u", "-t", sid, "key-table")
 		if lines, err := r.Run("show-options", "-gqv", "key-table"); err == nil && len(lines) > 0 {
 			target = lines[0]
 		}
@@ -117,8 +126,10 @@ func (d *Daemon) restoreCommands(r tmux.Runner, sid, current string) []string {
 			target = "root"
 		}
 	}
-	cmds = append(cmds, tmux.Command("set-option", "-u", "-q", "-t", sid, savedOpt))
-	cmds = append(cmds, d.repointClients(sid, current, target)...)
+	cmds := []string{
+		oneLine(set, d.repointClients(sid, current, target)),
+		tmux.Command("set-option", "-u", "-q", "-t", sid, savedOpt),
+	}
 	d.log.Infof("session %s: key-table %s -> %s (restored)", sid, current, target)
 	return cmds
 }
