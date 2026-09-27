@@ -1,0 +1,59 @@
+# Architecture and code map
+
+```
+tmux server
+ ├─ human clients
+ └─ tmux-modal daemon  (one per server; flock in $XDG_RUNTIME_DIR/tmux-modal-<uid>/)
+      ├─ control clients: one `-C attach -f ignore-size` per human-attached session
+      │     └─ %output / focus notifications ──► events (coalesced, reader goroutines)
+      ├─ loop (single goroutine): reconcile ► cycle ► sleep until next due / event
+      │     cycle = list-panes -a (tier 1) ► gates ► pipelined capture-pane (tier 2)
+      │             ► classify ► transition ► publish ► key tables ► focus sweep ► status refresh
+      └─ hookRunner (goroutines): debounce, supersede, timeout, process-group kill
+```
+
+## Packages
+
+| Path | Role |
+|---|---|
+| `cmd/tmux-modal/main.go` | CLI: `daemon`, `stop`, `validate`, `capture`, `lint`, `version` |
+| `specs.go` | `//go:embed specs` — bundled specs (`specs/*.toml`, `specs/groups/*.toml`) |
+| `internal/screen` | `Screen` (lines, optional cells, cursor, flags; full-screen row coordinates, `Top` for partial captures), SGR parser (state carried across lines), colour normalisation, fixture file format |
+| `internal/spec` | TOML load (bundled then user dirs; shadow by file stem), `normalise` sugar, `resolve` extends (list = mixin chain, cycle check), `merge`, `compile` to `Spec`/`Rule`/`Clause`, clause/rule `Eval` (tri-state), `lint`, `LocaleAudit` |
+| `internal/classify` | `EvalIdentity` (Identified vs Confirmed), `Classify` (always → mode rules → absence needs confirmed identity → corroboration veto → default), `Identify` (all specs, priority order), `Pane` (entry point: sticky app, shell fast path) |
+| `internal/validate` | the score-sheet report |
+| `internal/tmux` | `Exec` runner, `Control` client (pipelined `Send`/`Wait`, guarded block parser, `ClientLabel`), `Quote`/`Command`, `ListPanes` tier-1 snapshot, `CaptureArgs`/`Fill`, `Capture` |
+| `internal/daemon` | `daemon.go` lifecycle/reconcile/shutdown/`runLines`; `cycle.go` scheduler, examine, transition, publish, indicator, focus sweep, hook events; `sessions.go` key-table ownership, client re-point, install, recovery; `keys.go` binding generation; `hooks.go` runner; `config.go` options/profiles/unescape; `sys.go` lock + CPU throttle; `log.go` |
+| `modal.tmux`, `scripts/binary.sh` | TPM entry: resolve binary, `run-shell -b` the daemon with `--socket '#{socket_path}'` |
+| `examples/` | hook scripts (`log`, `notify`, `windows-toast`, `fifo`) and `listener.sh` |
+
+## Key invariants (do not break)
+
+1. A spec without `[keys]` never causes `key-table` or `@modal_saved_key_table` to be written.
+2. `normal` (the default mode) is only concluded when identity is **confirmed on the same capture**; otherwise `OtherwiseMode` (`unknown`).
+3. Unknown / none ⇒ pass-through: no table switch, remap guard false.
+4. The session key-table is only ever set to a table that becomes the default; `switch-client -T` is only used (a) to re-point clients to that same default and (b) for the one-shot literal table.
+5. The daemon never sends keys to panes.
+6. Every failure mode (spec error, tmux error, crash) degrades to pass-through; a spec that fails to load is skipped with a warning.
+7. Formats in status/border only read `@modal_*` variables.
+
+## Per-pane state (`paneState`)
+
+`app` (sticky identity), `identFails` (3 → drop identity), `cur` (published
+`modeState{App,Mode,Bucket,Confidence}`), `pending`/`pendingN` (confirmation
+before resuming remap), `due` (next examination), `burstStart`,
+`lastOutput`, `lastExam`, `inScope`, `indicator`, `altToggles` (counted, not
+yet used — intended for nested-tmux detection, §3.8).
+
+Invalidations (tier 1): alt-screen toggle or command change → drop identity,
+examine now; resize → examine now; newly in scope → examine now.
+
+Capture band: sticky + healthy identity + spec's rules all bottom-relative →
+capture only `max(CaptureBottom, @modal_capture_rows)` rows; otherwise full
+screen. (htop's identity uses top rows, so htop captures the full screen.)
+
+## Published per-pane options
+
+`@modal_app`, `@modal_mode`, `@modal_bucket`, `@modal_confidence`,
+`@modal_indicator`. Server/session: `@modal_daemon_pid` (global),
+`@modal_saved_key_table` (session, only while owned).
