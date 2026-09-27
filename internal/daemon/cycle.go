@@ -14,9 +14,10 @@ import (
 // modeState is what the daemon publishes for a pane.
 type modeState struct {
 	App, Mode, Bucket, Confidence string
+	Nested                        string // evidence of an inner multiplexer, or ""
 }
 
-var paneOptions = []string{"@modal_app", "@modal_mode", "@modal_bucket", "@modal_confidence", "@modal_indicator"}
+var paneOptions = []string{"@modal_app", "@modal_mode", "@modal_bucket", "@modal_confidence", "@modal_nested", "@modal_indicator"}
 
 type paneState struct {
 	id   string
@@ -207,7 +208,9 @@ func (d *Daemon) cycle() {
 		if st.app != "" {
 			sp = d.set.Specs[st.app]
 		}
-		if sp != nil && st.identFails == 0 && sp.CaptureBottom > 0 {
+		// A nested pane needs the full screen: the inner status line and
+		// pane borders are what keep it from being remapped.
+		if sp != nil && st.identFails == 0 && sp.CaptureBottom > 0 && st.cur.Nested == "" {
 			j.bottom = sp.CaptureBottom
 			if d.cfg.CaptureRows > j.bottom {
 				j.bottom = d.cfg.CaptureRows
@@ -278,7 +281,7 @@ func (d *Daemon) examine(st *paneState, s *screen.Screen, full bool, now time.Ti
 		}
 	}
 
-	next := modeState{App: res.App, Mode: res.Mode, Bucket: res.Bucket, Confidence: res.Confidence}
+	next := modeState{App: res.App, Mode: res.Mode, Bucket: res.Bucket, Confidence: res.Confidence, Nested: res.Nested}
 	d.transition(st, next, res.Reason, now)
 
 	switch {
@@ -344,7 +347,7 @@ func (d *Daemon) publish(st *paneState, m modeState, reason string) {
 		st.indicator = ind
 		d.statusDirty = true
 	}
-	vals := []string{m.App, m.Mode, m.Bucket, m.Confidence, ind}
+	vals := []string{m.App, m.Mode, m.Bucket, m.Confidence, m.Nested, ind}
 	var cmds []string
 	for i, o := range paneOptions {
 		if vals[i] == "" {
@@ -443,7 +446,7 @@ func (d *Daemon) sweepFocus(panes []tmux.PaneInfo, humans map[string]bool) {
 func (d *Daemon) hookEvent(event, key string, p *tmux.PaneInfo, from, to modeState, active bool) *HookEvent {
 	e := &HookEvent{
 		Event: event, Key: key, Pane: p.ID, App: to.App, AppFrom: from.App,
-		ModeTo: to.Mode, ModeFrom: from.Mode, Bucket: to.Bucket, Confidence: to.Confidence,
+		ModeTo: to.Mode, ModeFrom: from.Mode, Bucket: to.Bucket, Confidence: to.Confidence, Nested: to.Nested,
 		Session: p.SessionName, SessionID: p.SessionID, Window: p.WindowID, Active: active,
 	}
 	if e.ModeTo == "" {

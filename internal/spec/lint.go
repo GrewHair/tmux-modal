@@ -57,6 +57,40 @@ func (sp *Spec) lint() {
 	if sp.HasKeys() && sp.Identity.Screen == nil && !sp.Group {
 		sp.warnf("has [keys] but no screen identity clauses: remapping will only ever work locally (by command), never over SSH")
 	}
+	sp.lintAbsenceAnchor()
+}
+
+// lintAbsenceAnchor flags a remapping spec whose default (commanding) mode
+// would be concluded from the absence of markers in rows that no required
+// identity clause vouches for. Under a remote tmux the last row is the
+// inner status line: identity anchors elsewhere still match, the prompt
+// one row up is never seen, and keys get remapped while the user types.
+// htop needed its bottom bar made required for exactly this reason.
+func (sp *Spec) lintAbsenceAnchor() {
+	id := sp.Identity.Screen
+	if sp.Group || !sp.HasKeys() || sp.Always != "" || id == nil || sp.Bucket(sp.DefaultMode) != BucketCommanding {
+		return
+	}
+	overlaps := func(a, b, c, d int) bool { return (a < 0) == (c < 0) && a <= d && c <= b }
+	for _, r := range sp.ModeRules {
+		for _, m := range r.Clauses {
+			if m.Kind != KindRegex || m.Negate {
+				continue
+			}
+			vouched := false
+			for _, c := range id.Clauses {
+				binding := c.WeightKind == WeightRequired || (id.Combine == "all" && c.WeightKind == WeightNumeric)
+				if c.Kind == KindRegex && !c.Negate && binding && overlaps(m.RowA, m.RowB, c.RowA, c.RowB) {
+					vouched = true
+				}
+			}
+			if !vouched {
+				sp.warnf("mode_when (%s): %s reads rows [%d, %d], but no required identity clause anchors those rows; "+
+					"%q would be concluded from absence even when they show something else (e.g. a remote tmux status line)",
+					r.Mode, m.Label, m.RowA, m.RowB, sp.DefaultMode)
+			}
+		}
+	}
 }
 
 // hasStrongCursor reports whether a rule also constrains the cursor, which

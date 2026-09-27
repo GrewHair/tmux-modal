@@ -24,6 +24,7 @@ type HookEvent struct {
 	ModeFrom   string
 	Bucket     string
 	Confidence string
+	Nested     string
 	Session    string
 	SessionID  string
 	Window     string
@@ -54,6 +55,7 @@ func (e *HookEvent) env(now time.Time) []string {
 		"MODAL_MODE_TO="+e.ModeTo,
 		"MODAL_MODE_FROM="+e.ModeFrom,
 		"MODAL_CONFIDENCE="+e.Confidence,
+		"MODAL_NESTED="+e.Nested,
 		"MODAL_PANE="+e.Pane,
 		"MODAL_APP="+e.App,
 		"MODAL_APP_FROM="+e.AppFrom,

@@ -29,7 +29,8 @@ func bundledSet(t *testing.T) *spec.Set {
 //
 //	remote  as captured (fixtures are captured inside containers, so the
 //	        pane command is not the app: identity must come from the screen)
-//	local   with pane_current_command set to the app (the local fast path)
+//	local   with pane_current_command set to the app (the local fast path),
+//	        or for nested/ fixtures to tmux (a local nested client)
 //	sticky  with the app already identified on an earlier capture
 //	mono    with the colour capture stripped
 func TestFixtures(t *testing.T) {
@@ -66,6 +67,9 @@ func TestFixtures(t *testing.T) {
 			if app != "" {
 				local := *f.Screen
 				local.Command = app
+				if strings.HasPrefix(rel, "nested"+string(filepath.Separator)) {
+					local.Command = "tmux"
+				}
 				check("local", &local, "")
 				check("sticky", f.Screen, app)
 			}

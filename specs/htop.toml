@@ -20,7 +20,7 @@ translated = false                # htop ships no translations
 command             = ["htop"]
 requires_alt_screen = true
 combine             = "weighted"
-threshold           = 100
+threshold           = 40          # the required bottom bar + PID header, or + both meters
 
   # Process-list column header. Columns are configurable, but PID first
   # followed by USER is the long-standing default.
@@ -31,10 +31,14 @@ threshold           = 100
 
   # The bottom bar, in every state htop draws one: the function-key bar,
   # the search/filter prompts, and the kill / user / setup panels.
+  # Required: the mode rules read this row, so "normal" may only be
+  # concluded from their absence when the row really is htop's. Without
+  # this, htop under a remote tmux whose status line covers the last row
+  # would read as normal while its search prompt is open one row up.
   [[match.clause]]
   regex  = '^(F1Help +F2Setup +F3Search|F3Next +(S-F3Prev +)?Esc ?Cancel +Search:|Enter ?Done +Esc ?Clear +Filter:|Enter ?Send +Esc ?Cancel$|Enter ?Show +Esc ?Cancel$|F1 +F2 +F3 +.*F10Done$)'
   rows   = [-1, -1]
-  weight = 60
+  weight = "required"
 
   # Header meters (configurable, so supporting evidence only).
   [[match.clause]]

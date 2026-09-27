@@ -151,3 +151,25 @@ func RuneWidth(r rune) int {
 	}
 	return 1
 }
+
+// WithoutRow returns a copy of a full-screen capture with row r removed
+// and the rows below it moved up, as if the pane were one row shorter.
+// Used to drop a nested multiplexer's status line before matching.
+func (s *Screen) WithoutRow(r int) *Screen {
+	if s.Top != 0 || r < 0 || r >= len(s.Lines) {
+		return s
+	}
+	c := *s
+	c.Height--
+	c.Lines = append(append([]string{}, s.Lines[:r]...), s.Lines[r+1:]...)
+	if s.Cells != nil && r < len(s.Cells) {
+		c.Cells = append(append([][]Cell{}, s.Cells[:r]...), s.Cells[r+1:]...)
+	}
+	switch {
+	case s.Cursor.Y == r:
+		c.Cursor.Visible = false
+	case s.Cursor.Y > r:
+		c.Cursor.Y--
+	}
+	return &c
+}

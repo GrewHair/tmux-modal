@@ -353,3 +353,44 @@ func TestLintTrailingSpace(t *testing.T) {
 		t.Errorf("expected trailing-whitespace warning, got %v", sp.Warnings)
 	}
 }
+
+// A remapping spec must not conclude its commanding default from the
+// absence of a bottom-row prompt unless an identity clause it cannot do
+// without vouches for that row (a remote tmux status line covers it).
+func TestLintAbsenceAnchor(t *testing.T) {
+	body := func(weight string) string {
+		return `name = "app"
+modes = ["normal", "insert"]
+[buckets]
+typing = ["insert"]
+commanding = ["normal"]
+[match]
+requires_alt_screen = true
+combine = "weighted"
+threshold = 40
+  [[match.clause]]
+  regex = '^APP HEADER LINE TITLE'
+  row = 0
+  weight = 50
+  [[match.clause]]
+  regex = '^F1 Help +F2 Quit bottom bar'
+  row = -1
+  weight = ` + weight + `
+[[insert_when]]
+regex = '^Search prompt here:( |$)'
+row = -1
+[keys]
+j = "Down"
+`
+	}
+	warned := func(weight string) bool {
+		sp := mustSpec(t, load(t, map[string]string{"app.toml": body(weight)}), "app")
+		return strings.Contains(strings.Join(sp.Warnings, "\n"), "no required identity clause anchors those rows")
+	}
+	if !warned("30") {
+		t.Error("an optional bottom-bar anchor must be flagged")
+	}
+	if warned(`"required"`) {
+		t.Error("a required bottom-bar anchor must satisfy the lint")
+	}
+}

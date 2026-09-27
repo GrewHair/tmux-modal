@@ -28,6 +28,10 @@ type Result struct {
 	// Confirmed is true when the app's identity rules fired on this
 	// capture (not merely remembered from an earlier one).
 	Confirmed bool
+
+	// Nested is the evidence of an inner multiplexer ("" if none); see
+	// DetectNested.
+	Nested string
 }
 
 // Identity is the identity evaluation of one spec on one screen.
@@ -208,7 +212,43 @@ func NoApp(s *screen.Screen) Result {
 
 // Pane classifies a pane from scratch or with a sticky app. It is the
 // single entry point shared by the daemon and validate.
+//
+// A pane showing an inner multiplexer is classified on the screen minus
+// the inner status line, and then made safe: a key-remapping spec never
+// reports a mode there (the inner multiplexer owns a prefix key and copy
+// mode, and a split inner window mixes panes), and a hooks-only spec
+// reports its mode with low confidence, or unknown across inner splits.
 func Pane(set *spec.Set, s *screen.Screen, stickyApp string) (Result, []Trace) {
+	n := DetectNested(set, s)
+	if n.StatusRow >= 0 {
+		s = s.WithoutRow(n.StatusRow)
+	}
+	res, traces := pane(set, s, stickyApp)
+	if n.Evidence == "" {
+		return res, traces
+	}
+	res.Nested = n.Evidence
+	sp := set.Specs[res.App]
+	switch {
+	case res.App == "" || res.Mode == spec.ModeUnknown || res.Mode == spec.ModeNone:
+	case n.Split || sp == nil || sp.HasKeys():
+		res.Reason = fmt.Sprintf("nested multiplexer (%s): would be %s, but %s", n.Evidence, res.Mode, nestedWhy(n))
+		res.Mode, res.Bucket, res.Confidence = spec.ModeUnknown, spec.ModeUnknown, Low
+	default:
+		res.Confidence = Low
+		res.Reason = fmt.Sprintf("nested multiplexer (%s): %s", n.Evidence, res.Reason)
+	}
+	return res, traces
+}
+
+func nestedWhy(n Nested) string {
+	if n.Split {
+		return "the inner window is split"
+	}
+	return "keys are never remapped through a nested multiplexer"
+}
+
+func pane(set *spec.Set, s *screen.Screen, stickyApp string) (Result, []Trace) {
 	if stickyApp != "" {
 		if sp, ok := set.Specs[stickyApp]; ok {
 			t := Classify(sp, s, true)

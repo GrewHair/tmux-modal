@@ -173,6 +173,9 @@ func cmdValidate(args []string) error {
 	for _, t := range traces {
 		validate.Trace(out, t)
 	}
+	if res.Nested != "" {
+		fmt.Fprintf(out, "\nnested multiplexer detected (%s); any inner status line was removed before the rules above ran\n", res.Nested)
+	}
 	fmt.Fprintf(out, "\nfinal: app=%s mode=%s bucket=%s confidence=%s (%s)\n",
 		orDash(res.App), res.Mode, res.Bucket, res.Confidence, res.Reason)
 	return nil

@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 56,12
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: htop
+# expect_mode: unknown
+# note: three inner panes
+# ---
+                                        xdemo@remote:/$
+    0[||      4.4%]   4[||       4.9%]  x
+    1[||      6.7%]   5[||       0.9%]  x
+    2[||      2.7%]   6[||       2.3%]  x
+    3[||      0.9%]   7[||       2.3%]  x
+  Mem[|1.12G/15.4G] Tasks: 5, 0 thr, 0  x
+  Swp[    0K/4.00G] Load average: 0.15  x
+                    Uptime: 05:06:23    x
+                                        x
+  [Main] [I/O]                          x
+    PID USER       PRI  NI  VIRT   RES  x
+      1 demo        20   0  9268  5428  tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+      8 demo        20   0  9804  4580  xdemo@remote:/$
+      9 demo        20   0  4848  3936  x
+     11 demo        20   0  4600  4080  x
+     20 demo        20   0  4600  4000  x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+F1Help  F2Setup F3SearchF4FilterF5Tree  x
+[0] 0:bash*                                             "remote" 13:58 27-Sep-26
