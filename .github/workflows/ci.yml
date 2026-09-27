@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    env:
+      TERM: xterm-256color
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Install tmux, htop, shellcheck
+        run: sudo apt-get update && sudo apt-get install -y tmux htop shellcheck
+      - name: Versions
+        run: tmux -V && htop --version && go version
+      - name: gofmt
+        run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+      - name: vet
+        run: go vet ./...
+      - name: shellcheck
+        run: shellcheck modal.tmux scripts/*.sh scripts/fixtures/*.sh examples/*.sh examples/hooks/*.sh tests/integration/testdata/keyecho.sh
+      - name: lint bundled specs
+        run: go run ./cmd/tmux-modal lint --spec-path /nonexistent
+      - name: unit and golden fixture tests
+        run: go test ./internal/... -count=1
+      - name: integration tests (real tmux, real htop, real client)
+        run: go test ./tests/integration/ -count=1 -v

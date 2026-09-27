@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Shared helpers for fixture capture scripts. Source, don't run.
 #
 # Every capture uses a dedicated -L socket and -f /dev/null so it never
