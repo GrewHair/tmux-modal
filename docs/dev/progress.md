@@ -94,3 +94,8 @@
   (`TestNestedTmuxVim`: status bottom/top/off, nvim, inner split). All
   behaved; Escape there costs the inner tmux's escape-time. Owner: target
   default configs only; the no-ruler vimrc gap stays documented, unfixed.
+- Owner is on AHK v2 with an HTTP endpoint (localhost:42800,
+  `/send/F?<func>;;;;<arg>`). Added `examples/hooks/ahk-http.sh` (focused
+  pane only, payload `app/mode/typing|commanding`); Linux curl cannot reach
+  Windows' localhost (NAT), so Windows curl.exe: ~80 ms process start, ~3
+  ms request; verified end to end with vim (hook ok in 77–131 ms).

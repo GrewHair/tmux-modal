@@ -106,8 +106,12 @@ plan kept below:
   script). The FIFO example is the path to that; a Windows-side listener
   example (AHK or PowerShell reading a named pipe / file) would be valuable.
 
-**Left in M7:** a *fast* Windows-side listener example (AutoHotkey bridge
-fed from WSL). A Windows-side hook example exists since M4
+**M7 Windows side:** `examples/hooks/ahk-http.sh` (owner's AHK v2 script
+serves HTTP on Windows' localhost:42800; `curl.exe` per transition, 77–131
+ms per call measured end to end, almost all process start). Possible
+later: a warm bridge (one long-lived Windows process fed from the FIFO)
+to save that ~80 ms, if the owner wants it. Previously noted: a *fast*
+Windows-side listener example (AutoHotkey bridge fed from WSL). A Windows-side hook example exists since M4
 (`examples/hooks/windows-toast.sh`), but it starts powershell.exe per
 transition (~0.5 s); an outer keyboard layer needs a warm listener. Candidates, to settle with the owner (their AHK version and how
 their script switches layers): the WSL listener pipes lines into a

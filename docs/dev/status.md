@@ -12,7 +12,7 @@ _Last updated: 2026-09-28, M7 part 2 (vim/neovim), release v0.6.0._
 | 4 | Status indicator and transition hook | **done** |
 | 5 | SSH integration tests; nested-tmux fallback | **done** — sshd container tier, nested detection (D20), absence-anchor lint (D21) |
 | 6 | Remaining bundled specs, CPU-budget self-throttling, benchmark | **done** — 25 specs (D23–D26), fixtures from three distros, SSH app tier, benchmark + output gating (D28) |
-| 7 | Spec overlays (owner's request, D29), then `vim-family` specs | **nearly done** — overlays (v0.5.0), vim/nvim hooks-only specs (v0.6.0, D30, D31); left: a Windows-side listener example ([milestones.md](milestones.md)) |
+| 7 | Spec overlays (owner's request, D29), then `vim-family` specs | **done** — overlays (v0.5.0), vim/nvim hooks-only specs (v0.6.0, D30, D31); and `examples/hooks/ahk-http.sh` for the owner's AHK v2 endpoint ([milestones.md](milestones.md)) |
 | 8 | README, CI, publish | **done early** at the owner's request (repo public, CI green, v0.1.0 released); README must keep growing with each milestone |
 
 ## Where things live

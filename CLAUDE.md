@@ -12,4 +12,4 @@ Hard rules:
 - Before pushing: `gofmt -l .`, `go vet ./...`, `go test ./... -count=1`, shellcheck (also as `koalaman/shellcheck:v0.9.0`, CI's version); `grep -rIl "$(hostname)" . --exclude-dir=.git` must find nothing; CI must be green. Bump `VERSION` and tag a release when daemon code changes.
 - Update `docs/dev/status.md` and `docs/dev/progress.md` at each milestone.
 
-Next: the rest of milestone 7 — a fast Windows-side listener example (the toast example exists but is slow), to settle with the owner (docs/dev/milestones.md); then M8. vim/nvim shipped in v0.6.0 (D30).
+Next: M8 (docs/dev/milestones.md). M7 is done: overlays (v0.5.0), vim/nvim (v0.6.0), `examples/hooks/ahk-http.sh` for the owner's AHK v2 HTTP endpoint. vim/nvim shipped in v0.6.0 (D30).
