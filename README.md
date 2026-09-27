@@ -8,21 +8,21 @@ It reads the rendered screen (the same cells you see) and fingerprints the
 app and its mode from text, geometry, cursor state and, optionally, colour.
 Two independent things can subscribe to that:
 
-1. **Key remapping.** Give vim-style keys to TUIs that lack them. In `htop`,
-   `hjkl` move the selection, but the moment you open htop's `Search:` or
-   `Filter:` prompt, `hjkl` are ordinary letters again.
+1. **Key remapping.** Give vim-style keys to TUIs that lack them. In `htop`
+   and `btop`, `hjkl` move the selection, but the moment you open a search
+   or filter prompt, `hjkl` are ordinary letters again.
 2. **Transition hooks.** Run a command whenever a pane changes mode, so
    something outside tmux (AutoHotkey, kanata, karabiner, a status widget)
    can react — e.g. switch an outer keyboard layer off while vim is in
    normal mode and on while you type.
 
-> **Status: pre-release (0.3).** Milestones done: detector, spec engine,
-> `validate`, htop end to end, status indicator, transition hook, SSH and
-> nested-tmux handling (tested against a real sshd). Still to
-> come: the remaining bundled specs (less, man,
-> tig, k9s, lazygit, ranger/lf/nnn, ncdu, mc, btop, REPLs), and the
-> hooks-only `vim`/`nvim` specs. Today only **htop** is recognised; every
-> other full-screen app shows as **N/A** and is left completely alone.
+> **Status: pre-release (0.4).** Milestones done: detector, spec engine,
+> `validate`, status indicator, transition hook, SSH and nested-tmux
+> handling (tested against a real sshd), and [bundled specs](#bundled-specs)
+> for htop, btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc,
+> fzf and common REPLs. Still to come: the hooks-only `vim`/`nvim` specs.
+> Any full-screen app no spec recognises shows as **N/A** and is left
+> completely alone.
 
 ## Install
 
@@ -146,7 +146,43 @@ of milliseconds natively and hundreds across a WSL→Windows boundary. For a
 keyboard layer, keep the AutoHotkey/kanata side running and feed it through
 `fifo.sh` (or your own equivalent), not by launching it per transition.
 
-## Key remapping (htop)
+## Bundled specs
+
+| App | What the spec does | Modes it reports | Verified with |
+|---|---|---|---|
+| `htop` | **remaps keys** | normal; insert in `Search:` / `Filter:` | 2.2.0, 3.0.5, 3.2.2, 3.3.0 |
+| `btop` | **remaps keys** | normal; insert while typing the process filter, and on the options screen (it has text fields) | 1.2.3, 1.2.13, 1.3.0 |
+| `less`, `man` | detects | normal; insert in any text prompt (`/` `?` search, `&` filter, `!` shell, `-` option, `:e` …) | less 590; man-db 2.10–2.12 |
+| `tig` | detects | normal; insert in `/` `?` search; command at `:` | 2.5.1, 2.5.5, 2.5.8 |
+| `lazygit` | detects | normal; insert whenever a text field has focus (commit message, filter, shell command, branch name …) | 0.65.1 |
+| `k9s` | detects | normal; insert in the `/` filter; command at `:` | 0.51.0 |
+| `ranger`, `lf`, `nnn` | detect | normal; insert / command in their prompts (search, rename, console …) | ranger 1.9.3; lf r28, r31; nnn 4.3–4.9 |
+| `ncdu` | detects | always normal (it has no text prompts) | 1.15.1, 1.18, 1.19 |
+| `mc` | always insert | its shell command line is always live: letters typed in the panels go there | 4.8.27–4.8.30 |
+| `fzf` | always insert | every letter goes to the query | 0.29, 0.38, 0.44 |
+| `python` (IPython, bpython, ptpython), `node`, `irb`/`pry`, `psql`/`pgcli`, `mysql`/`mariadb`/`mycli`, `sqlite3`/`litecli`, `gdb`, `lldb`, `weechat`, `irssi` | always insert | line-reading REPLs and chat clients | by command name |
+
+**Why most specs only detect.** less, tig, lazygit, k9s, the file managers
+and ncdu already move with `j`/`k` (most with `hjkl`, `g`/`G`); remapping
+would add risk and nothing else. Their specs exist for the indicator and
+the transition hook, and they never touch your key tables. Only apps that
+lack vim keys get a key map.
+
+**Over SSH** every spec works from the screen alone, with a few limits:
+- `less` shows nothing identifying on its first screen (just the file name)
+  or while idle (a bare `:`), so remotely it is recognised once it shows
+  one of its own prompts (`(END)`, `HELP`, a `(press RETURN)` message) and
+  from then on for as long as it runs. `man` is recognised at once.
+- REPLs are recognised by their local command name only; a remote Python
+  reads like the remote shell it was started from (both are typing).
+- k9s is recognised by its header block; with the header hidden
+  (`ctrl-e`) it is N/A.
+
+**Escape does not close every prompt.** less and tig use `Esc` to start a
+key sequence inside the prompt; close them with `Enter` or `C-c`. The mode
+follows whatever the app does.
+
+## Key remapping (htop, btop)
 
 With htop focused and in normal mode, the session's key table becomes
 `modal-htop`:
@@ -161,6 +197,17 @@ With htop focused and in normal mode, the session's key table becomes
 When htop's `Search:` or `Filter:` prompt opens, the key table goes back to
 yours within a few tens of milliseconds and every key types literally.
 htop's other panels (F9 kill, `u` user, F2 setup) stay in normal mode.
+
+btop (`modal-btop`) gets the same map, following btop's own `vim_keys`
+option: `h`/`l` choose the sort column (btop's Left/Right). It shadows
+btop's `h` (help) and `k` (kill the selected process); `_h`, `_k` reach
+them. While the process filter (`f` or `/`) is being typed, and on the
+options screen, nothing is remapped; the main menu, help and the signal
+list (arrows pick a signal) are normal mode. If you prefer btop's own
+`vim_keys = True`, turn btop into a detection-only spec: copy
+`specs/btop.toml` to `~/.config/tmux-modal/specs/btop.toml` (a user spec
+shadows the bundled one of the same file name) and delete its `[keys]`
+table.
 
 Details that make this safe:
 - Only the session `key-table` option is used, never a sticky
@@ -205,12 +252,30 @@ Profiles: `frugal` 100/500/5000 ms (burst/poll/idle), `balanced` 30/150/2000,
 
 Options are re-read every idle interval, so changes apply without restarting.
 
-### Measured (one pane, WSL2, tmux 3.4)
+### Measured (WSL2 on a laptop, tmux 3.4)
 
-Keypress to published mode: entering typing **37 ms** (balanced) / **28 ms**
-(snappy); returning to commanding **94 ms** / **76 ms** (includes the
-deliberate two-capture confirmation). Daemon CPU: ~0 % idle, ~1.8 % of a
-core while toggling modes several times a second.
+**Latency**, keypress to published mode, one pane: entering typing
+**37 ms** (balanced) / **28 ms** (snappy); returning to commanding
+**94 ms** / **76 ms** (includes the deliberate two-capture confirmation).
+
+**CPU**, % of one core, with **htop in every pane** (it redraws every
+1.5 s, so every pane is busy), tiled in one window; "server" is what the
+tmux server spends on top of its own baseline to serve the daemon
+(`TestBenchmarkCPU`, 30 s per measurement):
+
+| Panes | `@modal_scope` | frugal: daemon / server | balanced | snappy |
+|---|---|---|---|---|
+| 5 | `active` (default) | 0.20 % / +0.20 % | 0.13 % / +0.17 % | 0.23 % / +0.40 % |
+| 5 | `all` / `visible` | 0.33 % / +0.57 % | 0.33 % / +0.53 % | 0.60 % / +0.93 % |
+| 20 | `active` (default) | 0.10 % / +0.30 % | 0.17 % / +0.33 % | 0.27 % / +0.50 % |
+| 20 | `all` / `visible` | 1.50 % / +3.63 % | 1.63 % / +4.16 % | 2.36 % / +5.46 % |
+
+With the default scope only the focused pane of each attached session is
+examined, and tmux stops streaming the other panes' output to the daemon,
+so the cost barely grows with the number of panes. `visible`/`all`
+examine every busy pane each time it redraws: 20 constantly redrawing
+panes is the expensive case, and `@modal_cpu_budget` (2 %) then stretches
+the intervals. Idle panes cost nothing in any scope.
 
 **`escape-time` matters more than any of this:** tmux holds a bare `Esc`
 for `escape-time` (default **500 ms**) to see whether an escape sequence
@@ -305,7 +370,7 @@ typing     = ["insert"]
 commanding = ["normal"]
 
 [match]                           # identity
-command             = ["myapp"]   # local fast path only (an SSH pane says "ssh")
+command             = ["myapp"]   # local fast path only (an SSH pane says "ssh"); globs ok: "python3.*"
 requires_alt_screen = true
 combine             = "weighted"
 threshold           = 60
@@ -337,7 +402,16 @@ Clause keys: `regex` with `rows`/`row`, `col`/`cols`, `anchor`
 `cursor_visible`, `cursor_shape`); `negate`; `weight` (a number,
 `"bonus"` or `"required"`). Also: `always = "insert"`, `[[corroborate]]`,
 `[default_mode]`, `[escape] leader`, `[shadowed]` (documentation), `hook`,
-`translated = false`.
+`poll_interval` (ms; replaces `@modal_poll_interval` for panes running the
+app), `translated = false`, `lint_ignore = ["under-specified"]` (accept a
+lint warning you have checked; say why in a comment).
+
+Groups in [`specs/groups/`](specs/groups/) (`extends`, a list is merged in
+order): `curses-tui` (cursor visible on the bottom rows = a prompt has
+focus), `slash-search` (`/` `?` on the last row with the cursor there),
+`colon-command` (`:` there, mode `command`), `readline-repl` (always
+insert, primary screen), `less-prompts` (less's own prompts). Groups carry
+no key maps.
 
 **Anchor the rows you read.** A remapping spec concludes its commanding
 mode from the *absence* of a prompt. Make sure the rows the mode rules read
@@ -372,7 +446,9 @@ tmux-modal lint --locale-audit                    # every spec
 
 The lint flags unanchored patterns, rules with fewer than 12 anchored
 characters, required colour clauses, prompt regexes ending in whitespace,
-and (with `--locale-audit`) English-only markers.
+remapping specs whose prompt rows no required identity clause anchors, and
+(with `--locale-audit`) English-only markers. Every bundled spec is
+lint-clean (a unit test enforces it).
 
 ## Why Go
 
@@ -389,13 +465,16 @@ go test ./internal/...          # unit + golden fixtures (no tmux needed)
 go test ./tests/integration/    # real tmux, real htop, real attached client; SSH tier needs docker
 scripts/fixtures/htop.sh LABEL docker run --rm -it IMAGE htop   # recapture fixtures
 scripts/fixtures/nested.sh      # recapture the nested-tmux fixtures
+scripts/fixtures/apps.sh [ubuntu-24.04|ubuntu-22.04|debian-bookworm] [app...]   # the other apps
+TMUX_MODAL_BENCH=1 go test ./tests/integration/ -run TestBenchmarkCPU -v -timeout 30m   # CPU table below
 ```
 
 Integration tests run each case on two private tmux servers (`-L`,
 `-f /dev/null`): the outer one's pane runs `tmux attach` to the inner one,
 so keystrokes go through a real client's key tables. The SSH tier runs the
 application in an sshd container (`tests/docker/sshd.Dockerfile`, built on
-first use) and skips itself without docker. Fixtures are captured
+first use, with every bundled app installed) and skips itself without
+docker; `tests/integration/apps_test.go` drives each app's prompts there. Fixtures are captured
 inside containers (`tests/docker/`) so they contain no host data.
 
 ## License

@@ -23,14 +23,27 @@ so the SSH tier fails instead of skipping. Keep it green before every push.
   identity must come from the screen), **local** (command = app), **sticky**
   (app pre-identified), **mono** (colour stripped). Expectation `unknown` on a
   screen with no anchors means app "" remotely but the app locally/sticky.
-- Capture: `tmux-modal capture -o file.txt -expect-app A -expect-mode M %N`,
-  or the scripted `scripts/fixtures/htop.sh LABEL docker run --rm -it IMAGE htop`
-  (uses `scripts/fixtures/lib.sh`: private `-L` socket, `-f /dev/null`,
-  status off, neutral pane title).
-- **Always capture inside containers** (`tests/docker/apps.Dockerfile`, images
-  `tmux-modal-fx:<base>`: ubuntu 20.04/22.04/24.04, debian bookworm; include
-  htop, less, man-db, vim-nox; user `demo`). Never commit host process lists,
-  paths, user or host names.
+  `expect_mode_<variant>` overrides one variant where the evidence really
+  differs (a state with no identity anchor is `unknown` remotely and in
+  mono; less's `/abs/path` prompt needs colour). The same file checks that
+  every bundled spec is lint-clean and that no spec claims a shell.
+- Capture: `tmux-modal capture -o file.txt -expect-app A -expect-mode M
+  [-meta key=value] %N`, or the scripts: `scripts/fixtures/htop.sh LABEL
+  docker run --rm -it IMAGE htop`, `scripts/fixtures/apps.sh [image-tag]
+  [app...]` (every other app, one function per app listing the states),
+  `scripts/fixtures/nested.sh`. All use `scripts/fixtures/lib.sh`: private
+  `-L` socket, `-f /dev/null`, status off, neutral pane title; `snap FILE
+  APP MODE NOTE [key=value...]`. Settle ~1.3 s after Escape for ncurses
+  apps (F29); btop needs one key per write (F31) and its CPU model is
+  scrubbed from the fixtures by `sanitize_btop`.
+- **Always capture inside containers** (`tests/docker/apps.Dockerfile` +
+  `apps-install.sh` + `apps-home.sh`, images `tmux-modal-fx:<base>`: ubuntu
+  20.04/22.04/24.04, debian bookworm; every bundled app, lazygit and k9s
+  from their releases; user `demo` with `~/repo` (git) and `~/tree`, and
+  `~/sample.txt`). Build: `docker build --build-arg BASE=ubuntu:22.04 -t
+  tmux-modal-fx:ubuntu-22.04 -f tests/docker/apps.Dockerfile tests/docker`.
+  Never commit host process lists, paths, user or host names (or hardware:
+  btop's CPU model).
 
 ## Integration harness (`tests/integration/harness_test.go`)
 
@@ -62,7 +75,11 @@ follows focus; per-pane disable; custom session key-table restored; stop and
 crash recovery; root bindings copied (mouse, `bind -n`); htop
 search/type/cancel/confirm/filter/resize/panels/leader; hook env, focus
 stream, stop event, spec hook order; indicator in real borders incl. N/A;
-latency; daemon client label. Remote: plain-SSH remap/prompt, htop over
+latency; daemon client label. Apps over SSH (`apps_test.go`, the sshd
+image installs them): less (identified at `(END)`, then search/filter),
+man, tig (`:` command, `/` search, C-c), btop (remap; `jk` typed into the
+filter stay letters; options screen), lazygit (filter, menu, new-branch
+prompt), ranger/lf/nnn prompts, ncdu, mc, fzf. Remote: plain-SSH remap/prompt, htop over
 SSH, leaving the remote app for the remote shell; nested tmux with status
 line (keyecho and htop: never remap), with inner split and status off
 (borders), hooks-only through nested tmux (mode reported, confidence low),
@@ -87,4 +104,11 @@ status-off single-pane (documented limitation: remaps), local tmux-in-tmux
 ## Still missing (planned)
 
 - vim-family mandatory fixture set (brief §9) — M7.
-- 20-pane CPU benchmark per profile — M6.
+
+## CPU benchmark
+
+`TMUX_MODAL_BENCH=1 [TMUX_MODAL_BENCH_SECONDS=30] go test ./tests/integration/
+-run TestBenchmarkCPU -v -timeout 30m`: 5 and 20 htop panes (tiled, one
+window), each profile, scope `active` and `all`; daemon CPU and the tmux
+server's extra CPU over a no-daemon baseline, from `/proc/<pid>/stat`
+(10 ms ticks: use ≥ 20 s windows). Results in the README.

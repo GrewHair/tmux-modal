@@ -39,3 +39,17 @@
   and client re-point now go in one command list (D22). Released v0.2.0.
 - Owner review of M5: remap through nested tmux by default
   (`@modal_nested_remap`, default on); released v0.3.0.
+- M6: probed every listed app in containers (`apps.Dockerfile` now
+  installs all of them, lazygit/k9s from releases). Found most already
+  have vim keys (F26) → detection-only specs (D23), groups without keys
+  (D24). Specs: btop (remap), less/man (reverse-video tie-breaker, D25),
+  tig, lazygit (cursor = text field, F30), k9s, ranger, lf, nnn, ncdu, mc
+  and fzf (always insert), ten REPL/chat specs by command (globs, D26).
+  ~300 new fixtures from Ubuntu 24.04/22.04 and Debian bookworm, one
+  script (`scripts/fixtures/apps.sh`); btop's host CPU model scrubbed.
+  Real screens exposed two nested-detection false positives (aligned text
+  as VT100 borders, mc's separator; F27) and lint gaps (D27). SSH app
+  tier (`apps_test.go`) drives every app's prompts in the sshd container.
+  Wired spec `poll_interval`; CPU benchmark (5/20 panes × profiles ×
+  scope) showed the tmux server paying for streaming unwatched panes'
+  output → `refresh-client -A '%N:off'` (D28, F34). Released v0.4.0.

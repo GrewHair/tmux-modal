@@ -14,9 +14,18 @@ nested tmux the default (`@modal_nested_remap`, v0.3.0). Carried forward to
 [backlog.md](backlog.md): split remote tmux (B1), nested `cursor_shape`
 delay (B2, look at it in M7).
 
-**Next up: M6.**
+## M6 — remaining specs, CPU budget, benchmark — done (v0.4.0)
 
-## M6 — remaining specs, CPU budget, benchmark
+See decisions D23–D28, findings F26–F34, `specs/`, `tests/fixtures/<app>/`,
+`scripts/fixtures/apps.sh`, `tests/integration/apps_test.go`,
+`bench_test.go`. Settled: most listed apps already have vim keys, so their
+specs detect only (D23); mc and fzf always insert; `cursor_flag` per app
+(F30); `_` is unbound in btop (the only new remapping spec). Per-submode
+key maps: not needed (btop's options screen is simply insert).
+
+**Next up: M7.**
+
+### Original plan
 
 Specs per brief §5.4, each with fixtures captured in containers (several
 versions where distros differ) and integration tests for its insert
@@ -55,7 +64,7 @@ Wire spec `poll_interval` into the scheduler (or M7).
 - Which distro vim packages set `t_SI`/`t_EI` by default (§13).
 - Hook latency keypress → subscriber, measured (FIFO listener); if not under
   ~50 ms, say so plainly in the README (§13).
-- Per-spec `poll_interval` override in the scheduler.
+- (Per-spec `poll_interval` is already wired, M6.)
 - This is the milestone the owner personally cares about most: the outer
   keyboard layer is AutoHotkey on the Windows side of WSL (they have an AHK
   script). The FIFO example is the path to that; a Windows-side listener

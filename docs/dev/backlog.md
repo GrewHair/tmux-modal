@@ -60,10 +60,8 @@ from outside. Only revisit if the owner complains.
 
 - `@modal_burst_decay` is parsed but unused (event-driven scheduling made
   it moot; kept for a possible polling fallback).
-- A spec's `poll_interval` is parsed but not consulted — planned for M6/M7.
-- Chatty unfocused panes still cost a little: `%output` bytes are read and
-  discarded. Mitigation if ever needed: `refresh-client -A '%N:off'` for
-  unfocused panes (decisions D2). Measure in the M6 benchmark first.
+- (Done in M6: spec `poll_interval` is used by the scheduler.)
+- (Done in M6: unwatched panes' output is switched off for the daemon, D28.)
 
 ## B5. Small things
 
@@ -79,3 +77,18 @@ from outside. Only revisit if the owner complains.
   for B1.
 - Test specs `keyecho`/`keyhook` trip the "under-specified" lint (7-char
   `PROMPT>` marker). Cosmetic.
+
+## B6. Spec ideas left from M6
+
+- less over SSH: recognise it from its first screen. The file name prompt
+  in reverse video plus the cursor after it is suggestive but not
+  specific; would need a second anchor.
+- k9s with its header hidden (`ctrl-e`): identify from the crumbs row and
+  table frame.
+- fzf `--reverse` / `--layout=reverse-list`: the counter and query are on
+  the top rows; only the default layout is recognised over SSH.
+- REPLs over SSH: a cursor-row-relative clause (`row = "cursor"`) would let
+  a spec say "the prompt `>>> ` is on the cursor's row", which is specific
+  enough to identify Python remotely.
+- `mc`: a real normal mode would need to tell the panels from a focused
+  dialog input; ship only with fixtures proving it.

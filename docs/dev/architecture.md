@@ -50,6 +50,11 @@ used: the §3.8 tier-1 nesting signals proved useless, F21).
 Invalidations (tier 1): alt-screen toggle or command change → drop identity,
 examine now; resize → examine now; newly in scope → examine now.
 
+Tier-1 gate: a local shell (`classify.Shells`) on the primary screen is
+`none` without a capture, always (REPL specs match their own command
+names, D26). A spec's `poll_interval` replaces `@modal_poll_interval` for
+panes identified as that app (`pollFor`).
+
 Capture band: sticky + healthy identity + not nested + spec's rules all bottom-relative →
 capture only `max(CaptureBottom, @modal_capture_rows)` rows; otherwise full
 screen. (htop's identity uses top rows, so htop captures the full screen.)

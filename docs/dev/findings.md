@@ -152,7 +152,19 @@ the two into `ESC/` in any app that disambiguates Escape by timeout — wait
 for the *app* (screen), not only for the daemon's published state, before
 the next key.
 
-## Performance (one pane, WSL2, tmux 3.4)
+## Performance (WSL2, tmux 3.4)
+
+**CPU benchmark (M6, `TestBenchmarkCPU`)**, htop in 5 / 20 tiled panes,
+30 s windows, % of one core, daemon / extra tmux server CPU. Before output
+gating (D28), scope `active`: 5 panes 0.30 / +0.47 (balanced), 20 panes
+0.67 / +1.60 (balanced), 1.33 / +4.27 (snappy) — the server's share grew
+with every background pane. After: 5 panes 0.13 / +0.17, 20 panes
+0.17 / +0.33 (balanced), 0.27 / +0.50 (snappy). Scope `all`, 20 panes:
+2.20 / +5.59 → 1.63 / +4.16 (balanced; every pane is examined on each
+redraw, full-screen captures because htop's identity reads the top rows).
+Full table in the README.
+
+**One pane:**
 
 Keypress → published mode (`TestDetectionLatency`): into typing 37 ms
 (balanced) / 28 ms (snappy); back to commanding 94 / 76 ms (includes the
@@ -160,3 +172,57 @@ Keypress → published mode (`TestDetectionLatency`): into typing 37 ms
 Daemon CPU ~0 % idle, ~1.8 % of a core while toggling modes every ~150 ms.
 `powershell.exe` from WSL takes ~0.47 s just to start (hence the detached
 toast hook).
+
+## Applications (M6, probed in containers)
+
+**F26. Most "navigation TUIs" already have vim keys.** less (j/k/g/G,
+C-d/C-u; h = help), tig (j/k; h = help), lazygit (hjkl), k9s (j/k, g/G),
+ranger, lf, nnn (hjkl), ncdu (hjkl). htop and btop do not (btop has an
+opt-in `vim_keys`). Hence D23.
+
+**F27. Aligned text looks like VT100-letter borders.** less showing
+"Sample text line N" puts `t` and `x` in the same columns on every row;
+with the file name `sample.txt` on the last row, column 9 was all
+border letters and the pane read as a split nested tmux (N/A). mc's
+full-width panel separator `├───┤├───┤` did the same with UTF-8 glyphs.
+Fixed by the edge and junction rules in D27.
+
+**F28. Escape does not close less or tig prompts.** less treats Esc as
+the start of a line-editing sequence; tig's prompts are readline (Esc is
+a meta prefix). Enter runs the prompt, C-c (or backspacing past its start
+in less) cancels it. k9s, lazygit, ranger, lf, nnn close on Esc.
+
+**F29. ncurses apps wait `ESCDELAY` (1 s) after Esc**, so scripted
+captures must settle ~1.3 s after Escape (tig, ranger, lf, nnn, ncdu, mc).
+tcell apps (k9s, lazygit) read Esc followed at once by a key as Alt+key.
+
+**F30. Cursor visibility is a near-perfect prompt signal** for tig,
+ranger, lf, nnn (cursor on the last row only while a prompt is open) and
+lazygit (cursor visible exactly while a text field has focus, anywhere on
+screen; menus and confirmations keep it hidden). less keeps it visible on
+the last row always; btop and k9s hide it always (btop draws its own `█`).
+
+**F31. btop specifics.** The filter is edited in the proc box title:
+`⁴proc┌┐f bto█ ↵┌` (`↲` in 1.2.3), `f bto del` once applied. btop drops
+keys that arrive in one write (`send-keys -l abc` loses all but one; a
+human typing is fine). Overlays (options, help in 1.3) cover the proc box,
+so identity is not confirmed there; the options tab row is a positive
+marker. btop shows the host's CPU model, which the fixture script
+replaces (including tails left visible by overlays).
+
+**F32. less under git runs on the primary screen** (`LESS=FRX`, pane
+command `git`); `man` reports pane command `man` with the alternate
+screen on. less's idle prompt is `:` (not a command line); `& :` while a
+filter is on; messages end in `(press RETURN)`; prompts are right-trimmed,
+so `Examine: ` must be matched as `Examine:( |$)`.
+
+**F33. Minimised Ubuntu images divert `man`** to a stub and exclude man
+pages; `apps-install.sh` removes the exclusion and the diversion.
+
+**F34. `refresh-client -A '%N:off'` is safe and needs quoting.** From a
+control client it stops that client's `%output` stream for the pane; tmux
+keeps reading the pane for human clients (the pane went on updating while
+visible and while in a hidden window; the manual's "stops reading when all
+clients have turned it off" did not apply with a human attached). Unquoted,
+`refresh-client -A %0:off` is a parse error (a word starting with `%` other
+than a bare pane id), so `tmux.Quote` quotes such words.

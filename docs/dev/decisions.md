@@ -210,3 +210,86 @@ line, so no keystroke can arrive between the two (such a key would be
 discarded, see D3). Theoretical window; the latency-test flake that
 prompted the look turned out to be F25. The option comes first, so a
 failing re-point (client just detached) cannot drop it (F4).
+
+## D23. Apps that already have vim keys get detection-only specs — M6
+
+**Deviation from brief §5.4**, which lists less, man, tig, k9s, lazygit,
+ranger/lf/nnn and ncdu as key-remapping specs. Probing each one showed
+they already move with `j`/`k` (most with `hjkl`, `g`/`G`, `C-d`/`C-u`):
+remapping `j` → `Down` there changes nothing when it works and steals a
+keystroke when detection is wrong. Their specs are hooks-only (no
+`[keys]`): they feed the indicator and the transition hook and never touch
+key tables. Only apps without vim navigation remap: htop and btop (btop
+has an opt-in `vim_keys` option; the spec follows its semantics, `h`/`l`
+= sort column). mc and fzf are `always = "insert"` (mc: the shell command
+line is live in the panels, brief §5.4's suggested fallback).
+
+## D24. Groups carry no key maps — M6
+
+**Deviation from brief §5.3** ("curses-tui: … baseline hjkl map").
+curses-tui is extended by hooks-only specs (tig, ranger, lf, nnn), which
+would otherwise inherit keys, and a child can only suppress them one by
+one. htop and btop declare their maps. New groups: `slash-search` (`/` `?`
+at column 0 of the last row **and** the cursor there: the marker alone is
+two characters), `colon-command` (same with `:`, mode `command`, typing
+bucket; not for less, whose idle prompt is `:`), `readline-repl`
+(`always = "insert"`, primary screen, no keys), `less-prompts` (less and
+man; man must not inherit less's identity, since `extends` also merges
+`[match]`).
+
+## D25. less: reverse video is the tie-breaker; primary screen allowed — M6
+
+less shows the file name as its first prompt, in reverse video; with an
+absolute path it starts with `/`, like a search. A positive `normal` rule
+(reverse video at the last row's column 0 + cursor there) runs first; text
+prompts are never reverse video. This makes less the one spec whose
+colour clause is load-bearing (the daemon captures `-e` for it). Without
+colour (`@modal_color_matching off`, or `LESS_TERMCAP_so` restyling) such
+a screen reads as insert — the harmless direction. `requires_alt_screen =
+false` because git runs less with `LESS=FRX` (no alternate screen; pane
+command `git`). Identity needs one of less's own prompts (`(END)`, HELP,
+`(press RETURN)`, `lines N-M`), because the first screen and the idle `:`
+do not identify it (vim's command line looks the same); positive mode
+rules then carry a sticky identity. Locally the command identifies it.
+
+## D26. REPLs identify by command only; shells never captured — M6
+
+REPL specs run on the primary screen and match only their own command
+names (globs allowed: `python3.*`). A prompt like `>>> ` is far too weak
+to identify anything over SSH; there a remote REPL reads like the remote
+shell (`none`, also typing). The tier-1 shell gate therefore stays
+unconditional: a local shell on the primary screen is `none` without a
+capture even when primary-screen specs are loaded (M5 disabled the gate
+whenever one was, which would have captured every idle shell pane).
+
+## D27. Lint and nesting heuristics tightened by real screens — M6
+
+- `lintAbsenceAnchor` compares row ranges by resolving them at several
+  heights and requires the identity clause to **cover** the mode rows
+  (mixed ranges such as `[0, -2]` were mishandled).
+- Specificity counts a small character class (`[↵↲]`, `[0-9]`) as one
+  character.
+- `lint_ignore = ["…"]`: a spec may accept a warning it has checked, with
+  a comment (tig's title bar, k9s's one-character prompt markers). Not
+  inherited. A unit test keeps every bundled spec lint-clean.
+- Nested `borders` (F27): a border spanning the window must end in a plain
+  line at both edges (tmux draws none along the edge, so mc's
+  `├──┤├──┤` separator is not one); a column containing VT100 letters must
+  also have junctions only where a `q` line meets them and blank cells
+  beside it on at least half the rows.
+- Per-variant fixture expectations (`expect_mode_remote`,
+  `expect_mode_mono`, …) record where evidence genuinely differs, e.g.
+  states with no identity anchor on screen are `unknown` remotely.
+
+## D28. Unwatched panes' output is switched off for the daemon — M6
+
+The daemon needs only the edge "pane X produced output", but tmux formats
+and sends every byte of every pane's output to each control client. The
+M6 benchmark showed the tmux server spending more on that than the daemon
+spent on everything (5 htop panes, scope active: daemon 0.3 %, server
++0.47 %). `syncOutput` (each cycle) sends `refresh-client -A '%N:off'` for
+panes outside `@modal_scope` (or disabled) and `on` when they come into
+scope; a pane coming into scope is examined at once anyway. Per control
+client state; skipped for good on tmux < 3.2 (logged). This is D2's
+planned mitigation. Test: `TestUnwatchedPaneOutputResumesOnFocus` (fails
+if the focused pane's output stays off).
