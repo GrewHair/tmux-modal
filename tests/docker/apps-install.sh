@@ -39,4 +39,6 @@ if [ -n "$arch" ] && [ -n "${K9S_VERSION:-}" ]; then
 		tar -xz -C /usr/local/bin k9s
 fi
 rm -rf /var/lib/apt/lists/*
-[ -x /usr/bin/mandb ] && mandb -q || true
+if [ -x /usr/bin/mandb ]; then
+	mandb -q || true
+fi

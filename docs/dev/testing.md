@@ -4,7 +4,7 @@
 go test ./internal/... -count=1          # unit + golden fixtures, < 10 s, no tmux needed except config round-trip
 go test ./tests/integration/ -count=1    # real tmux + htop + real client + sshd container, ~25 s
 go test ./tests/integration/ -run TestDetectionLatency -v   # latency/CPU numbers
-docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable -x modal.tmux scripts/*.sh scripts/fixtures/*.sh examples/*.sh examples/hooks/*.sh tests/docker/*.sh
+docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:v0.9.0 -x modal.tmux scripts/*.sh scripts/fixtures/*.sh examples/*.sh examples/hooks/*.sh tests/docker/*.sh   # CI runs Ubuntu 24.04's 0.9 (stricter than stable in places: SC2015)
 gofmt -l . ; go vet ./...
 ```
 
