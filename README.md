@@ -219,7 +219,16 @@ neovim's bar cursor in insert mode is used as a second opinion.
   neovim's terminal mode are typing. The hit-enter and `-- More --`
   prompts and `-- (insert) --` (one command from insert mode) are normal.
 
+The target is a host nobody has configured: vim with its defaults
+(`defaults.vim`: ruler and showmode on), neovim with its own. Where you
+have written a vimrc, a hint you control (a `titlestring` carrying the
+mode, say) beats any fingerprint.
+
 Known limits — the screen alone cannot tell:
+- **A vimrc without `set ruler`** (vim reads `defaults.vim`, which turns
+  the ruler on, only when there is no vimrc): once the opening message is
+  gone only the tilde column is left, so normal mode reads as **unknown**;
+  markers (insert, visual …) still read right.
 - **`set noshowmode` with the ruler on** (e.g. a custom statusline that
   keeps the ruler): insert looks exactly like normal and is reported as
   **normal**. With neovim on tmux 3.6+, the bar cursor corrects that.
@@ -234,6 +243,11 @@ Known limits — the screen alone cannot tell:
   both are commanding, which is the right bucket.
 - **Over SSH, before vim is first recognised**, its command line (only
   tildes on screen) reads as unknown; once vim has been seen, it is known.
+- **Inside a remote tmux** it works the same (the inner status line is
+  removed first; low confidence), except when the remote window is split
+  (unknown: which inner pane has the keyboard is invisible from outside).
+  Escape takes the inner tmux's `escape-time` (500 ms on tmux 3.4; `set -s
+  escape-time 10` on the remote fixes that) plus vim's `ttimeoutlen`.
 
 ## Key remapping
 

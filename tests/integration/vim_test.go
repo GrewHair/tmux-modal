@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"testing"
@@ -135,4 +136,73 @@ func TestVimHookLatency(t *testing.T) {
 			})
 		}
 	}
+}
+
+// vim and neovim over SSH inside a remote tmux. With a status line (bottom
+// or top) the daemon removes it and reads vim's own last row: every mode,
+// low confidence. With the status line off the remote tmux is invisible
+// and it is plain SSH. With the remote window split the mode is unknown:
+// the outer screen cannot tell which inner pane has the keyboard. Escape
+// is slow here (the inner tmux's escape-time, 500 ms on 3.4) but within
+// expectState's wait. The remote tmux outlives the SSH connection, so each
+// case runs its own remote tmux server on a file of its own (a second vim
+// on one file stops at the swap-file prompt), killed afterwards.
+func TestNestedTmuxVim(t *testing.T) {
+	requireRemote(t)
+	// remoteTmux: a tmux command line on a private remote socket that the
+	// test kills when it ends; and a file name unique to the run.
+	remoteTmux := func(t *testing.T) (string, string) {
+		id := strings.NewReplacer("/", "-", " ", "").Replace(t.Name()) + "-" + strconv.FormatInt(time.Now().UnixNano(), 36)
+		t.Cleanup(func() {
+			exec.Command("ssh", append(sshArgs(false), "tmux -L "+id+" kill-server; rm -f "+id+".txt ."+id+".txt.sw?")...).Run()
+		})
+		return "tmux -L " + id, id + ".txt"
+	}
+	for _, c := range []struct {
+		name, app, tmuxArgs, nested, confidence string
+	}{
+		{"status-bottom", "vim", "", "status-line", "low"},
+		{"status-top", "vim", ` \; set status-position top`, "status-line", "low"},
+		{"status-off", "vim", ` \; set status off`, "", "high"},
+		{"nvim-status-bottom", "nvim", "", "status-line", "low"},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			tmux, file := remoteTmux(t)
+			h := newHarness(t, opts{w: 100, h: 30,
+				cmd: sshCmd(`printf 'alpha\nalpine\n' >` + file + ` && ` + tmux + ` new-session ` + c.app + ` ` + file + c.tmuxArgs)})
+			h.startDaemon()
+			h.expectState("main", c.app+"/normal/commanding", "root")
+			if n := h.option("main", "@modal_nested"); n != c.nested {
+				t.Errorf("@modal_nested = %q, want %q", n, c.nested)
+			}
+			if conf := h.option("main", "@modal_confidence"); conf != c.confidence {
+				t.Errorf("confidence %q, want %q", conf, c.confidence)
+			}
+			for _, step := range []struct{ keys, state string }{
+				{"i", "insert/typing"},
+				{"Escape", "normal/commanding"},
+				{"v", "visual/commanding"},
+				{"Escape", "normal/commanding"},
+				{":", "command/typing"},
+				{"Escape", "normal/commanding"},
+			} {
+				h.typeKeys(step.keys)
+				h.expectState("main", c.app+"/"+step.state, "root")
+			}
+		})
+	}
+	t.Run("split", func(t *testing.T) {
+		tmux, file := remoteTmux(t)
+		h := newHarness(t, opts{w: 100, h: 30,
+			cmd: sshCmd(`printf 'alpha\n' >` + file + ` && ` + tmux + ` new-session vim ` + file + ` \; split-window -h -d`)})
+		h.startDaemon()
+		h.waitFor("unknown with the inner split seen", 8*time.Second, func() bool {
+			return strings.HasSuffix(h.state("main"), "/unknown/unknown") && h.option("main", "@modal_nested") != ""
+		})
+		h.typeKeys("i")
+		time.Sleep(500 * time.Millisecond)
+		if st := h.state("main"); !strings.HasSuffix(st, "/unknown/unknown") {
+			t.Errorf("inner split, after i: %s, want unknown", st)
+		}
+	})
 }

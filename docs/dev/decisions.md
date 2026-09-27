@@ -363,6 +363,11 @@ Built from F35–F37 rather than the brief's §6.2 sketch:
   the name.
 - vim-family is exempt from the remap-ready test (D29): never remapped
   (brief), and its identity is weighted on purpose.
+- **Target: default configuration** (owner, after M7): the fingerprint is
+  for hosts nobody configured; where there is a vimrc, the owner would
+  rather add an explicit hint (titlestring) than have the fingerprint
+  widened. So a vimrc without `set ruler` (normal reads unknown) is left
+  as a documented gap, not fixed.
 - Known gaps, documented in the README: showmode off with the ruler on
   reads normal in every mode (a bar cursor vetoes that where tmux reports
   it); lualine/airline replacing the ruler leave only tildes (unknown

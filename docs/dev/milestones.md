@@ -106,8 +106,10 @@ plan kept below:
   script). The FIFO example is the path to that; a Windows-side listener
   example (AHK or PowerShell reading a named pipe / file) would be valuable.
 
-**Left in M7:** a Windows-side listener example (AutoHotkey bridge fed
-from WSL). Candidates, to settle with the owner (their AHK version and how
+**Left in M7:** a *fast* Windows-side listener example (AutoHotkey bridge
+fed from WSL). A Windows-side hook example exists since M4
+(`examples/hooks/windows-toast.sh`), but it starts powershell.exe per
+transition (~0.5 s); an outer keyboard layer needs a warm listener. Candidates, to settle with the owner (their AHK version and how
 their script switches layers): the WSL listener pipes lines into a
 long-running Windows process's stdin (WSL interop), with AHK polling its
 stdin with PeekNamedPipe on a timer; or the hook writes a one-line state

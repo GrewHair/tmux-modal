@@ -90,3 +90,7 @@
   after making hook calls leading-edge (they had waited the whole 30 ms
   debounce). Distro vims never set t_SI/t_EI. Locale audit no longer
   reads regex escapes as words. Released v0.6.0.
+- After v0.6.0, at the owner's request: nested-tmux vim tests
+  (`TestNestedTmuxVim`: status bottom/top/off, nvim, inner split). All
+  behaved; Escape there costs the inner tmux's escape-time. Owner: target
+  default configs only; the no-ruler vimrc gap stays documented, unfixed.
