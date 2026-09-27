@@ -46,7 +46,7 @@ server CPU via `/proc/<pid>/stat`; document in README. Consider
 `refresh-client -A %N:off` for unfocused chatty panes (D2).
 Wire spec `poll_interval` into the scheduler (or M7).
 
-## M7 — spec overlays, then vim-family (hooks-only)
+## M7 — spec overlays, then vim-family (hooks-only) — done (v0.5.0, v0.6.0)
 
 **Part 1 done in v0.5.0 (D29 has what was built and why the lint was
 widened rather than the specs rewritten).** Original plan kept below.
@@ -106,22 +106,35 @@ plan kept below:
   script). The FIFO example is the path to that; a Windows-side listener
   example (AHK or PowerShell reading a named pipe / file) would be valuable.
 
-**M7 Windows side:** `examples/hooks/ahk-http.sh` (owner's AHK v2 script
-serves HTTP on Windows' localhost:42800; `curl.exe` per transition, 77–131
-ms per call measured end to end, almost all process start). Possible
-later: a warm bridge (one long-lived Windows process fed from the FIFO)
-to save that ~80 ms, if the owner wants it. Previously noted: a *fast*
-Windows-side listener example (AutoHotkey bridge fed from WSL). A Windows-side hook example exists since M4
-(`examples/hooks/windows-toast.sh`), but it starts powershell.exe per
-transition (~0.5 s); an outer keyboard layer needs a warm listener. Candidates, to settle with the owner (their AHK version and how
-their script switches layers): the WSL listener pipes lines into a
-long-running Windows process's stdin (WSL interop), with AHK polling its
-stdin with PeekNamedPipe on a timer; or the hook writes a one-line state
-file under /mnt/c that AHK checks on a timer. Not testable here without
-touching the owner's Windows side.
+**M7 Windows side — done:** `examples/hooks/ahk-http.sh` for the owner's
+AutoHotkey v2 script, which serves HTTP on Windows' localhost:42800
+(`/send/F?<func>;;;;<arg>`; `OSD` shows a notification, the owner swaps in
+a real function later). Fire and forget through Windows `curl.exe` (Linux
+cannot reach the Windows localhost under WSL's NAT networking); the
+payload carries the transition time so the receiver can drop late
+arrivals. `windows-toast.sh` (since M4) remains as the slow demo. A warm
+bridge (one long-lived Windows process, no per-call start) is in the
+backlog (B7) if ~80–130 ms per call ever matters.
 
-## M8 — polish
+## M8 — polish (next)
 
-README complete (every option, spec authoring, shadowed keys per app,
-nested limitation, validate, measured costs, known vim gaps from §6.2),
-release, CI green, report URL + CI status.
+From the brief: README complete (every option, spec authoring, shadowed
+keys per app, nested limitation, validate, measured costs, known vim gaps
+from §6.2), release, CI green, report URL + CI status. Concretely:
+
+1. README pass, top to bottom: check every option in `config.go` is in
+   the Options table with its real default; every bundled spec in the
+   table with verified versions; shadowed keys per remapping app (htop,
+   btop); the nested limitations; `validate`/`lint`/`capture` usage;
+   measured costs (benchmark, latency F38); the vim known limits; the
+   overlay recipe; the hook examples incl. `ahk-http.sh`. Remove stale
+   statements (search for "M7", "not yet", "so far").
+2. Re-run the CPU benchmark (vim panes are now a 12-row capture band;
+   the benchmark predates vim) and update the README table.
+3. Repo hygiene (topics are already set: tmux, tmux-plugin, tui, vim);
+   CHANGELOG or release notes per tag
+   (GitHub releases have only assets now); bump the CI actions that warn
+   about Node 20 (B5) if newer majors exist.
+4. Decide with the owner which backlog items (B1 split inner tmux, B7
+   warm Windows bridge) go into a v1.0, or ship 1.0 without them.
+5. Final release, CI green, report URL + CI status (brief).

@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-28, M7 part 2 (vim/neovim), release v0.6.0._
+_Last updated: 2026-09-28, after M7 (overlays v0.5.0, vim/neovim v0.6.0, AHK hook example). Next: M8._
 
 ## Milestones (brief §12)
 
@@ -13,12 +13,12 @@ _Last updated: 2026-09-28, M7 part 2 (vim/neovim), release v0.6.0._
 | 5 | SSH integration tests; nested-tmux fallback | **done** — sshd container tier, nested detection (D20), absence-anchor lint (D21) |
 | 6 | Remaining bundled specs, CPU-budget self-throttling, benchmark | **done** — 25 specs (D23–D26), fixtures from three distros, SSH app tier, benchmark + output gating (D28) |
 | 7 | Spec overlays (owner's request, D29), then `vim-family` specs | **done** — overlays (v0.5.0), vim/nvim hooks-only specs (v0.6.0, D30, D31); and `examples/hooks/ahk-http.sh` for the owner's AHK v2 endpoint ([milestones.md](milestones.md)) |
-| 8 | README, CI, publish | **done early** at the owner's request (repo public, CI green, v0.1.0 released); README must keep growing with each milestone |
+| 8 | README, CI, publish | **next** — published early at the owner's request (repo public, CI green since v0.1.0); what is left is the polish pass in [milestones.md](milestones.md) M8 |
 
 ## Where things live
 
 - Repo: https://github.com/GrewHair/tmux-modal (public). CI: `.github/workflows/ci.yml`; release on `v*` tags: `release.yml` (static binaries for linux/darwin/freebsd, amd64/arm64 + linux/arm, SHA256SUMS).
-- Current release: **v0.6.0** (M7 part 2: vim and neovim specs for the hook, every language they ship; hook calls fire on the leading edge). v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 ( bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
+- Current release: **v0.6.0** (M7 part 2: vim and neovim specs for the hook, every language they ship; hook calls fire on the leading edge). v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 (bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
 
 ## The owner is dogfooding it
 
@@ -27,13 +27,21 @@ On the owner's own tmux (WSL2, tmux 3.4, fish shell, TPM):
 - Plugin clone: `~/.config/tmux/plugins/tmux-modal` (a git clone of the public repo, binary pre-downloaded into its `bin/`). Update with `git pull` there (or TPM `prefix+U`), then the binary resolver fetches the matching release.
 - Options: `~/.config/tmux/tmux.conf.d/modal/modal.tmux` (sourced from `tmux.conf`); `@plugin 'GrewHair/tmux-modal'` added to `tmux.conf`.
 - Indicator in `pane-border-format` (owner's choice), three-way: NORMAL / INSERT / N/A, nothing for shells.
-- Hook: `examples/hooks/log.sh` active; `windows-toast.sh` and "none" provided as commented alternatives. Log: `~/.local/state/tmux-modal/transitions.log`.
-- `~/.config` is itself a git repo with the owner's unrelated uncommitted work — **never commit there**.
+- Hook options in that file, one to be uncommented at a time: `log.sh`,
+  `windows-toast.sh`, `ahk-http.sh` (option 4, the owner's AutoHotkey v2
+  HTTP endpoint on Windows' localhost:42800, `/send/F?OSD;;;;<payload>`;
+  fire and forget). As of 2026-09-28 **all are commented out** (no hook
+  active); the owner decides when to switch one on. Log:
+  `~/.local/state/tmux-modal/transitions.log`.
+- `~/.config` is itself a git repo with the owner's unrelated uncommitted work — **never commit there** (editing the modal options file is fine; it was written for them).
 - **Never kill or restart the owner's tmux server.** Test on private `-L` sockets; the owner restarts tmux themselves.
+- The owner's own nvim is LazyVim (lualine, noshowmode): locally it reads
+  `nvim/unknown` — expected, the vim fingerprint targets unconfigured
+  hosts (see collaboration.md).
 
-Owner feedback so far: "everything seems to work alright". The owner's
-machine is on v0.4.0's binary (plugin clone updated); it takes effect when
-they restart tmux.
+Owner feedback so far: "everything seems to work alright", "everything
+looks good" (after M7). The plugin clone is on v0.6.0's binary plus the
+later example commits; it takes effect when they restart tmux.
 
 **History was rewritten once** (after M6, to remove the machine name):
 anyone with an old clone must `git fetch && git reset --hard origin/main`.
@@ -41,12 +49,31 @@ Don't rewrite again without the owner asking.
 
 ## Known gaps right now
 
-- Only htop and btop remap; the other app specs detect only (D23). Adding keys to another app today means copying its whole spec; overlays fix that in M7 (D29). vim/nvim are not recognised yet (M7): N/A.
-- less over SSH is recognised only once it shows one of its own prompts (`(END)`, HELP, a message); REPLs only locally (D25, D26).
-- Inner tmux split into several panes: always `unknown` (the outer screen does not say which inner pane is focused). Improvement designed and deferred by the owner: [backlog.md](backlog.md) B1.
-- Remapping through a nested tmux: after the inner prefix key, a remapped key arrives remapped (`prefix l` → `prefix Right`); owner accepted.
-- Nested `cursor_shape` ~0.5 s delay (F11): cause still unknown; matters for nvim over nested tmux (M7).
-- `@modal_burst_decay` is parsed but unused (event-driven scheduling made it moot; reserved for a polling fallback).
-- CPU budget: implemented (`sys.go`), measures only the daemon's own CPU, not the tmux server work it causes; the benchmark (README) measures both.
-- `#{C:}` is not used at all (control-mode capture made it unnecessary; see decisions D2).
-- Hook latency end-to-end (keypress → subscriber) not measured separately from detection latency; detection is ~30–40 ms into typing, ~80–95 ms back to commanding, plus 30 ms hook debounce.
+- Only htop and btop remap by default; every other app can be given keys
+  with an overlay file (D29). vim/nvim never remap (D30).
+- vim/nvim (D30, README "vim and neovim"): target default configs only
+  (owner). showmode off with the ruler on reads normal; lualine/airline
+  (no ruler) read unknown; a vimrc without `set ruler` reads unknown in
+  normal; nvim cmdheight=0 and vim's `:terminal` read normal; over SSH the
+  vim/nvim *name* is a layout guess; vim passes through `unknown` for
+  ~100 ms on Escape (it clears the mode line, redraws the ruler after
+  `ttimeoutlen`).
+- less over SSH is recognised only once it shows one of its own prompts
+  (`(END)`, HELP, a message); REPLs only locally (D25, D26).
+- Inner tmux split into several panes: always `unknown`. Improvement
+  designed and deferred by the owner: [backlog.md](backlog.md) B1.
+- Remapping through a nested tmux: after the inner prefix key, a remapped
+  key arrives remapped (`prefix l` → `prefix Right`); owner accepted.
+- Inside a remote tmux, Escape reaches the app after the inner tmux's
+  `escape-time` (500 ms default on 3.4) — not ours; README says so.
+- Nested `cursor_shape` ~0.5 s delay (F11): cause unknown; only nvim on
+  tmux ≥ 3.6 (backlog B2).
+- The cursor-shape veto was only unit-tested (shape set on a real
+  capture); no run on a real tmux ≥ 3.6 yet.
+- `@modal_burst_decay` is parsed but unused (reserved for a polling fallback).
+- CPU budget: measures only the daemon's own CPU, not the tmux server work
+  it causes; the benchmark (README) measures both.
+- `#{C:}` is not used at all (control-mode capture made it unnecessary; D2).
+- Hook latency (F38): keypress → FIFO listener 39 ms p50 local, 62 ms over
+  SSH (balanced); `ahk-http.sh` adds ~80–130 ms of Windows `curl.exe`
+  start, after the hook has returned.

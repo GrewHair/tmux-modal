@@ -45,8 +45,12 @@ keys while the user types. Estimated half a day plus tests.
 
 Through a nested tmux (3.7c), nvim's cursor shape reached the outer tmux
 ~0.5 s late on Esc, even with `escape-time 0` on both servers. Cause
-unknown. Only matters for nvim on tmux ≥ 3.7-ish; the owner runs 3.4 where
-`cursor_shape` does not exist at all. Look at it in M7.
+unknown. Only matters for nvim on tmux ≥ 3.6; the owner runs 3.4 where
+`cursor_shape` does not exist at all. Not looked at in M7 (the vim specs
+do not depend on it: markers are primary, shape only vetoes). Related but
+different: the ~600 ms Escape through a remote tmux in M7's nested vim
+tests is the inner tmux's `escape-time` (500 ms default on 3.4) plus vim's
+`ttimeoutlen`, fully explained.
 
 ## B3. Inner prefix key while remapping through nested tmux
 
@@ -92,3 +96,38 @@ from outside. Only revisit if the owner complains.
   enough to identify Python remotely.
 - `mc`: a real normal mode would need to tell the panels from a focused
   dialog input; ship only with fixtures proving it.
+
+## B7. Left over from M7 (vim, Windows side)
+
+- **Warm Windows bridge for the AHK endpoint.** `ahk-http.sh` starts
+  Windows `curl.exe` per transition (~80 ms, off the hook's critical path
+  since it is detached, but still that much later at the AHK side). A
+  long-lived Windows process (PowerShell or a tiny exe) started once from
+  WSL, fed lines through its stdin from the FIFO listener
+  (`examples/listener.sh`), would send the HTTP request in ~3 ms and keep
+  order. Only if the owner finds 80–130 ms too slow for their layer.
+  Alternative: WSL mirrored networking (`networkingMode=mirrored` in
+  .wslconfig) would let Linux `curl` reach Windows' localhost directly —
+  the owner's choice, it changes their WSL setup.
+- **Real tmux ≥ 3.6 run of the cursor-shape veto** with nvim (the image
+  `tmux-modal-tmuxsrc:3.7c` from F11 can host it). Today only a unit test
+  sets the shape on a real capture.
+- **vim's ~100 ms `unknown` on Escape** (it clears the mode line at once
+  and redraws the ruler after `ttimeoutlen`): subscribers see typing a
+  little longer. Could be smoothed by treating "sticky vim, last row
+  blank, tildes present" as normal — declined for now: it weakens the
+  "never normal from a half-drawn screen" rule (§9) for a cosmetic gain.
+- **Configured vims are out of scope by the owner's call** (lualine,
+  airline, noshowmode, no ruler): don't add fingerprints for them unless
+  the owner asks; they would rather add an explicit hint (a `titlestring`
+  carrying the mode) to their own config. A `title`-based identity/mode
+  rule is already supported by the spec engine (`match.title`) if that
+  day comes — it would need mode rules on the title too (not supported
+  yet: mode rules read the screen only).
+- vim/nvim **name over SSH** is a layout guess (D30). Harmless for modes;
+  if a subscriber ever needs the right name remotely, there is no screen
+  signal that separates them reliably.
+- `fr_FR` is generated in the images but no French fixtures were
+  captured (the full catalogue is covered by `TestVimMarkers`); upstream
+  nvim (`nvim-upstream`) exists only in the ubuntu-24.04 image.
+- `emacs -nw` (listed as experimental in the M7 plan) was not started.

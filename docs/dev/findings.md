@@ -264,3 +264,36 @@ neovim only, and only on a tmux that reports it (F11).
 Leaving insert is ~130 ms more, almost all of it vim's own Escape timeout
 (`ttimeoutlen=100` in defaults.vim). Until M7 the hook debounce was
 trailing and added its full 30 ms to every call (D31).
+
+## M7 harness pitfalls
+
+**F39. Harness and probing pitfalls found in M7:**
+- A remote tmux started over SSH **outlives the connection**. A second test
+  opening the same file in vim stops at the swap-file prompt (E325);
+  `TestNestedTmuxVim` gives each case its own remote `tmux -L` socket and
+  file and kills them in `t.Cleanup`.
+- While Docker is busy (an image build), `docker run` can take > 2 s to
+  show anything; `scripts/fixtures/lib.sh` sets `-e`, so a probe that
+  greps an empty screen exits silently. Raise `BOOT`, add `|| true`.
+- The agent's shell is zsh: `$files` is **not word-split**; pass file
+  lists with `git ls-files -z … | xargs -0`.
+- `vim -es` never initialises the terminal: `&t_SI` is empty there
+  whatever the defaults — probe terminal options in a real pane (F37).
+- `python3 -m py_compile` leaves `__pycache__/` in the tree; delete it.
+- Go's `exec.Cmd` with a non-file `Stdout` **waits for the pipe to close**:
+  a hook that backgrounds a child must redirect the child's stdio
+  (`>/dev/null 2>&1 </dev/null`), or the daemon waits for the child.
+- A container user cannot read files in the scratch dir mounted with
+  `-v` (permissions); pipe scripts in on stdin (`python3 - < script`).
+
+## WSL and Windows (M7)
+
+
+**F40. Windows' localhost is not reachable from WSL (default NAT
+networking)**: Linux `curl http://localhost:42800` fails; Windows
+`/mnt/c/Windows/System32/curl.exe` works. Starting a Windows exe from WSL
+costs ~80 ms (the HTTP request to the owner's AHK server ~3 ms);
+powershell.exe ~0.5 s (the toast example). Detached with `setsid … &` and
+stdio to /dev/null, the hook returns in < 10 ms with the server up, down
+(connection refused at once), or hung (`--connect-timeout 1 -m 2` bounds
+the background curl). Detached calls can arrive out of order.

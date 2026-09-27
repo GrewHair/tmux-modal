@@ -16,8 +16,8 @@
 - Their environment: WSL2 on Windows, tmux 3.4, fish as tmux shell (the
   agent's own shell is zsh), TPM, prefix `S-F1`, `escape-time 0`, mouse on,
   many `bind -n` keys (F-keys, `M-hjkl`, `S-arrows`, `C-s` via an `is_vim`
-  check), `pane-border-status top`, AutoHotkey on the Windows side (the
-  motivating subscriber for the hook), nvim as editor.
+  check), `pane-border-status top`, AutoHotkey v2 on the Windows side (the
+  motivating subscriber for the hook), nvim (LazyVim, lualine) as editor.
 - Stated preferences: explicit, unmistakable naming for anything the plugin
   adds (the `TMUX-MODAL-DAEMON` client label); three-way indicator
   NORMAL / INSERT / N/A; no shell fallback daemon; don't burn cycles on
@@ -40,6 +40,27 @@
 - **Keep options open.** Even where the default is "don't remap", the
   owner wants the mechanism to allow it later (D29: overlays, remap-ready
   specs). Prefer designs that make a future change a config edit.
+- **Fingerprints target unconfigured hosts** (owner, M7). The screen
+  fingerprinting is "for worst case stuff": servers nobody configured.
+  Assume default configs (vim with defaults.vim). Where the owner has a
+  config, they would rather add an explicit hint (e.g. a vim
+  `titlestring` with the mode) than have heuristics widened — so gaps
+  caused by customised configs are documented, not fixed.
+- **Answer questions with verified facts.** When the owner asks "did you
+  account for X?", run a probe (a scratch test on a private socket) before
+  answering rather than reasoning from the code; offer to keep it as a test.
+- **The AutoHotkey side** (M7): AutoHotkey **v2**, a long-running script
+  that serves HTTP on Windows' localhost:42800:
+  `/mnt/c/Windows/System32/curl.exe "http://localhost:42800/send/F?OSD;;;;hi"`
+  calls the AHK function `OSD` with argument `hi` (an on-screen
+  notification). The owner swaps `OSD` for a real function when ready.
+  They offered to explain the internals if needed — ask rather than
+  guess. Requirements they gave: **fire and forget** (never wait for the
+  response) and **never hang** if the server is not running.
+  Sending a few test OSDs while developing is fine (they asked for it).
+- **Before a compaction** the owner asks for everything to be written into
+  these docs; after it, they expect work to resume from the "Next" line in
+  `CLAUDE.md` / status.md without re-asking.
 - **Privacy slip-ups get fixed at the root.** The owner approved rewriting
   public history to remove the machine name; check new docs for host data
   before every push (`grep -rI "$(hostname)"`).

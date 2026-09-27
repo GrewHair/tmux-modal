@@ -103,3 +103,7 @@
   /dev/null, --connect-timeout 1 -m 2): the hook returns in <10 ms with
   the server up, down, or hung; the output pipe closes at once. Payload
   gained the transition time (ms) so the receiver can drop late arrivals.
+- Handover before compaction (2026-09-28): status.md known gaps and
+  dogfooding refreshed, M8 plan made concrete, backlog B7 (M7 leftovers),
+  findings F39 (harness pitfalls) and F40 (WSL/Windows), collaboration
+  notes (default-config target, AHK v2 endpoint, verify before answering).
