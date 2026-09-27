@@ -46,13 +46,15 @@ var optionNames = []string{
 	"@modal_log_level", "@modal_confirm_captures",
 }
 
-// configFormat reads every option in one display-message.
+// configFormat reads every option in one display-message. The separator
+// is a tab: display-message escapes non-printable characters (a \x1f comes
+// back as the four characters "\037"), but passes tabs through.
 var configFormat = func() string {
 	parts := make([]string, len(optionNames))
 	for i, o := range optionNames {
 		parts[i] = "#{" + o + "}"
 	}
-	return strings.Join(parts, "\x1f")
+	return strings.Join(parts, "\t")
 }()
 
 // ReadConfig reads the global options.
@@ -63,7 +65,7 @@ func ReadConfig(r tmux.Runner) (Config, error) {
 	}
 	raw := map[string]string{}
 	if len(lines) > 0 {
-		vals := strings.Split(strings.Join(lines, "\n"), "\x1f")
+		vals := strings.Split(strings.Join(lines, "\n"), "\t")
 		for i, o := range optionNames {
 			if i < len(vals) {
 				raw[o] = vals[i]
