@@ -43,6 +43,11 @@ type Daemon struct {
 	pidOpt         string
 	forceReconcile bool
 	lastCPU        float64
+
+	hooks        *hookRunner
+	focusEmitted map[string]focusState // session id -> last focus report
+	statusDirty  bool
+	indicatorKey string
 }
 
 // events collects notifications from the control clients' reader
@@ -132,7 +137,10 @@ func Main(args []string, bundled spec.Source) error {
 		sessions:  map[string]*sessionState{},
 		installed: map[string]string{},
 		throttle:  1,
+
+		focusEmitted: map[string]focusState{},
 	}
+	d.hooks = newHookRunner(d.log)
 	return d.loop()
 }
 
@@ -221,6 +229,14 @@ func resetTimer(t *time.Timer, dur time.Duration) {
 func (d *Daemon) applyConfig(c Config) {
 	d.cfg = c
 	d.log.SetLevel(c.LogLevel)
+	d.hooks.configure(c.HookTimeout, c.HookDebounce)
+	if key := fmt.Sprint(c.Indicator); key != d.indicatorKey {
+		first := d.indicatorKey == ""
+		d.indicatorKey = key
+		if !first {
+			d.republishIndicators()
+		}
+	}
 	key := strings.Join(c.SpecPaths, ":")
 	if key != d.specKey {
 		srcs := []spec.Source{d.bundled}
@@ -329,6 +345,16 @@ func (d *Daemon) closeConns() {
 func (d *Daemon) shutdown() {
 	d.log.Infof("shutting down")
 	r := d.runner()
+	// Tell subscribers detection has stopped, so nothing stays stuck in a
+	// commanding state the daemon can no longer vouch for.
+	for sid, f := range d.focusEmitted {
+		p := tmux.PaneInfo{ID: f.pane, SessionID: sid}
+		if st, ok := d.panes[f.pane]; ok {
+			p = st.info
+		}
+		d.hooks.Emit(d.hookEvent("stop", "s:"+sid, &p, f.m, modeState{}, true))
+	}
+	d.hooks.Flush(d.cfg.HookTimeout + time.Second)
 	d.restoreAllKeyTables(r)
 	var cmds []string
 	for id := range d.panes {
@@ -337,6 +363,8 @@ func (d *Daemon) shutdown() {
 		}
 	}
 	d.run(r, cmds)
+	d.statusDirty = true
+	d.refreshStatus(r)
 	for app := range d.installed {
 		runLines(r, UnbindCommands(app))
 	}

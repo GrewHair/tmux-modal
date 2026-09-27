@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/GrewHair/tmux-modal/internal/classify"
@@ -15,7 +16,7 @@ type modeState struct {
 	App, Mode, Bucket, Confidence string
 }
 
-var paneOptions = []string{"@modal_app", "@modal_mode", "@modal_bucket", "@modal_confidence"}
+var paneOptions = []string{"@modal_app", "@modal_mode", "@modal_bucket", "@modal_confidence", "@modal_indicator"}
 
 type paneState struct {
 	id   string
@@ -27,6 +28,7 @@ type paneState struct {
 
 	cur       modeState
 	published bool
+	indicator string
 	pending   modeState
 	pendingN  int
 
@@ -246,6 +248,8 @@ func (d *Daemon) cycle() {
 		}
 	}
 	d.syncKeyTables(r, panes, humans)
+	d.sweepFocus(panes, humans)
+	d.refreshStatus(r)
 }
 
 // examine classifies one captured pane and applies the result.
@@ -316,6 +320,11 @@ func (d *Daemon) transition(st *paneState, next modeState, reason string, now ti
 	d.publish(st, next, reason)
 	d.log.Infof("%s: %s/%s -> %s/%s (%s, %s)", st.id, orNone(prev.App), orNone(prev.Mode),
 		orNone(next.App), next.Mode, next.Confidence, reason)
+	// The focused pane of each session is reported by sweepFocus, which
+	// also covers focus moving between panes; here only the others.
+	if !st.info.Focused() {
+		d.hooks.Emit(d.hookEvent("mode", "p:"+st.id, &st.info, prev, next, false))
+	}
 }
 
 func orNone(s string) string {
@@ -325,10 +334,17 @@ func orNone(s string) string {
 	return s
 }
 
-// publish writes a pane's state to its @modal_* options.
+// publish writes a pane's state to its @modal_* options, including the
+// ready-rendered @modal_indicator, so status and border formats only ever
+// read variables.
 func (d *Daemon) publish(st *paneState, m modeState, reason string) {
 	st.cur, st.published = m, m != (modeState{})
-	vals := []string{m.App, m.Mode, m.Bucket, m.Confidence}
+	ind := d.indicator(m)
+	if ind != st.indicator {
+		st.indicator = ind
+		d.statusDirty = true
+	}
+	vals := []string{m.App, m.Mode, m.Bucket, m.Confidence, ind}
 	var cmds []string
 	for i, o := range paneOptions {
 		if vals[i] == "" {
@@ -338,6 +354,108 @@ func (d *Daemon) publish(st *paneState, m modeState, reason string) {
 		}
 	}
 	d.run(d.runner(), cmds)
+}
+
+// indicator renders the indicator template for a state.
+func (d *Daemon) indicator(m modeState) string {
+	if m == (modeState{}) {
+		return ""
+	}
+	tpl := d.cfg.Indicator[m.Bucket]
+	return strings.NewReplacer(
+		"{MODE}", strings.ToUpper(m.Mode), "{mode}", m.Mode,
+		"{APP}", strings.ToUpper(m.App), "{app}", m.App,
+		"{bucket}", m.Bucket, "{confidence}", m.Confidence,
+	).Replace(tpl)
+}
+
+// republishIndicators re-renders every pane's indicator after the
+// templates changed.
+func (d *Daemon) republishIndicators() {
+	var cmds []string
+	for _, st := range d.panes {
+		if !st.published {
+			continue
+		}
+		if ind := d.indicator(st.cur); ind != st.indicator {
+			st.indicator = ind
+			cmds = append(cmds, tmux.Command("set-option", "-p", "-t", st.id, "@modal_indicator", ind))
+		}
+	}
+	if len(cmds) > 0 {
+		d.run(d.runner(), cmds)
+		d.statusDirty = true
+	}
+}
+
+// refreshStatus redraws the status lines of human clients once per cycle
+// when something they may display changed. Pane borders redraw by
+// themselves when a pane option changes; status lines do not.
+func (d *Daemon) refreshStatus(r tmux.Runner) {
+	if !d.statusDirty {
+		return
+	}
+	d.statusDirty = false
+	var cmds []string
+	for _, c := range d.clients {
+		if !c.Control {
+			cmds = append(cmds, tmux.Command("refresh-client", "-S", "-t", c.Name))
+		}
+	}
+	d.run(r, cmds)
+}
+
+// focusState is what the hook last reported for a session's focused pane.
+type focusState struct {
+	pane string
+	m    modeState
+}
+
+// sweepFocus reports each session's focused pane whenever its pane or its
+// mode changes. This is the stream an outer keyboard layer follows: it
+// needs "what am I typing into now", which changes on focus moves as well
+// as on mode changes.
+func (d *Daemon) sweepFocus(panes []tmux.PaneInfo, humans map[string]bool) {
+	for i := range panes {
+		p := &panes[i]
+		if !p.Focused() || !humans[p.SessionID] {
+			continue
+		}
+		st, ok := d.panes[p.ID]
+		if !ok || (!st.published && p.Enabled != "off") {
+			continue // not examined yet; a disabled pane reports none
+		}
+		prev, seen := d.focusEmitted[p.SessionID]
+		if seen && prev.pane == p.ID && prev.m == st.cur {
+			continue
+		}
+		event := "mode"
+		if !seen || prev.pane != p.ID {
+			event = "focus"
+		}
+		d.focusEmitted[p.SessionID] = focusState{pane: p.ID, m: st.cur}
+		d.hooks.Emit(d.hookEvent(event, "s:"+p.SessionID, p, prev.m, st.cur, true))
+	}
+}
+
+// hookEvent builds a hook event; the global hook runs first, then the
+// hook of the spec the pane is now in.
+func (d *Daemon) hookEvent(event, key string, p *tmux.PaneInfo, from, to modeState, active bool) *HookEvent {
+	e := &HookEvent{
+		Event: event, Key: key, Pane: p.ID, App: to.App, AppFrom: from.App,
+		ModeTo: to.Mode, ModeFrom: from.Mode, Bucket: to.Bucket, Confidence: to.Confidence,
+		Session: p.SessionName, SessionID: p.SessionID, Window: p.WindowID, Active: active,
+	}
+	if e.ModeTo == "" {
+		e.ModeTo, e.Bucket = spec.ModeNone, spec.ModeNone
+	}
+	if d.cfg.Hook != "" {
+		e.Commands = append(e.Commands, d.cfg.Hook)
+	}
+	if sp := d.set.Specs[to.App]; sp != nil && sp.Hook != "" {
+		e.Commands = append(e.Commands, sp.Hook)
+	}
+	return e
 }
 
 func (d *Daemon) primaryScreenSpecs() bool {

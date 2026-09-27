@@ -30,6 +30,7 @@ type PaneInfo struct {
 	Command       string
 	Enabled       string // @modal_enabled, resolved pane > window > global
 	KeyTable      string // session key-table option
+	SessionName   string
 	Title         string
 }
 
@@ -43,7 +44,7 @@ var paneFields = []string{
 	"session_attached", "alternate_on", "cursor_flag", "cursor_x", "cursor_y",
 	"cursor_shape", "scroll_region_lower", "pane_width", "pane_height",
 	"history_size", "pane_in_mode", "pane_dead", "pane_current_command",
-	"@modal_enabled", "key-table", "pane_title",
+	"@modal_enabled", "key-table", "session_name", "pane_title",
 }
 
 // PaneFormat is the packed tier-1 format string.
@@ -98,7 +99,7 @@ func parsePaneLine(l string) (PaneInfo, error) {
 		CursorX: atoi(f[8]), CursorY: atoi(f[9]), CursorShape: f[10],
 		ScrollLower: atoi(f[11]), Width: atoi(f[12]), Height: atoi(f[13]),
 		HistorySize: atoi(f[14]), InMode: f[15] == "1", Dead: f[16] == "1",
-		Command: f[17], Enabled: f[18], KeyTable: f[19], Title: f[20],
+		Command: f[17], Enabled: f[18], KeyTable: f[19], SessionName: f[20], Title: f[21],
 	}, nil
 }
 

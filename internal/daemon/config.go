@@ -27,6 +27,9 @@ type Config struct {
 	HookDebounce time.Duration
 	LogLevel     string
 	Confirm      int // consecutive agreeing captures before remapping resumes
+
+	// Indicator templates by bucket, published per pane as @modal_indicator.
+	Indicator map[string]string
 }
 
 type profile struct{ burst, poll, idle int }
@@ -44,6 +47,18 @@ var optionNames = []string{
 	"@modal_spec_paths", "@modal_escape_leader", "@modal_color_matching",
 	"@modal_transition_hook", "@modal_hook_timeout", "@modal_hook_debounce",
 	"@modal_log_level", "@modal_confirm_captures",
+	"@modal_indicator_format", "@modal_indicator_commanding",
+	"@modal_indicator_typing", "@modal_indicator_unknown", "@modal_indicator_none",
+}
+
+// Default indicator templates. {MODE}/{mode}, {APP}/{app}, {bucket} and
+// {confidence} are substituted by the daemon; the result is published as a
+// plain pane option so status formats only ever read a variable.
+var defaultIndicators = map[string]string{
+	"commanding": "#[fg=black,bg=green,bold] {MODE} #[default]",
+	"typing":     "#[fg=black,bg=yellow,bold] {MODE} #[default]",
+	"unknown":    "#[fg=black,bg=colour244] N/A #[default]",
+	"none":       "",
 }
 
 // configFormat reads every option in one display-message. The separator
@@ -72,7 +87,18 @@ func ReadConfig(r tmux.Runner) (Config, error) {
 			}
 		}
 	}
+	for k, v := range raw {
+		raw[k] = unescapeOption(v)
+	}
 	return parseConfig(raw), nil
+}
+
+// unescapeOption undoes tmux's output escaping of option values: tmux 3.x
+// prints every '$' as '\$' (in show-options and in #{@option} alike), and
+// nothing else. A literal '\$' in the stored value is printed as '\\$',
+// which this maps back correctly.
+func unescapeOption(v string) string {
+	return strings.ReplaceAll(v, `\$`, "$")
 }
 
 func parseConfig(raw map[string]string) Config {
@@ -93,6 +119,20 @@ func parseConfig(raw map[string]string) Config {
 	}
 	if c.Confirm < 1 {
 		c.Confirm = 1
+	}
+	c.Indicator = map[string]string{}
+	for bucket, def := range defaultIndicators {
+		opt := "@modal_indicator_" + bucket
+		if v, ok := raw[opt]; ok && v != "" {
+			c.Indicator[bucket] = v
+		} else if bucket == "commanding" && raw["@modal_indicator_format"] != "" {
+			c.Indicator[bucket] = raw["@modal_indicator_format"] // the brief's name
+		} else {
+			c.Indicator[bucket] = def
+		}
+	}
+	if raw["@modal_indicator_none"] == "off" {
+		c.Indicator["none"] = ""
 	}
 	name := pick(raw["@modal_profile"], "balanced", "frugal", "balanced", "snappy", "custom")
 	p, ok := profiles[name]
