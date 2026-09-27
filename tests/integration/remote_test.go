@@ -296,12 +296,13 @@ func TestNestedTmuxSplit(t *testing.T) {
 	h.waitFor("inner split", 5*time.Second, func() bool { return strings.Contains(h.screen("main"), "│") })
 	// The banner row now ends in the border and the right pane, so the
 	// app may not even be identified; either way the mode is unknown.
-	h.waitFor("unknown mode", 5*time.Second, func() bool {
-		return strings.HasSuffix(h.state("main"), "/unknown/unknown") && h.keyTable() == "root"
+	// Wait for both together: a capture taken while the inner tmux is
+	// still drawing the split can already be unknown without showing the
+	// whole border yet; the next capture has it.
+	h.waitFor("unknown mode with border evidence", 5*time.Second, func() bool {
+		return strings.HasSuffix(h.state("main"), "/unknown/unknown") && h.keyTable() == "root" &&
+			h.option("main", "@modal_nested") == "borders"
 	})
-	if n := h.option("main", "@modal_nested"); n != "borders" {
-		t.Fatalf("@modal_nested = %q, want borders", n)
-	}
 	h.typeKeys("j")
 	h.expectScreen("main", "last=[j]")
 }
