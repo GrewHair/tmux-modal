@@ -219,7 +219,9 @@ func (c *Control) finish(err error) {
 	for _, ch := range pend {
 		ch <- reply{err: ErrClosed}
 	}
-	_ = c.cmd.Wait()
+	if c.cmd != nil {
+		_ = c.cmd.Wait()
+	}
 	if err == io.EOF {
 		err = nil
 	}

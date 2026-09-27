@@ -56,8 +56,8 @@ func (a Attr) String() string {
 // Color is a terminal colour as it arrived: default, a palette index, or
 // truecolour. RGB() normalises all of them into one space for comparison.
 type Color struct {
-	Kind  ColorKind
-	Index uint8 // palette index when Kind == ColorIndexed
+	Kind    ColorKind
+	Index   uint8 // palette index when Kind == ColorIndexed
 	R, G, B uint8
 }
 
