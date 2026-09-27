@@ -1,0 +1,51 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 0,37
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nvim
+# expect_mode: normal
+# note: the buffer fills the window: no tildes, the ruler only
+# ---
+Sample text line 13
+Sample text line 14
+Sample text line 15
+Sample text line 16
+Sample text line 17
+Sample text line 18
+Sample text line 19
+Sample text line 20
+Sample text line 21
+Sample text line 22
+Sample text line 23
+Sample text line 24
+Sample text line 25
+Sample text line 26
+Sample text line 27
+Sample text line 28
+Sample text line 29
+Sample text line 30
+Sample text line 31
+Sample text line 32
+Sample text line 33
+Sample text line 34
+Sample text line 35
+Sample text line 36
+Sample text line 37
+Sample text line 38
+Sample text line 39
+Sample text line 40
+Sample text line 41
+Sample text line 42
+Sample text line 43
+Sample text line 44
+Sample text line 45
+Sample text line 46
+Sample text line 47
+Sample text line 48
+Sample text line 49
+Sample text line 50
+~/sample.txt                                                                                          50,1            0%
+:e /home/demo/sample.txt

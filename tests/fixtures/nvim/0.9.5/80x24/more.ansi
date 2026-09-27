@@ -1,0 +1,24 @@
+:set all
+[38;5;225m--- Options ---[39m
+noarabic              foldenable        nonumber              swapfile
+  arabicshape         foldexpr=0          numberwidth=4       switchbuf=uselast
+noallowrevins         foldignore=#        omnifunc=           synmaxcol=3000
+  ambiwidth=single    foldlevel=0         operatorfunc=       syntax=text
+noautochdir           foldlevelstart=-1 nopaste               tagfunc=
+  autoindent          foldmethod=manual   patchexpr=          tabline=
+  autoread            foldminlines=1      patchmode=          tabpagemax=50
+noautowrite           foldnestmax=20    nopreserveindent      tabstop=8
+noautowriteall        formatexpr=         previewheight=12    tagbsearch
+  background=dark     formatprg=        nopreviewwindow       tagcase=followic
+nobackup              fsync               prompt              taglength=0
+  backupcopy=auto   nogdefault            pumblend=0          tagrelative
+  backupext=~         guifont=            pumheight=0         tags=./tags;,tags
+  backupskip=/tmp/*   guifontwide=        pumwidth=15         tagstack
+  belloff=all         helpheight=20       pyxversion=3      notermbidi
+nobinary              helplang=           quickfixtextfunc= notermguicolors
+nobomb                hidden              quoteescape=\     noterse
+nobreakindent         history=10000     noreadonly            textwidth=0
+  breakindentopt=   nohkmap               redrawdebug=        thesaurus=
+  bufhidden=        nohkmapp              redrawtime=2000     thesaurusfunc=
+  buflisted           hlsearch            regexpengine=0    notildeop
+[38;5;121m-- More --[39m

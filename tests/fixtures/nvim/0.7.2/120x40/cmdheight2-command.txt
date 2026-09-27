@@ -1,0 +1,50 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 1,38
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nvim
+# expect_mode: command
+# note: cmdheight=2: the command line opens on row -2
+# ---
+alpha
+
+alpinealpine
+alps
+beta
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+notes.txt                                                                                             3,6            All
+:

@@ -74,3 +74,19 @@
   per-spec lint warnings and reloads spec files when they change. SSH
   test: an overlay written while tig runs remaps `K` in normal mode and
   leaves it a letter in the search prompt. Released v0.5.0.
+- M7 part 2 (D30, D31, F35–F38): probed vim 8.2/9.0/9.1 and nvim
+  0.6.1/0.7.2/0.9.5/0.12.5 in the images (neovim and locales added; the
+  release build has no translations). Extracted every showmode string,
+  ruler word and prompt from the editors' catalogues
+  (`scripts/fixtures/vim-markers.py` → `tests/fixtures/vim/markers.json`)
+  and generated the alternations; `TestVimMarkers` checks them all.
+  `vim-family` group (markers on the last row only, any unknown marker is
+  insert, select is typing), `vim`/`nvim` specs (command locally, layout
+  over SSH; `Identify` now ranks a command match first at equal
+  priority); right-relative clause columns for the ruler; bottom-relative
+  identity so a sticky vim pane is captured as 12 rows. 434 real
+  fixtures from three distros plus de/ru/ja. SSH tests for vim and nvim;
+  hook latency measured (39 ms p50 local, 62 ms over SSH to enter insert)
+  after making hook calls leading-edge (they had waited the whole 30 ms
+  debounce). Distro vims never set t_SI/t_EI. Locale audit no longer
+  reads regex escapes as words. Released v0.6.0.

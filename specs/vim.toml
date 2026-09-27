@@ -1,0 +1,25 @@
+# vim — hooks-only (brief §6.2, D30): everything is in groups/vim-family.
+# Locally the pane's command tells vim from nvim. Over SSH they read the
+# same screen, and only the default layout breaks the tie: vim's ruler is
+# on the last row, neovim's in the status line above it (so a remote vim
+# with laststatus=2 is reported as "nvim"; the modes are the same).
+name     = "vim"
+priority = 60
+extends  = "vim-family"
+# The markers are short ("-- 더 --"), but they are only read on the last
+# row, at column 0, of a pane already identified as vim, where vim writes
+# nothing but its own mode line and messages.
+lint_ignore = ["under-specified"]
+
+[match]
+command = ["vim", "vi", "view", "vimdiff", "rvim", "rview", "vim.*", "gvim"]
+
+  # Tie-break against nvim.toml over SSH (see above): no ruler in a
+  # status line above the command line (row -2, or -3 with cmdheight=2),
+  # so vim is the default when nothing tells.
+  [[match.clause]]
+  regex  = '[0-9]+,[0-9]+(-[0-9]+)? +'
+  rows   = [-3, -2]
+  col    = -18
+  negate = true
+  weight = 1

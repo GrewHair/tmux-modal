@@ -1,0 +1,51 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 0,3
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: vim
+# expect_mode: normal
+# note: KNOWN GAP: really insert; with showmode off nothing on screen says so
+# ---
+alpha
+alpine
+alps
+alps
+beta
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+:set noshowmode                                                                                       4,1           All

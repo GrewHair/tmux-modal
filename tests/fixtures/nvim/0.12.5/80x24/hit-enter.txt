@@ -1,0 +1,37 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 39,23
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nvim
+# expect_app_mono: vim
+# expect_app_remote: vim
+# expect_mode: normal
+# note: hit-enter prompt
+# ---
+alpha
+<Select>
+alpinealpine
+alps
+beta
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+
+:ls
+  1 %a   "notes.txt"                    line 3
+Press ENTER or type command to continue

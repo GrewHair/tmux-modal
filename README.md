@@ -16,9 +16,10 @@ Two independent things can subscribe to that:
    can react — e.g. switch an outer keyboard layer off while vim is in
    normal mode and on while you type.
 
-> **Status: pre-release (0.5).** Milestones done: detector, spec engine,
+> **Status: pre-release (0.6).** Milestones done: detector, spec engine,
 > `validate`, status indicator, transition hook, SSH and nested-tmux
-> handling (tested against a real sshd), and [bundled specs](#bundled-specs)
+> handling (tested against a real sshd), [vim and neovim](#vim-and-neovim)
+> for the hook, and [bundled specs](#bundled-specs)
 > for htop, btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc,
 > fzf and common REPLs, any of which [can be given keys](#add-keys-to-any-app).
 > Still to come: the hooks-only `vim`/`nvim` specs.
@@ -124,8 +125,10 @@ Unfocused panes' changes are reported too, with `MODAL_PANE_ACTIVE=0`,
 when `@modal_scope` makes them observed.
 
 Guarantees:
-- Rapid transitions are **debounced** (`@modal_hook_debounce`, 30 ms): one
-  call with the final state, reported from the state the subscriber last saw.
+- A transition runs the hook **at once**; further transitions within
+  `@modal_hook_debounce` (30 ms) of that call are **coalesced** into one
+  call with the final state at the end of the window, reported from the
+  state the subscriber last saw.
 - If the previous call for the same session/pane is still running, it is
   **killed** (with its whole process group) and the newer one runs: a stale
   transition is worse than a missed one.
@@ -147,10 +150,18 @@ of milliseconds natively and hundreds across a WSL→Windows boundary. For a
 keyboard layer, keep the AutoHotkey/kanata side running and feed it through
 `fifo.sh` (or your own equivalent), not by launching it per transition.
 
+Measured (keypress → hook → a listener reading the FIFO, vim, WSL2, tmux
+3.4): entering insert takes **39 ms** at the median (55 ms p90) locally and
+62 ms (70 ms) over SSH with the default profile; 31 ms and 40 ms with
+`@modal_profile snappy`. Leaving insert adds vim's own Escape timeout
+(`ttimeoutlen`, 100 ms in `defaults.vim`; `set ttimeoutlen=10` in your
+vimrc makes Escape itself fast).
+
 ## Bundled specs
 
 | App | What the spec does | Modes it reports | Verified with |
 |---|---|---|---|
+| `vim`, `nvim` | detects (**hook only**, never remaps) | normal, visual; insert, replace, select, command line, terminal (nvim) — [details and limits](#vim-and-neovim) | vim 8.2, 9.0, 9.1; nvim 0.6.1, 0.7.2, 0.9.5, 0.12.5; every language they ship |
 | `htop` | **remaps keys** | normal; insert in `Search:` / `Filter:` | 2.2.0, 3.0.5, 3.2.2, 3.3.0 |
 | `btop` | **remaps keys** | normal; insert while typing the process filter, and on the options screen (it has text fields) | 1.2.3, 1.2.13, 1.3.0 |
 | `less`, `man` | detects | normal; insert in any text prompt (`/` `?` search, `&` filter, `!` shell, `-` option, `:e` …) | less 590; man-db 2.10–2.12 |
@@ -183,6 +194,46 @@ lack vim keys get a key map. Every one of them is still ready to remap:
 **Escape does not close every prompt.** less and tig use `Esc` to start a
 key sequence inside the prompt; close them with `Enter` or `C-c`. The mode
 follows whatever the app does.
+
+### vim and neovim
+
+This is the case the transition hook exists for: an outer keyboard layer
+that helps while you type and gets in the way in normal mode. The spec
+never touches keys; it reports the mode.
+
+It reads what stock vim shows: the `-- INSERT --` / `-- VISUAL --` /
+`-- REPLACE --` marker on the last row (`showmode`, on by default), the
+ruler (`12,5   All`), the `~` column past the end of the buffer, and the
+`:` command line. Where tmux reports the cursor shape (3.6 and later),
+neovim's bar cursor in insert mode is used as a second opinion.
+
+- **Every language vim and neovim ship** is covered (the markers are
+  translated: `-- EINFÜGEN --`, `-- РЕЖИМ ВСТАВКИ --`, `-- 挿入 --`); the
+  spec is checked against all of their message catalogues.
+- **Over SSH** it works the same. vim and neovim look alike there; the
+  name is guessed from the default layout (neovim's ruler sits in a status
+  line), so a remote vim with split windows is reported as `nvim` and a
+  remote neovim prompt as `vim`. The modes are unaffected.
+- **Modes and buckets:** normal and visual are commanding; insert,
+  replace, select (a letter replaces the selection), command line and
+  neovim's terminal mode are typing. The hit-enter and `-- More --`
+  prompts and `-- (insert) --` (one command from insert mode) are normal.
+
+Known limits — the screen alone cannot tell:
+- **`set noshowmode` with the ruler on** (e.g. a custom statusline that
+  keeps the ruler): insert looks exactly like normal and is reported as
+  **normal**. With neovim on tmux 3.6+, the bar cursor corrects that.
+- **A statusline plugin that replaces the ruler** (lualine, airline, and
+  usually `noshowmode`): only the tilde column is left, which is not enough
+  to be sure it is vim, so the mode is **unknown** (`MODAL_TYPING=1`) except
+  while a marker shows.
+- **neovim with `cmdheight=0`** has no row for the marker: always normal.
+- **vim's `:terminal`** shows no marker: reported as normal (neovim's
+  `-- TERMINAL --` is recognised).
+- **Operator-pending** (`d` waiting for a motion) and `r` read as normal;
+  both are commanding, which is the right bucket.
+- **Over SSH, before vim is first recognised**, its command line (only
+  tildes on screen) reads as unknown; once vim has been seen, it is known.
 
 ## Key remapping
 
@@ -425,7 +476,8 @@ j = "Down"
 k = "Up"
 ```
 
-Clause keys: `regex` with `rows`/`row`, `col`/`cols`, `anchor`
+Clause keys: `regex` with `rows`/`row`, `col`/`cols` (negative counts
+from the right edge, as vim's ruler at `col = -18`), `anchor`
 (`start`/`end`), `min_occurrences`/`max_occurrences`/`contiguous`; colour
 (`row`, `col`, `fg`, `bg`, `attrs`, `tolerance`; names, palette indices or
 `#RRGGBB`, compared in RGB); cursor (`cursor_rows`, `cursor_cols`,

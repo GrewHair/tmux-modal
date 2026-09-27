@@ -255,8 +255,10 @@ func TestGeometry(t *testing.T) {
 		want   bool
 	}{
 		{"regex='Filter:'\nrows=[-1,-1]", true},
-		{"regex='Filter:'\nrows=[-1,-1]\ncol=0", false},             // match starts at col 23
-		{"regex='Filter:'\nrows=[-1,-1]\ncols=[20,30]", true},       // within range
+		{"regex='Filter:'\nrows=[-1,-1]\ncol=0", false},       // match starts at col 23
+		{"regex='Filter:'\nrows=[-1,-1]\ncols=[20,30]", true}, // within range
+		{"regex='Filter:'\nrows=[-1,-1]\ncol=-17", true},      // 40 wide: col 23 from the right
+		{"regex='Filter:'\nrows=[-1,-1]\ncols=[-20,-18]", false},
 		{"regex='Filter: abc'\nrows=[-1,-1]\nanchor=\"end\"", true}, // ends at last non-blank
 		{"regex='Filter:'\nrows=[-1,-1]\nanchor=\"end\"", false},
 		{"regex='Filter:'\nrows=[1,2]\nanchor=\"start\"", false}, // row 2 has it mid-line

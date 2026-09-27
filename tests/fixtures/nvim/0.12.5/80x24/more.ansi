@@ -1,0 +1,24 @@
+:set all
+[1m--- Options ---[0m
+  aleph=224           findfunc=           mousehide           splitkeep=cursor
+noallowrevins         fixendofline      nomousemoveevent    nosplitright
+  ambiwidth=single    foldclose=          mouseshape=       nostartofline
+noarabic              foldcolumn=0        mousetime=500       statuscolumn=
+  arabicshape         foldenable          nrformats=bin,hex   suffixesadd=
+noautochdir           foldexpr=0        nonumber              swapfile
+noautocomplete        foldignore=#        numberwidth=4       switchbuf=uselast
+  autoindent          foldlevel=0         omnifunc=           synmaxcol=3000
+  autoread            foldlevelstart=-1 noopendevice          syntax=text
+noautowrite           foldmethod=manual   operatorfunc=       tabclose=
+noautowriteall        foldminlines=1    nopaste               tabline=
+  background=dark     foldnestmax=20      pastetoggle=        tabpagemax=50
+nobackup              formatexpr=         patchexpr=          tabstop=8
+  backupcopy=auto     formatprg=          patchmode=          tagbsearch
+  backupext=~         fsync               path=.,,            tagcase=followic
+  backupskip=/tmp/* nogdefault          nopreserveindent      tagfunc=
+  belloff=all         guifontwide=        previewheight=12    taglength=0
+nobinary              guioptions=       nopreviewwindow       tagrelative
+nobomb                guitablabel=        prompt              tags=./tags;,tags
+nobreakindent         guitabtooltip=      pumblend=0          tagstack
+  breakindentopt=     helpheight=20       pumborder=        notermbidi
+[96m-- More --[39m

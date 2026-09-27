@@ -52,8 +52,9 @@ type Clause struct {
 
 	// regex
 	Regex      *regexp.Regexp
-	RowA, RowB int // inclusive, negative counts from the bottom
-	ColA, ColB int // allowed start columns; ColA < 0 means any
+	RowA, RowB int  // inclusive, negative counts from the bottom
+	ColA, ColB int  // allowed start columns (when HasCols); negative counts from the right edge
+	HasCols    bool // false: any column
 	Anchor     Anchor
 	Counting   bool
 	MinOcc     int
@@ -201,15 +202,15 @@ func compileClause(m map[string]any, kind ClauseKind, label string, defWeight We
 		if err := readRows(m, &c.RowA, &c.RowB); err != nil {
 			return nil, fmt.Errorf("%s: %w", label, err)
 		}
-		if err := readCols(m, &c.ColA, &c.ColB); err != nil {
+		if err := readCols(m, &c.ColA, &c.ColB, &c.HasCols); err != nil {
 			return nil, fmt.Errorf("%s: %w", label, err)
 		}
 		switch a, _ := m["anchor"].(string); a {
 		case "", "anywhere":
 		case "start":
 			c.Anchor = AnchorStart
-			if c.ColA < 0 {
-				c.ColA, c.ColB = 0, 0
+			if !c.HasCols {
+				c.ColA, c.ColB, c.HasCols = 0, 0, true
 			}
 		case "end":
 			c.Anchor = AnchorEnd
@@ -354,24 +355,27 @@ func readRows(m map[string]any, a, b *int) error {
 	return nil
 }
 
-func readCols(m map[string]any, a, b *int) error {
+// readCols reads col or cols. Negative columns count from the right edge
+// (-1 is the last column), for things drawn at a fixed distance from it,
+// like vim's ruler; both ends of a range must count from the same edge.
+func readCols(m map[string]any, a, b *int, set *bool) error {
 	if v, ok := m["cols"]; ok {
 		r, err := toRange(v)
 		if err != nil {
 			return fmt.Errorf("cols: %w", err)
 		}
-		if r[0] < 0 || r[1] < r[0] {
-			return fmt.Errorf("cols must be a non-negative ascending range")
+		if (r[0] < 0) != (r[1] < 0) || r[1] < r[0] {
+			return fmt.Errorf("cols must be an ascending range counted from one edge")
 		}
-		*a, *b = r[0], r[1]
+		*a, *b, *set = r[0], r[1], true
 		return nil
 	}
 	if v, ok := m["col"]; ok {
 		n, ok := toInt(v)
-		if !ok || n < 0 {
-			return fmt.Errorf("col must be a non-negative integer")
+		if !ok {
+			return fmt.Errorf("col must be an integer")
 		}
-		*a, *b = n, n
+		*a, *b, *set = n, n, true
 	}
 	return nil
 }
@@ -398,7 +402,7 @@ func (c *Clause) Describe() string {
 	switch c.Kind {
 	case KindRegex:
 		fmt.Fprintf(&b, "regex %q rows=[%d,%d]", c.Regex.String(), c.RowA, c.RowB)
-		if c.ColA >= 0 {
+		if c.HasCols {
 			if c.ColA == c.ColB {
 				fmt.Fprintf(&b, " col=%d", c.ColA)
 			} else {

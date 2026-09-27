@@ -83,9 +83,13 @@ func (c *Clause) evalRegex(s *screen.Screen) ClauseResult {
 			unavailable = true
 			continue
 		}
+		ca, cb := c.ColA, c.ColB
+		if ca < 0 {
+			ca, cb = ca+s.Width, cb+s.Width
+		}
 		for _, loc := range c.Regex.FindAllStringIndex(line, -1) {
 			col := screen.ColumnOf(line, loc[0])
-			if c.ColA >= 0 && (col < c.ColA || col > c.ColB) {
+			if c.HasCols && (col < ca || col > cb) {
 				continue
 			}
 			if c.Anchor == AnchorEnd && loc[1] != len(line) {

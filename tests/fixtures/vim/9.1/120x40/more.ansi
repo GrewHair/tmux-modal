@@ -1,0 +1,40 @@
+:set all
+[35m--- Options ---[39m
+  aleph=224         nocscopeverbose     noignorecase          nrformats=bin,hex   showcmd             timeoutlen=1000
+noallowrevins       nocursorbind          imactivatefunc=   nonumber              showcmdloc=last   notitle
+  ambiwidth=single  nocursorcolumn      noimcmdline           numberwidth=4     noshowfulltag         titlelen=85
+noarabic            nocursorline        noimdisable           omnifunc=         noshowmatch           titlestring=
+  arabicshape         debug=              iminsert=0          operatorfunc=       showmode            ttimeout
+noautochdir         nodelcombine          imsearch=-1       nopaste               showtabline=1       ttimeoutlen=100
+noautoindent          dictionary=         imstatusfunc=       pastetoggle=        sidescroll=0        ttybuiltin
+noautoread          nodiff                includeexpr=        patchexpr=          sidescrolloff=0     ttyfast
+noautoshelldir        diffexpr=           incsearch           patchmode=          signcolumn=auto     ttymouse=sgr
+noautowrite         nodigraph             indentexpr=       nopreserveindent    nosmartcase           ttyscroll=999
+noautowriteall        display=truncate  noinfercase           previewheight=12  nosmartindent         undodir=.
+  background=light    eadirection=both  noinsertmode          previewpopup=     nosmarttab          noundofile
+nobackup            noedcompatible        isprint=@,161-255 nopreviewwindow     nosmoothscroll        undolevels=1000
+  backupcopy=auto     emoji               joinspaces          printdevice=        softtabstop=0       undoreload=10000
+  backupext=~         encoding=utf-8      jumpoptions=        printencoding=    nospell               updatecount=200
+  backupskip=/tmp/* noendoffile           key=                printfont=courier   spellfile=          updatetime=4000
+  balloondelay=600    endofline           keymap=             printmbcharset=     spelllang=en        varsofttabstop=
+noballoonevalterm     equalalways         keymodel=           printmbfont=        spelloptions=       vartabstop=
+  balloonexpr=        equalprg=           keywordprg=man      printoptions=       spellsuggest=best   verbose=0
+  belloff=          noerrorbells          langmap=            prompt            nosplitbelow          verbosefile=
+nobinary              esckeys             langmenu=           pumheight=0         splitkeep=cursor    viminfofile=
+nobomb                eventignore=        langnoremap         pumwidth=15       nosplitright          virtualedit=
+nobreakindent       noexpandtab         nolangremap           pythonthreehome=    startofline       novisualbell
+  breakindentopt=   noexrc                laststatus=1        pyxversion=3        statusline=         warn
+  bufhidden=          fileformat=unix   nolazyredraw          quickfixtextfunc=   suffixesadd=      noweirdinvert
+  buflisted         nofileignorecase    nolinebreak           quoteescape=\       swapfile            whichwrap=b,s
+  buftype=            filetype=text       lines=40          noreadonly            swapsync=fsync      wildchar=<Tab>
+nocdhome              fixendofline      nolisp                redrawtime=2000     switchbuf=          wildcharm=0
+  cdpath=,,           foldclose=          lispoptions=        regexpengine=0      synmaxcol=3000      wildignore=
+  cedit=[34m^F[39m            foldcolumn=0      nolist              norelativenumber      syntax=text       nowildignorecase
+  charconvert=        foldenable          listchars=eol:$     remap               tabline=            wildmenu
+nocindent             foldexpr=0          loadplugins         report=2            tabpagemax=10       wildmode=full
+  cinoptions=         foldignore=#        magic             norevins              tabstop=8           wildoptions=
+  cmdheight=1         foldlevel=0         makeef=           norightleft           tagbsearch          wincolor=
+  cmdwinheight=7      foldlevelstart=-1   makeencoding=       ruler               tagcase=followic    window=39
+  colorcolumn=        foldmethod=manual   makeprg=make        rulerformat=        tagfunc=          nowinfixheight
+  columns=120         foldminlines=1      matchtime=5         scroll=19           taglength=0       nowinfixwidth
+[32m-- More --[39m

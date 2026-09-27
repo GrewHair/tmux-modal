@@ -1,0 +1,51 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 4,2
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nvim
+# expect_mode: select
+# note: -- SELECT --: a letter replaces the selection
+# ---
+alpha
+<Select>
+alpinealpine
+alps
+beta
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+notes.txt [+]                                                                                         3,5            All
+-- SELECT --                                                                                                 1

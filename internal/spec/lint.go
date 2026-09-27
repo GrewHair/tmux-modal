@@ -2,9 +2,12 @@ package spec
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"unicode"
 )
+
+var regexEscape = regexp.MustCompile(`\\[A-Za-z]`)
 
 // minAnchoredChars is the specificity floor below which a rule is flagged
 // as under-specified (§5.2): a bare `Filter:` matches any pane that happens
@@ -26,7 +29,7 @@ func (sp *Spec) lint() {
 					sp.warnf("%s: %s ends in whitespace, but lines are matched with trailing whitespace stripped; "+
 						"an empty prompt can never match (use '( |$)')", label, c.Label)
 				}
-				geometric := c.RowA != 0 || c.RowB != -1 || c.ColA >= 0 || c.Anchor != AnchorAnywhere
+				geometric := c.RowA != 0 || c.RowB != -1 || c.HasCols || c.Anchor != AnchorAnywhere
 				if !geometric {
 					sp.warnf("%s: %s has no geometry (rows/col/anchor); unanchored substrings false-positive on any pane showing the text",
 						label, c.Label)
@@ -163,7 +166,8 @@ func (sp *Spec) LocaleAudit() []string {
 				continue
 			}
 			src := c.Regex.String()
-			if strings.IndexFunc(src, unicode.IsLetter) < 0 {
+			// Escapes (\S, \b, \d) are syntax, not words.
+			if strings.IndexFunc(regexEscape.ReplaceAllString(src, ""), unicode.IsLetter) < 0 {
 				continue
 			}
 			if strings.IndexFunc(src, func(r rune) bool { return r > unicode.MaxASCII }) < 0 {

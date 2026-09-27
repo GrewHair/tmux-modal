@@ -39,6 +39,8 @@ func bundledSet(t *testing.T) *spec.Set {
 // the evidence really differs: e.g. mono where a spec needs colour to be
 // sure (it must then fail towards a typing mode or unknown, never
 // commanding), or remote where only the command identifies the app.
+// expect_app_<variant> likewise, where only the command tells two apps
+// apart (a remote vim with split windows reads as nvim).
 func TestFixtures(t *testing.T) {
 	set := bundledSet(t)
 	n := 0
@@ -64,12 +66,15 @@ func TestFixtures(t *testing.T) {
 				mode = m
 			}
 			wantApp := app
+			if a := f.Meta["expect_app_"+variant]; a != "" {
+				wantApp = a
+			}
 			if mode == spec.ModeNone || (mode == spec.ModeUnknown && sticky == "" && variant != "local") {
 				wantApp = ""
 			}
 			if res.Mode != mode || (wantApp != "" && res.App != wantApp) {
 				t.Errorf("%s [%s]: got %s/%s, want %s/%s (%s)",
-					rel, variant, orDash(res.App), res.Mode, orDash(app), mode, res.Reason)
+					rel, variant, orDash(res.App), res.Mode, orDash(wantApp), mode, res.Reason)
 			}
 		}
 		t.Run(rel, func(t *testing.T) {
@@ -138,7 +143,10 @@ func TestBundledSpecsLintClean(t *testing.T) {
 
 // TestBundledSpecsRemapReady holds every bundled spec to the remapping lint
 // as if a user overlay had given it keys (D29): any app may be remapped
-// without first tightening its spec. Always-insert specs never remap.
+// without first tightening its spec. Always-insert specs never remap, and
+// neither does vim-family (brief §6.2, D30): its identity is weighted on
+// purpose, with no clause that is always there, so it can never pass;
+// an overlay giving vim keys gets the lint warning in the daemon log.
 func TestBundledSpecsRemapReady(t *testing.T) {
 	entries, err := fs.ReadDir(tmuxmodal.Specs, "specs")
 	if err != nil {
@@ -158,7 +166,7 @@ func TestBundledSpecsRemapReady(t *testing.T) {
 		t.Errorf("load: %s", w)
 	}
 	for _, sp := range set.Order {
-		if sp.Always != "" {
+		if sp.Always != "" || contains(sp.Chain, "vim-family") {
 			continue
 		}
 		if !sp.HasKeys() {
@@ -168,4 +176,13 @@ func TestBundledSpecsRemapReady(t *testing.T) {
 			t.Errorf("%s: %s", sp.Name, w)
 		}
 	}
+}
+
+func contains(xs []string, x string) bool {
+	for _, e := range xs {
+		if e == x {
+			return true
+		}
+	}
+	return false
 }

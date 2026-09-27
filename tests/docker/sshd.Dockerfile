@@ -7,7 +7,7 @@ FROM ${BASE}
 ARG LAZYGIT_VERSION=0.65.1
 ENV DEBIAN_FRONTEND=noninteractive
 COPY apps-install.sh /usr/local/sbin/apps-install.sh
-RUN APPS="openssh-server htop vim-nox less man-db tmux locales tig btop ncdu ranger lf nnn mc fzf git ca-certificates curl" \
+RUN APPS="openssh-server htop vim-nox neovim less man-db tmux locales tig btop ncdu ranger lf nnn mc fzf git ca-certificates curl" \
       LAZYGIT_VERSION=${LAZYGIT_VERSION} sh /usr/local/sbin/apps-install.sh \
     && mkdir -p /run/sshd \
     && useradd -m -s /bin/bash demo \

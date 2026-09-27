@@ -1,0 +1,40 @@
+:set all
+[38;5;225m--- Options ---[39m
+  aleph=224           cscopeverbose       hlsearch            nrformats=bin,hex   shellxquote=        timeout
+noarabic            nocursorbind        noicon              nonumber              shellxescape=       timeoutlen=1000
+  arabicshape       nocursorcolumn        iconstring=         numberwidth=4     noshiftround        notitle
+noallowrevins       nocursorline        noignorecase          omnifunc=           shiftwidth=8        titlelen=85
+  ambiwidth=single    debug=              iminsert=0          operatorfunc=       showbreak=          titleold=
+noautochdir         nodelcombine          imsearch=-1       nopaste               showcmd             titlestring=
+  autoindent          dictionary=         includeexpr=        pastetoggle=      noshowfulltag         ttimeout
+  autoread          nodiff                incsearch           patchexpr=        noshowmatch           ttimeoutlen=50
+noautowrite           diffexpr=           indentexpr=         patchmode=          showmode            ttyfast
+noautowriteall      nodigraph           noinfercase         nopreserveindent      showtabline=1     noundofile
+  background=dark     eadirection=both  noinsertmode          previewheight=12    sidescroll=1        undolevels=1000
+nobackup            noedcompatible        isprint=@,161-255 nopreviewwindow       sidescrolloff=0     undoreload=10000
+  backupcopy=auto     emoji             nojoinspaces          printdevice=        signcolumn=auto     updatecount=200
+  backupext=~         encoding=utf-8      jumpoptions=        printencoding=    nosmartcase           updatetime=4000
+  backupskip=/tmp/*   endofline           keymap=             printfont=courier nosmartindent         varsofttabstop=
+  belloff=all         equalalways         keymodel=           printmbcharset=     smarttab            vartabstop=
+nobinary              equalprg=           keywordprg=:Man     printmbfont=        softtabstop=0       verbose=0
+nobomb              noerrorbells          langmap=            printoptions=     nospell               verbosefile=
+nobreakindent         eventignore=        langmenu=           prompt              spellfile=          virtualedit=
+  breakindentopt=   noexpandtab           langnoremap         pumblend=0          spelllang=en      novisualbell
+  bufhidden=        noexrc              nolangremap           pumheight=0         spellsuggest=best   warn
+  buflisted           fileformat=unix     laststatus=2        pumwidth=15         spelloptions=       whichwrap=b,s
+  buftype=          nofileignorecase    nolazyredraw          pyxversion=3      nosplitbelow          wildchar=<Tab>
+nocdhome              filetype=text     nolinebreak           quickfixtextfunc= nosplitright          wildcharm=0
+  cdpath=,,           fillchars=          lines=40            quoteescape=\     nostartofline         wildignore=
+  cedit=[38;5;81m^F[39m            fixendofline        linespace=0       noreadonly            statusline=       nowildignorecase
+  channel=0           foldclose=        nolisp                redrawdebug=        suffixesadd=        wildmenu
+  charconvert=        foldcolumn=0      nolist                redrawtime=2000     swapfile            wildmode=full
+nocindent             foldenable          loadplugins         regexpengine=0      switchbuf=uselast   winaltkeys=menu
+  cinoptions=         foldexpr=0          magic             norelativenumber      synmaxcol=3000      winblend=0
+  clipboard=          foldignore=#        makeef=             remap               syntax=text         winhighlight=
+  cmdheight=1         foldlevel=0         makeencoding=       report=2            tagfunc=            window=39
+  cmdwinheight=7      foldlevelstart=-1   makeprg=make      norevins              tabline=            winheight=1
+  colorcolumn=        foldmethod=manual   matchtime=5       norightleft           tabpagemax=50     nowinfixheight
+  columns=120         foldminlines=1      maxcombine=6        ruler               tabstop=8         nowinfixwidth
+  commentstring=      foldnestmax=20      maxfuncdepth=100    rulerformat=        tagbsearch          winminheight=1
+nocompatible          formatexpr=         maxmapdepth=1000    scroll=19           tagcase=followic    winminwidth=1
+[38;5;121m-- More --[39m

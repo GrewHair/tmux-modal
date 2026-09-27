@@ -18,7 +18,7 @@ tag=${1:-ubuntu-24.04}
 shift || true
 IMG=tmux-modal-fx:$tag
 apps=("$@")
-[ ${#apps[@]} -gt 0 ] || apps=(less man tig ncdu btop k9s lazygit ranger lf nnn mc fzf)
+[ ${#apps[@]} -gt 0 ] || apps=(less man tig ncdu btop k9s lazygit ranger lf nnn mc fzf vim nvim)
 trap stop EXIT
 
 # ncurses waits ESCDELAY (1 s) after Escape to tell it from a sequence.
@@ -404,6 +404,125 @@ cap_fzf() {
 		snap "$d/typed.txt" fzf insert "typing a query"
 		stop
 	done
+}
+
+# vim and neovim (hooks-only, D30). EDITOR_BIN picks the binary (nvim for
+# the distro's, nvim-upstream for the release build in ubuntu-24.04).
+NOTES='printf "alpha\nalpine\nalps\nbeta\n" >notes.txt'
+cap_editor() {
+	local name=$1 bin=$2 ver=$3 out
+	out=$ROOT/tests/fixtures/$name/$ver
+	# vim's command line replaces the ruler: only tildes are left, so a
+	# pane not yet identified can't be. nvim keeps its status line.
+	local cmdline=()
+	[ "$name" = vim ] && cmdline=("${ANCHORLESS[@]}")
+	# vim with two windows has nvim's layout (the ruler in a status line
+	# on row -2); over SSH only that tells them apart.
+	local layout=()
+	[ "$name" = vim ] && layout=(expect_app_remote=nvim expect_app_mono=nvim)
+	# nvim's prompts scroll its status line away: vim's layout.
+	local prompt=()
+	[ "$name" = nvim ] && prompt=(expect_app_remote=vim expect_app_mono=vim)
+	for size in 120x40 80x24; do
+		local d=$out/$size
+		app "${size%x*}" "${size#*x}" /home/demo bash -c "$NOTES; $bin notes.txt"
+		snap "$d/open.txt" "$name" normal "just opened: file message, ruler, tildes"
+		keys j; settle
+		snap "$d/normal.txt" "$name" normal "after moving"
+		keys i; settle
+		snap "$d/insert.txt" "$name" insert "-- INSERT --"
+		keys End Enter; keys -l al; keys C-n; settle
+		snap "$d/insert-completion.txt" "$name" insert "completion popup, the mode line shows the completion submode"
+		keys Escape; settle
+		keys v; settle
+		snap "$d/visual.txt" "$name" visual "-- VISUAL --"
+		keys Escape V; settle
+		snap "$d/visual-line.txt" "$name" visual "-- VISUAL LINE --"
+		keys Escape C-v; settle
+		snap "$d/visual-block.txt" "$name" visual "-- VISUAL BLOCK --"
+		keys Escape; settle
+		keys R; settle
+		snap "$d/replace.txt" "$name" replace "-- REPLACE --"
+		keys Escape; settle
+		keys g h; settle
+		snap "$d/select.txt" "$name" select "-- SELECT --: a letter replaces the selection"
+		keys Escape; settle
+		keys i C-o; settle
+		snap "$d/insert-pending.txt" "$name" normal "-- (insert) --: one normal command from insert"
+		keys Escape Escape; settle
+		keys :; settle
+		snap "$d/command-empty.txt" "$name" command "command line just opened" "${cmdline[@]}"
+		keys -l 'set nu'; settle
+		snap "$d/command-typed.txt" "$name" command "typing a command" "${cmdline[@]}"
+		keys Escape; settle
+		keys /; keys -l alp; settle
+		snap "$d/search-typed.txt" "$name" command "typing a search" "${cmdline[@]}"
+		keys Enter; settle
+		keys -l ':w'; keys Enter; settle
+		snap "$d/written.txt" "$name" normal "written message"
+		keys -l '/zzzz'; keys Enter; settle
+		snap "$d/not-found.txt" "$name" normal "E486: Pattern not found"
+		keys q q; settle
+		snap "$d/recording.txt" "$name" normal "recording @q"
+		keys q; settle
+		keys -l ':ls'; keys Enter; settle
+		snap "$d/hit-enter.txt" "$name" normal "hit-enter prompt" "${prompt[@]}"
+		keys Enter; settle
+		keys -l ':set all'; keys Enter; settle
+		snap "$d/more.txt" "$name" normal "-- More -- prompt" "${prompt[@]}"
+		keys q; settle
+		keys -l ':set cmdheight=2'; keys Enter; settle
+		keys i; settle
+		snap "$d/cmdheight2-insert.txt" "$name" insert "cmdheight=2: the marker stays on the last row"
+		keys Escape :; settle
+		snap "$d/cmdheight2-command.txt" "$name" command "cmdheight=2: the command line opens on row -2" "${cmdline[@]}"
+		keys Escape; keys -l ':set cmdheight=1'; keys Enter; settle
+		keys -l ':set noshowmode'; keys Enter; keys i; settle
+		snap "$d/noshowmode-insert.txt" "$name" normal \
+			"KNOWN GAP: really insert; with showmode off nothing on screen says so"
+		keys Escape; keys -l ':set showmode'; keys Enter; settle
+		keys -l ':split'; keys Enter; settle
+		snap "$d/split.txt" "$name" normal "two windows: the ruler is in the status lines" "${layout[@]}"
+		keys i; settle
+		snap "$d/split-insert.txt" "$name" insert "two windows, insert" "${layout[@]}"
+		keys Escape; keys -l ':only'; keys Enter; settle
+		keys -l ':e /home/demo/sample.txt'; keys Enter; settle
+		keys 5 0 G; settle
+		snap "$d/full-buffer.txt" "$name" normal "the buffer fills the window: no tildes, the ruler only"
+		keys -l ':term'; keys Enter; settle 1
+		if [ "$name" = nvim ]; then
+			keys i; settle
+			snap "$d/terminal.txt" "$name" terminal "-- TERMINAL --"
+		else
+			snap "$d/terminal.txt" "$name" normal \
+				"KNOWN GAP: vim's terminal window takes typing but shows no marker" "${layout[@]}"
+		fi
+		stop
+	done
+	# Translated markers (the full list is checked by TestVimMarkers).
+	for lang in de_DE ru_RU ja_JP; do
+		local d=$out/80x24/$lang
+		app 80 24 /home/demo bash -c "$NOTES; LANG=$lang.UTF-8 $bin notes.txt"
+		keys j; settle
+		snap "$d/normal.txt" "$name" normal "LANG=$lang.UTF-8"
+		keys i; settle
+		snap "$d/insert.txt" "$name" insert "LANG=$lang.UTF-8"
+		keys Escape V; settle
+		snap "$d/visual-line.txt" "$name" visual "LANG=$lang.UTF-8"
+		keys Escape; keys -l ':ls'; keys Enter; settle
+		snap "$d/hit-enter.txt" "$name" normal "LANG=$lang.UTF-8" "${prompt[@]}"
+		stop
+	done
+}
+
+cap_vim() { cap_editor vim vim "$(version 'vim --version' 5)"; }
+cap_nvim() {
+	cap_editor nvim nvim "$(version 'nvim --version' 2 | sed 's/^v//')"
+	local up
+	up=$(version 'nvim-upstream --version 2>/dev/null' 2 | sed 's/^v//')
+	if [ -n "$up" ]; then
+		cap_editor nvim nvim-upstream "$up"
+	fi
 }
 
 for a in "${apps[@]}"; do

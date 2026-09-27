@@ -25,8 +25,21 @@ so the SSH tier fails instead of skipping. Keep it green before every push.
   screen with no anchors means app "" remotely but the app locally/sticky.
   `expect_mode_<variant>` overrides one variant where the evidence really
   differs (a state with no identity anchor is `unknown` remotely and in
-  mono; less's `/abs/path` prompt needs colour). The same file checks that
-  every bundled spec is lint-clean and that no spec claims a shell.
+  mono; less's `/abs/path` prompt needs colour); `expect_app_<variant>`
+  likewise where only the command tells two apps apart (vim/nvim over
+  SSH). The same file checks that every bundled spec is lint-clean, that
+  no spec claims a shell, and that every non-always spec except
+  vim-family is remap-ready (`TestBundledSpecsRemapReady`, D29).
+- vim-family (`internal/classify/vim_test.go`): `TestVimMarkers` builds
+  screens for every translated marker, ruler word and prompt in
+  `tests/fixtures/vim/markers.json` (all of vim's and the distros'
+  neovim's catalogues, extracted by `scripts/fixtures/vim-markers.py`;
+  `--regex` regenerates the alternations in `vim-family.toml` and fails on
+  a cross-mode collision); `TestVimPartialCaptures` (mode line not yet
+  drawn → unknown; bottom band only → still right);
+  `TestVimCursorShapeVeto`. Real captures: `apps.sh <tag> vim nvim` →
+  `tests/fixtures/{vim,nvim}/<version>/<size>/` plus `de_DE`, `ru_RU`,
+  `ja_JP` subdirectories (the images generate those locales).
 - Capture: `tmux-modal capture -o file.txt -expect-app A -expect-mode M
   [-meta key=value] %N`, or the scripts: `scripts/fixtures/htop.sh LABEL
   docker run --rm -it IMAGE htop`, `scripts/fixtures/apps.sh [image-tag]
@@ -38,8 +51,9 @@ so the SSH tier fails instead of skipping. Keep it green before every push.
   scrubbed from the fixtures by `sanitize_btop`.
 - **Always capture inside containers** (`tests/docker/apps.Dockerfile` +
   `apps-install.sh` + `apps-home.sh`, images `tmux-modal-fx:<base>`: ubuntu
-  20.04/22.04/24.04, debian bookworm; every bundled app, lazygit and k9s
-  from their releases; user `demo` with `~/repo` (git) and `~/tree`, and
+  20.04/22.04/24.04, debian bookworm; every bundled app, lazygit, k9s and
+  a current neovim (`nvim-upstream`) from their releases, locales de_DE,
+  ru_RU, ja_JP, fr_FR; user `demo` with `~/repo` (git) and `~/tree`, and
   `~/sample.txt`). Build: `docker build --build-arg BASE=ubuntu:22.04 -t
   tmux-modal-fx:ubuntu-22.04 -f tests/docker/apps.Dockerfile tests/docker`.
   Never commit host process lists, paths, user or host names (or hardware:
@@ -79,7 +93,11 @@ latency; daemon client label. Apps over SSH (`apps_test.go`, the sshd
 image installs them): less (identified at `(END)`, then search/filter),
 man, tig (`:` command, `/` search, C-c), btop (remap; `jk` typed into the
 filter stay letters; options screen), lazygit (filter, menu, new-branch
-prompt), ranger/lf/nnn prompts, ncdu, mc, fzf. Remote: plain-SSH remap/prompt, htop over
+prompt), ranger/lf/nnn prompts, ncdu, mc, fzf; an overlay giving tig keys,
+written while the daemon runs (`TestAppOverlayAddsKeys`). vim and nvim over
+SSH, every mode, key table never touched (`vim_test.go`), and hook latency
+keypress → FIFO listener, local vim (defaults only) and over SSH
+(`TestVimHookLatency`, -v for numbers). Remote: plain-SSH remap/prompt, htop over
 SSH, leaving the remote app for the remote shell; nested tmux with status
 line (keyecho and htop: never remap), with inner split and status off
 (borders), hooks-only through nested tmux (mode reported, confidence low),
@@ -103,7 +121,9 @@ status-off single-pane (documented limitation: remaps), local tmux-in-tmux
 
 ## Still missing (planned)
 
-- vim-family mandatory fixture set (brief §9) — M7.
+- A real tmux ≥ 3.6 run of the cursor-shape veto with neovim (the unit
+  test sets the shape on a captured screen; F11 saw nvim report `bar` on
+  3.7c).
 
 ## CPU benchmark
 

@@ -179,6 +179,11 @@ func Identify(set *spec.Set, s *screen.Screen) []Trace {
 		if a.Spec.Priority != b.Spec.Priority {
 			return a.Spec.Priority > b.Spec.Priority
 		}
+		// Equal footing: the one the pane's command names (nvim, not vim,
+		// when both read the same screen).
+		if a.Identity.CommandMatch != b.Identity.CommandMatch {
+			return a.Identity.CommandMatch
+		}
 		if a.Identity.Confirmed != b.Identity.Confirmed {
 			return a.Identity.Confirmed
 		}

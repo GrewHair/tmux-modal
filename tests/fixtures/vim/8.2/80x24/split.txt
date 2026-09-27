@@ -1,0 +1,37 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 0,3
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: vim
+# expect_app_mono: nvim
+# expect_app_remote: nvim
+# expect_mode: normal
+# note: two windows: the ruler is in the status lines
+# ---
+alpha
+alpine
+alps
+alps
+beta
+~
+~
+~
+~
+~
+~
+notes.txt                                                     4,1            All
+alpha
+alpine
+alps
+alps
+beta
+~
+~
+~
+~
+~
+notes.txt                                                     4,1            All
+:split

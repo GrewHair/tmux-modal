@@ -332,3 +332,49 @@ Done in v0.5.0:
   directories when their files change (name/size/mtime stamp checked
   every idle interval), so an overlay applies without a restart.
 
+
+## D30. vim-family: markers on the last row, any unknown marker is insert — M7
+
+Built from F35–F37 rather than the brief's §6.2 sketch:
+- **Only the last row is read for markers** (the brief had rows [-3, -1]):
+  it is where vim puts them in every layout, and rows above can be buffer
+  text starting with `-- `.
+- **Rule order:** More and hit-enter prompts → normal; `-- (x) --` →
+  normal (language-independent); visual; select; replace; terminal;
+  then **any other `-- X` → insert** (completion submodes, languages not
+  listed); `:`/`/`/`?` with the cursor on it → command. So an insert
+  marker in any language reads right; only the commanding-side words need
+  the translations, and a gap there errs towards typing.
+- **Select mode is its own mode in the typing bucket**: a printable key
+  replaces the selection (the brief grouped SELECT with visual).
+- **Identity (weighted, threshold 100, nothing required):** the ruler at
+  column -18 on rows [-3, -1], 100 on its own (a full buffer has no
+  tildes); the tilde column, 60; the file message, 40; a marker, 40; the
+  More/hit-enter prompts, 100. Right-relative clause columns (`col = -18`)
+  were added for the ruler. Every clause counts from the bottom, so a
+  sticky vim pane is captured as its bottom 12 rows.
+- **Translations are generated, not hand-picked:** alternations from every
+  catalogue the editors ship, checked by `TestVimMarkers` against the
+  extracted data. The brief asked for a non-English LANG to read as
+  unknown rather than normal; it now reads as the right mode.
+- **vim vs nvim:** locally by command (at equal priority a command match
+  now ranks first in `Identify`); over SSH by the default layout (ruler in a
+  status line above the command line → nvim), a guess that only affects
+  the name.
+- vim-family is exempt from the remap-ready test (D29): never remapped
+  (brief), and its identity is weighted on purpose.
+- Known gaps, documented in the README: showmode off with the ruler on
+  reads normal in every mode (a bar cursor vetoes that where tmux reports
+  it); lualine/airline replacing the ruler leave only tildes (unknown
+  unless a marker shows); nvim cmdheight=0; vim's `:terminal`; vim's
+  command line on a pane not yet identified (only tildes are left).
+
+## D31. Hook calls: leading edge, then coalesce — M7
+
+The hook debounce was trailing, so every call waited the full
+`@modal_hook_debounce` (30 ms) even for a lone transition (F38). Now a
+transition after a quiet window runs at once; transitions within the
+window after a call coalesce into one call with the final state at the
+window's end. The README's guarantee (one call with the final state per
+burst, reported from what the subscriber last saw) still holds; the first
+edge of a burst is additionally reported at once.

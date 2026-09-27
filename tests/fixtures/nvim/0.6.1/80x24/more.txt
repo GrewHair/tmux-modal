@@ -1,0 +1,37 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 10,23
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nvim
+# expect_app_mono: vim
+# expect_app_remote: vim
+# expect_mode: normal
+# note: -- More -- prompt
+# ---
+:set all
+--- Options ---
+  aleph=224           fillchars=          mousetime=500     nosplitbelow
+noarabic              fixendofline        nrformats=bin,hex nosplitright
+  arabicshape         foldclose=        nonumber            nostartofline
+noallowrevins         foldcolumn=0        numberwidth=4       statusline=
+  ambiwidth=single    foldenable          omnifunc=           suffixesadd=
+noautochdir           foldexpr=0          operatorfunc=       swapfile
+  autoindent          foldignore=#      nopaste               switchbuf=uselast
+  autoread            foldlevel=0         pastetoggle=        synmaxcol=3000
+noautowrite           foldlevelstart=-1   patchexpr=          syntax=text
+noautowriteall        foldmethod=manual   patchmode=          tagfunc=
+  background=dark     foldminlines=1    nopreserveindent      tabline=
+nobackup              foldnestmax=20      previewheight=12    tabpagemax=50
+  backupcopy=auto     formatexpr=       nopreviewwindow       tabstop=8
+  backupext=~         formatprg=          printdevice=        tagbsearch
+  backupskip=/tmp/* nofsync               printencoding=      tagcase=followic
+  belloff=all       nogdefault            printfont=courier   taglength=0
+nobinary              guifont=            printmbcharset=     tagrelative
+nobomb                guifontwide=        printmbfont=        tags=./tags;,tags
+nobreakindent         helpheight=20       printoptions=       tagstack
+  breakindentopt=     helplang=           prompt            notermbidi
+  bufhidden=          hidden              pumblend=0        notermguicolors
+-- More --

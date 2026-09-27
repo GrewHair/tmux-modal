@@ -14,6 +14,7 @@
 description = "less's last-row prompts"
 extends = "slash-search"
 modes   = ["normal", "insert"]
+translated = false                # less has no translations
 
 [buckets]
 typing     = ["insert"]

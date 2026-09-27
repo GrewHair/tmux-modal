@@ -1,0 +1,51 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 5,2
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nvim
+# expect_mode: visual
+# note: -- VISUAL --
+# ---
+alpha
+
+alpinealpine
+alps
+beta
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+notes.txt [+]                                                                                         3,6            All
+-- VISUAL --                                                                                                 1

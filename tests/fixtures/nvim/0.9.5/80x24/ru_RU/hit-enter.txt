@@ -1,0 +1,37 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 49,23
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nvim
+# expect_app_mono: vim
+# expect_app_remote: vim
+# expect_mode: normal
+# note: LANG=ru_RU.UTF-8
+# ---
+alpha
+alpine
+alps
+beta
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+
+:ls
+  1 %a   "notes.txt"                    строка 2
+Нажмите ENTER или введите команду для продолжения

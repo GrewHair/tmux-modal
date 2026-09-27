@@ -41,9 +41,9 @@ func TestHookEnvAndOrder(t *testing.T) {
 	}
 }
 
-// A burst of transitions inside the debounce window yields one hook call
-// with the final state, reported as a transition from what the subscriber
-// last saw.
+// The first transition runs at once; the rest of a burst inside the
+// debounce window yields one call with the final state, reported as a
+// transition from what the subscriber last saw.
 func TestHookDebounceCoalesces(t *testing.T) {
 	h, out := testRunner(t, 60*time.Millisecond, time.Second)
 	cmd := []string{`echo "$MODAL_MODE_FROM>$MODAL_MODE_TO" >> ` + out}
@@ -52,8 +52,8 @@ func TestHookDebounceCoalesces(t *testing.T) {
 	h.Emit(&HookEvent{Key: "s:1", ModeFrom: "normal", ModeTo: "visual", Bucket: "commanding", Commands: cmd})
 	time.Sleep(300 * time.Millisecond)
 	h.Flush(time.Second)
-	if got := readLines(t, out); strings.Join(got, "|") != "normal>visual" {
-		t.Errorf("got %q, want one coalesced normal>visual", got)
+	if got := readLines(t, out); strings.Join(got, "|") != "normal>insert|insert>visual" {
+		t.Errorf("got %q, want normal>insert at once, then one coalesced insert>visual", got)
 	}
 }
 

@@ -226,3 +226,41 @@ visible and while in a hidden window; the manual's "stops reading when all
 clients have turned it off" did not apply with a human attached). Unquoted,
 `refresh-client -A %0:off` is a parse error (a word starting with `%` other
 than a bare pane id), so `tmux.Quote` quotes such words.
+
+## vim and neovim (M7; vim 8.2/9.0/9.1, nvim 0.6.1/0.7.2/0.9.5 from the distros, nvim 0.12.5 release build)
+
+**F35. Screen layout.** The showmode marker is always on the **last row**,
+column 0, whatever the layout (cmdheight 1 or 2, status line or not); in
+vim without a status line row -2 is buffer text (a Lua/SQL `-- ` comment
+can sit there). The ruler (`12,5-8   All`) starts exactly **18 columns from
+the right edge**: on the last row in vim (laststatus=1), in the status line
+on row -2 in nvim (laststatus=2 by default) and in split windows. A `:`
+command line replaces the ruler on the last row (vim then shows only
+tildes), or with cmdheight=2 opens on row -2 with the last row cleared.
+Completion replaces `-- INSERT --` with `-- Keyword completion (^N^P)
+match 1 of 3` (and no ruler). `C-o` in insert shows `-- (insert) --`,
+visual from it `-- (insert) VISUAL --`. The hit-enter and `-- More --`
+prompts take the last row with the cursor on it. nvim's terminal mode
+shows `-- TERMINAL --`; plain vim's terminal window shows nothing.
+`recording @q` follows the marker (or stands alone in normal mode).
+
+**F36. Translations.** vim ships 30 catalogues, the distros' neovim 27;
+**neovim's release tarballs ship none** (always English). Translated:
+every showmode word, the ruler's position word (`Alles`, `Весь текст`,
+`全て`), the hit-enter and More prompts. Traditional Chinese uses one word
+(選取) for both VISUAL and SELECT. The Hungarian catalogue is mis-declared
+(UTF-8 bytes labelled ISO-8859-1), so vim shows mojibake, and the markers
+list keeps what is displayed. `scripts/fixtures/vim-markers.py` extracts
+all of it from the images into `tests/fixtures/vim/markers.json`.
+
+**F37. No distro vim sets `t_SI`/`t_EI` by default** (vim 8.2, 9.0, 9.1
+with defaults.vim, TERM tmux-256color and xterm-256color): stock vim never
+changes the cursor shape, as the brief expected, so cursor shape helps
+neovim only, and only on a tmux that reports it (F11).
+
+**F38. Hook latency, keypress → transition hook → a warm FIFO listener**
+(`TestVimHookLatency`, vim with defaults, WSL2): entering insert p50/p90
+39/55 ms local, 62/70 ms over SSH (balanced); 31/45 and 40/76 ms (snappy).
+Leaving insert is ~130 ms more, almost all of it vim's own Escape timeout
+(`ttimeoutlen=100` in defaults.vim). Until M7 the hook debounce was
+trailing and added its full 30 ms to every call (D31).

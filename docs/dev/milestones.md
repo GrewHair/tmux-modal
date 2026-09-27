@@ -23,7 +23,7 @@ specs detect only (D23); mc and fzf always insert; `cursor_flag` per app
 (F30); `_` is unbound in btop (the only new remapping spec). Per-submode
 key maps: not needed (btop's options screen is simply insert).
 
-**Next up: M7 — overlays done (v0.5.0); the vim work is next (see below).**
+**Next up: M7 remainder — a Windows-side listener example (see M7 below).**
 
 ### Original plan
 
@@ -80,7 +80,9 @@ for future cases. The engine is already one tier (a spec remaps iff it has
    through in its prompts.
 4. Release (bump `VERSION`).
 
-**Next: the vim work** (start here):
+**Part 2, the vim work: done in v0.6.0** (D30, D31, F35–F38) except the
+Windows listener example, which needs the owner's AHK details. Original
+plan kept below:
 
 - Group `vim-family`, specs `vim`, `nvim` (and `emacs -nw` experimental).
   Start from brief §6.2 but fix the weights (F19: any two of three anchors
@@ -103,6 +105,14 @@ for future cases. The engine is already one tier (a spec remaps iff it has
   keyboard layer is AutoHotkey on the Windows side of WSL (they have an AHK
   script). The FIFO example is the path to that; a Windows-side listener
   example (AHK or PowerShell reading a named pipe / file) would be valuable.
+
+**Left in M7:** a Windows-side listener example (AutoHotkey bridge fed
+from WSL). Candidates, to settle with the owner (their AHK version and how
+their script switches layers): the WSL listener pipes lines into a
+long-running Windows process's stdin (WSL interop), with AHK polling its
+stdin with PeekNamedPipe on a timer; or the hook writes a one-line state
+file under /mnt/c that AHK checks on a timer. Not testable here without
+touching the owner's Windows side.
 
 ## M8 — polish
 

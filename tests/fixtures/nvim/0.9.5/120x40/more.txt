@@ -1,0 +1,53 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 10,39
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nvim
+# expect_app_mono: vim
+# expect_app_remote: vim
+# expect_mode: normal
+# note: -- More -- prompt
+# ---
+:set all
+--- Options ---
+noarabic            nodiff                iminsert=0          numberwidth=4     noshowmatch           titleold=
+  arabicshape         diffexpr=           imsearch=-1         omnifunc=           showmode            titlestring=
+noallowrevins       nodigraph             includeexpr=        operatorfunc=       showtabline=1       ttimeout
+  ambiwidth=single    display=lastline    incsearch         nopaste               sidescroll=1        ttimeoutlen=50
+noautochdir           eadirection=both    indentexpr=         patchexpr=          sidescrolloff=0     ttyfast
+  autoindent        noedcompatible      noinfercase           patchmode=          signcolumn=auto   noundofile
+  autoread            emoji             noinsertmode        nopreserveindent    nosmartcase           undolevels=1000
+noautowrite           encoding=utf-8      isprint=@,161-255   previewheight=12  nosmartindent         undoreload=10000
+noautowriteall      noendoffile         nojoinspaces        nopreviewwindow       smarttab            updatecount=200
+  background=dark     endofline           jumpoptions=        prompt              softtabstop=0       updatetime=4000
+nobackup              equalalways         keymap=             pumblend=0        nospell               varsofttabstop=
+  backupcopy=auto     equalprg=           keymodel=           pumheight=0         spellfile=          vartabstop=
+  backupext=~       noerrorbells          keywordprg=:Man     pumwidth=15         spelllang=en        verbose=0
+  backupskip=/tmp/*   eventignore=        langmap=            pyxversion=3        spellsuggest=best   verbosefile=
+  belloff=all       noexpandtab           langmenu=           quickfixtextfunc=   spelloptions=       virtualedit=
+nobinary            noexrc                langnoremap         quoteescape=\     nosplitbelow        novisualbell
+nobomb                fileformat=unix   nolangremap         noreadonly            splitkeep=cursor    warn
+nobreakindent       nofileignorecase      laststatus=2        redrawdebug=      nosplitright          whichwrap=b,s
+  breakindentopt=     filetype=text     nolazyredraw          redrawtime=2000   nostartofline         wildchar=<Tab>
+  bufhidden=          fillchars=        nolinebreak           regexpengine=0      statuscolumn=       wildcharm=0
+  buflisted           fixendofline        lines=40          norelativenumber      statusline=         wildignore=
+  buftype=            foldclose=          linespace=0         remap               suffixesadd=      nowildignorecase
+nocdhome              foldcolumn=0      nolisp                report=2            swapfile            wildmenu
+  cdpath=,,           foldenable          lispoptions=      norevins              switchbuf=uselast   wildmode=full
+  cedit=^F            foldexpr=0        nolist              norightleft           synmaxcol=3000      winaltkeys=menu
+  channel=0           foldignore=#        loadplugins         ruler               syntax=text         winbar=
+  charconvert=        foldlevel=0         magic               rulerformat=        tagfunc=            winblend=0
+nocindent             foldlevelstart=-1   makeef=             scroll=19           tabline=            winhighlight=
+  cinoptions=         foldmethod=manual   makeencoding=       scrollback=-1       tabpagemax=50       window=39
+  clipboard=          foldminlines=1      makeprg=make      noscrollbind          tabstop=8           winheight=1
+  cmdheight=1         foldnestmax=20      matchtime=5         scrolljump=1        tagbsearch        nowinfixheight
+  cmdwinheight=7      formatexpr=         maxcombine=6        scrolloff=0         tagcase=followic  nowinfixwidth
+  colorcolumn=        formatprg=          maxfuncdepth=100  nosecure              taglength=0         winminheight=1
+  columns=120         fsync               maxmapdepth=1000    selectmode=         tagrelative         winminwidth=1
+  commentstring=    nogdefault            menuitems=25        shadafile=          tags=./tags;,tags   winwidth=20
+nocompatible          guifont=            modeline            shell=sh            tagstack            wrap
+  concealcursor=      guifontwide=      nomodelineexpr        shellcmdflag=-c   notermbidi            wrapmargin=0
+-- More --

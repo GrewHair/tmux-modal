@@ -1,0 +1,53 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 2,0
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: vim
+# expect_app_mono: nvim
+# expect_app_remote: nvim
+# expect_mode: normal
+# note: KNOWN GAP: vim's terminal window takes typing but shows no marker
+# ---
+$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+!sh [running]                                                                                         0,0-1          All
+Sample text line 35
+Sample text line 36
+Sample text line 37
+Sample text line 38
+Sample text line 39
+Sample text line 40
+Sample text line 41
+Sample text line 42
+Sample text line 43
+Sample text line 44
+Sample text line 45
+Sample text line 46
+Sample text line 47
+Sample text line 48
+Sample text line 49
+Sample text line 50
+Sample text line 51
+Sample text line 52
+~/sample.txt                                                                                          50,1            1%
+:term

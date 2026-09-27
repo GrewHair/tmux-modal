@@ -1,0 +1,21 @@
+# neovim — hooks-only (brief §6.2, D30): everything is in groups/vim-family.
+# Recognised as "nvim" by its local command. Over SSH, by the default
+# layout: the ruler in the status line on row -2 (see vim.toml). Its
+# prompts (hit-enter, More) scroll the status line away and read as vim.
+name     = "nvim"
+priority = 60
+extends  = "vim-family"
+# The markers are short ("-- 더 --"), but they are only read on the last
+# row, at column 0, of a pane already identified as vim, where vim writes
+# nothing but its own mode line and messages.
+lint_ignore = ["under-specified"]
+
+[match]
+command = ["nvim", "nvim.*", "nvim-*"]
+
+  # Tie-break against vim.toml over SSH (row -3 with cmdheight=2).
+  [[match.clause]]
+  regex  = '[0-9]+,[0-9]+(-[0-9]+)? +'
+  rows   = [-3, -2]
+  col    = -18
+  weight = 1

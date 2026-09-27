@@ -67,10 +67,12 @@ func (e *HookEvent) env(now time.Time) []string {
 	)
 }
 
-// hookRunner runs hooks detached from the daemon's loop. Per key it
-// debounces (emitting only the final state of a burst) and keeps at most
-// one invocation alive: a newer transition cancels an older one still
-// running, because a stale transition is worse than a missed one.
+// hookRunner runs hooks detached from the daemon's loop. Per key it runs
+// at most one call per debounce window: a transition after a quiet spell
+// runs at once (the latency an outer keyboard layer feels), later ones in
+// the window coalesce into one call with the final state at its end. It
+// keeps at most one invocation alive: a newer transition cancels an older
+// one still running, because a stale transition is worse than a missed one.
 type hookRunner struct {
 	log *Logger
 
@@ -79,6 +81,7 @@ type hookRunner struct {
 	debounce time.Duration
 	pending  map[string]*HookEvent
 	timers   map[string]*time.Timer
+	last     map[string]time.Time // last call started, per key
 	running  map[string]runningHook
 	gen      uint64
 	wg       sync.WaitGroup
@@ -91,7 +94,7 @@ type runningHook struct {
 
 func newHookRunner(log *Logger) *hookRunner {
 	return &hookRunner{log: log, pending: map[string]*HookEvent{},
-		timers: map[string]*time.Timer{}, running: map[string]runningHook{}}
+		timers: map[string]*time.Timer{}, last: map[string]time.Time{}, running: map[string]runningHook{}}
 }
 
 func (h *hookRunner) configure(timeout, debounce time.Duration) {
@@ -100,8 +103,9 @@ func (h *hookRunner) configure(timeout, debounce time.Duration) {
 	h.mu.Unlock()
 }
 
-// Emit schedules an event after the debounce window, replacing any event
-// still pending for the same key.
+// Emit runs an event now if the key's last call is a debounce window ago,
+// else schedules it for the end of the window, replacing any event still
+// pending for the same key.
 func (h *hookRunner) Emit(e *HookEvent) {
 	if len(e.Commands) == 0 {
 		return
@@ -118,18 +122,28 @@ func (h *hookRunner) Emit(e *HookEvent) {
 		return
 	}
 	key := e.Key
-	h.timers[key] = time.AfterFunc(h.debounce, func() { h.fire(key) })
+	if wait := h.debounce - time.Since(h.last[key]); wait > 0 {
+		h.timers[key] = time.AfterFunc(wait, func() { h.fire(key) })
+		return
+	}
+	h.start(key)
 }
 
 func (h *hookRunner) fire(key string) {
 	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.start(key)
+}
+
+// start runs the pending event for key; h.mu is held.
+func (h *hookRunner) start(key string) {
 	e := h.pending[key]
 	delete(h.pending, key)
 	delete(h.timers, key)
 	if e == nil {
-		h.mu.Unlock()
 		return
 	}
+	h.last[key] = time.Now()
 	if old, ok := h.running[key]; ok {
 		old.cancel() // drop the older invocation, run the newer
 	}
@@ -139,7 +153,6 @@ func (h *hookRunner) fire(key string) {
 	h.running[key] = runningHook{id: id, cancel: cancel}
 	timeout := h.timeout
 	h.wg.Add(1)
-	h.mu.Unlock()
 
 	go func() {
 		defer h.wg.Done()

@@ -1,0 +1,40 @@
+:set all
+[38;5;225m--- Options ---[39m
+  aleph=224         nocursorbind        noicon              nonumber              shellxescape=       timeoutlen=1000
+noarabic            nocursorcolumn        iconstring=         numberwidth=4     noshiftround        notitle
+  arabicshape       nocursorline        noignorecase          omnifunc=           shiftwidth=8        titlelen=85
+noallowrevins         debug=              iminsert=0          operatorfunc=       showbreak=          titleold=
+  ambiwidth=single  nodelcombine          imsearch=-1       nopaste               showcmd             titlestring=
+noautochdir           dictionary=         includeexpr=        pastetoggle=      noshowfulltag         ttimeout
+  autoindent        nodiff                incsearch           patchexpr=        noshowmatch           ttimeoutlen=50
+  autoread            diffexpr=           indentexpr=         patchmode=          showmode            ttyfast
+noautowrite         nodigraph           noinfercase         nopreserveindent      showtabline=1     noundofile
+noautowriteall        eadirection=both  noinsertmode          previewheight=12    sidescroll=1        undolevels=1000
+  background=dark   noedcompatible        isprint=@,161-255 nopreviewwindow       sidescrolloff=0     undoreload=10000
+nobackup              emoji             nojoinspaces          printdevice=        signcolumn=auto     updatecount=200
+  backupcopy=auto     encoding=utf-8      jumpoptions=        printencoding=    nosmartcase           updatetime=4000
+  backupext=~         endofline           keymap=             printfont=courier nosmartindent         varsofttabstop=
+  backupskip=/tmp/*   equalalways         keymodel=           printmbcharset=     smarttab            vartabstop=
+  belloff=all         equalprg=           keywordprg=:Man     printmbfont=        softtabstop=0       verbose=0
+nobinary            noerrorbells          langmap=            printoptions=     nospell               verbosefile=
+nobomb                eventignore=        langmenu=           prompt              spellfile=          virtualedit=
+nobreakindent       noexpandtab           langnoremap         pumblend=0          spelllang=en      novisualbell
+  breakindentopt=   noexrc              nolangremap           pumheight=0         spellsuggest=best   warn
+  bufhidden=          fileformat=unix     laststatus=2        pumwidth=15         spelloptions=       whichwrap=b,s
+  buflisted         nofileignorecase    nolazyredraw          pyxversion=0      nosplitbelow          wildchar=<Tab>
+  buftype=            filetype=text     nolinebreak           quickfixtextfunc= nosplitright          wildcharm=0
+  cdpath=,,           fillchars=          lines=40            quoteescape=\     nostartofline         wildignore=
+  cedit=[38;5;81m^F[39m            fixendofline        linespace=0       noreadonly            statusline=       nowildignorecase
+  channel=0           foldclose=        nolisp                redrawdebug=        suffixesadd=        wildmenu
+  charconvert=        foldcolumn=0      nolist                redrawtime=2000     swapfile            wildmode=full
+nocindent             foldenable          loadplugins         regexpengine=0      switchbuf=uselast   winaltkeys=menu
+  cinoptions=         foldexpr=0          magic             norelativenumber      synmaxcol=3000      winblend=0
+  clipboard=          foldignore=#        makeef=             remap               syntax=text         winhighlight=
+  cmdheight=1         foldlevel=0         makeencoding=       report=2            tagfunc=            window=39
+  cmdwinheight=7      foldlevelstart=-1   makeprg=make      norevins              tabline=            winheight=1
+  colorcolumn=        foldmethod=manual   matchtime=5       norightleft           tabpagemax=50     nowinfixheight
+  columns=120         foldminlines=1      maxcombine=6        ruler               tabstop=8         nowinfixwidth
+  commentstring=      foldnestmax=20      maxfuncdepth=100    rulerformat=        tagbsearch          winminheight=1
+nocompatible          formatexpr=         maxmapdepth=1000    scroll=19           tagcase=followic    winminwidth=1
+  concealcursor=      formatprg=          menuitems=25        scrollback=-1       taglength=0         winwidth=20
+[38;5;121m-- More --[39m

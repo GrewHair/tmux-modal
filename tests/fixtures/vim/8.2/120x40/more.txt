@@ -1,0 +1,51 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 10,39
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: vim
+# expect_mode: normal
+# note: -- More -- prompt
+# ---
+:set all
+--- Options ---
+  aleph=224           cscopetagorder=0    iconstring=         nrformats=bin,hex   showbreak=        notitle
+noarabic            nocscopeverbose     noignorecase        nonumber              showcmd             titlelen=85
+  arabicshape       nocursorbind          imactivatefunc=     numberwidth=4     noshowfulltag         titlestring=
+noallowrevins       nocursorcolumn      noimcmdline           omnifunc=         noshowmatch           ttimeout
+  ambiwidth=single  nocursorline        noimdisable           operatorfunc=       showmode            ttimeoutlen=100
+noautochdir           debug=              iminsert=0        nopaste               showtabline=1       ttybuiltin
+noautoshelldir      nodelcombine          imsearch=-1         pastetoggle=        sidescroll=0        ttyfast
+noautoindent          dictionary=         imstatusfunc=       patchexpr=          sidescrolloff=0     ttymouse=xterm
+noautoread          nodiff                includeexpr=        patchmode=          signcolumn=auto     ttyscroll=999
+noautowrite           diffexpr=           incsearch         nopreserveindent    nosmartcase           undodir=.
+noautowriteall      nodigraph             indentexpr=         previewheight=12  nosmartindent       noundofile
+  background=light    display=truncate  noinfercase           previewpopup=     nosmarttab            undolevels=1000
+nobackup              eadirection=both  noinsertmode        nopreviewwindow       softtabstop=0       undoreload=10000
+  backupcopy=auto   noedcompatible        isprint=@,161-255   printdevice=      nospell               updatecount=200
+  backupext=~         emoji               joinspaces          printencoding=      spellfile=          updatetime=4000
+  backupskip=/tmp/*   encoding=utf-8      key=                printfont=courier   spelllang=en        varsofttabstop=
+  balloondelay=600    endofline           keymap=             printmbcharset=     spelloptions=       vartabstop=
+noballoonevalterm     equalalways         keymodel=           printmbfont=        spellsuggest=best   verbose=0
+  balloonexpr=        equalprg=           keywordprg=man      printoptions=     nosplitbelow          verbosefile=
+  belloff=          noerrorbells          langmap=            prompt            nosplitright          viminfofile=
+nobinary              esckeys             langmenu=           pumheight=0         startofline         virtualedit=
+nobomb                eventignore=        langnoremap         pumwidth=15         statusline=       novisualbell
+nobreakindent       noexpandtab         nolangremap           pythonthreehome=    suffixesadd=        warn
+  breakindentopt=   noexrc                laststatus=1        pyxversion=3        swapfile          noweirdinvert
+  bufhidden=          fileformat=unix   nolazyredraw          quickfixtextfunc=   swapsync=fsync      whichwrap=b,s
+  buflisted         nofileignorecase    nolinebreak           quoteescape=\       switchbuf=          wildchar=<Tab>
+  buftype=            filetype=text       lines=40          noreadonly            synmaxcol=3000      wildcharm=0
+nocdhome              fixendofline      nolisp                redrawtime=2000     syntax=text         wildignore=
+  cdpath=,,           foldclose=        nolist                regexpengine=0      tabline=          nowildignorecase
+  cedit=^F            foldcolumn=0        listchars=eol:$   norelativenumber      tabpagemax=10       wildmenu
+  charconvert=        foldenable          loadplugins         remap               tabstop=8           wildmode=full
+nocindent             foldexpr=0          magic               report=2            tagbsearch          wildoptions=
+  cinoptions=         foldignore=#        makeef=           norevins              tagcase=followic    wincolor=
+  cmdheight=1         foldlevel=0         makeencoding=     norightleft           tagfunc=            window=39
+  cmdwinheight=7      foldlevelstart=-1   makeprg=make        ruler               taglength=0         winheight=1
+  colorcolumn=        foldmethod=manual   matchtime=5         rulerformat=        tagrelative       nowinfixheight
+  columns=120         foldminlines=1      maxcombine=2        scroll=19           tagstack          nowinfixwidth
+-- More --

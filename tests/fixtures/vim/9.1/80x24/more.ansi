@@ -1,0 +1,24 @@
+:set all
+[35m--- Options ---[39m
+  aleph=224           filetype=text       nrformats=bin,hex   swapsync=fsync
+noallowrevins         fixendofline      nonumber              switchbuf=
+  ambiwidth=single    foldclose=          numberwidth=4       synmaxcol=3000
+noarabic              foldcolumn=0        omnifunc=           syntax=text
+  arabicshape         foldenable          operatorfunc=       tabline=
+noautochdir           foldexpr=0        nopaste               tabpagemax=10
+noautoindent          foldignore=#        pastetoggle=        tabstop=8
+noautoread            foldlevel=0         patchexpr=          tagbsearch
+noautoshelldir        foldlevelstart=-1   patchmode=          tagcase=followic
+noautowrite           foldmethod=manual nopreserveindent      tagfunc=
+noautowriteall        foldminlines=1      previewheight=12    taglength=0
+  background=light    foldnestmax=20      previewpopup=       tagrelative
+nobackup              formatexpr=       nopreviewwindow       tagstack
+  backupcopy=auto     formatoptions=tcq   printdevice=      notermbidi
+  backupext=~         formatprg=          printencoding=      termencoding=
+  backupskip=/tmp/*   fsync               printfont=courier notermguicolors
+  balloondelay=600  nogdefault            printmbcharset=     termwinkey=
+noballoonevalterm     helpheight=20       printmbfont=        termwinsize=
+  balloonexpr=        helplang=           printoptions=     noterse
+  belloff=          nohidden              prompt              textauto
+nobinary              history=200         pumheight=0       notextmode
+[32m-- More --[39m
