@@ -2,14 +2,15 @@
 
 ```sh
 go test ./internal/... -count=1          # unit + golden fixtures, < 10 s, no tmux needed except config round-trip
-go test ./tests/integration/ -count=1    # real tmux + htop + real client, ~20 s
+go test ./tests/integration/ -count=1    # real tmux + htop + real client + sshd container, ~25 s
 go test ./tests/integration/ -run TestDetectionLatency -v   # latency/CPU numbers
-docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable -x modal.tmux scripts/*.sh scripts/fixtures/*.sh examples/*.sh examples/hooks/*.sh tests/integration/testdata/keyecho.sh
+docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable -x modal.tmux scripts/*.sh scripts/fixtures/*.sh examples/*.sh examples/hooks/*.sh tests/docker/*.sh
 gofmt -l . ; go vet ./...
 ```
 
 CI (`.github/workflows/ci.yml`, ubuntu-24.04, tmux 3.4) runs all of the
-above including the integration tests. Keep it green before every push.
+above including the integration tests, with `TMUX_MODAL_REQUIRE_REMOTE=1`
+so the SSH tier fails instead of skipping. Keep it green before every push.
 
 ## Golden fixtures
 
@@ -41,10 +42,18 @@ above including the integration tests. Keep it green before every push.
   `tests/integration/testdata/specs`, `@modal_log_level debug`.
 - Daemon: built once in `TestMain`, started with `-L inner --log <tmp>`;
   on failure the log, stderr and final screen are dumped.
-- `testdata/keyecho.sh`: deterministic alt-screen TUI printing
-  `last=[KeyName]`, `/` opens `PROMPT>` on the last row; `KEYECHO_NAME` changes
-  the banner (`KEYHOOK` is matched by the hooks-only test spec). It
-  poll-reads (`read -t 0.1`) so the WINCH trap can redraw after resizes.
+- `keyecho/` (Go, built statically by `TestMain` next to the daemon):
+  deterministic alt-screen TUI printing `last=[KeyName]`, `/` opens
+  `PROMPT>` on the last row; `KEYECHO_NAME` changes the banner (`KEYHOOK`
+  is matched by the hooks-only test spec); redraws on SIGWINCH;
+  `KEYECHO_LOG=file` logs every key. It was a bash script until F25.
+- **Remote tier** (`remote_test.go`): on first use builds
+  `tests/docker/sshd.Dockerfile` (image `tmux-modal-sshd`: sshd, key-only
+  login for `demo`, htop, vim, tmux), generates a throwaway key, runs one
+  container for the whole run (`--hostname remote`, port on 127.0.0.1,
+  the build dir mounted at `/testbin` so `/testbin/keyecho` runs remotely),
+  removed in `TestMain`. Pane commands are `ssh -t … demo@127.0.0.1 CMD`.
+  Skips without docker unless `TMUX_MODAL_REQUIRE_REMOTE` is set.
 - Use pane ids (`%0`, `%1`) as targets, not `main.0` (ambiguous).
 
 Covered: remap + literal typing incl. first key after switch; leader
@@ -53,13 +62,21 @@ follows focus; per-pane disable; custom session key-table restored; stop and
 crash recovery; root bindings copied (mouse, `bind -n`); htop
 search/type/cancel/confirm/filter/resize/panels/leader; hook env, focus
 stream, stop event, spec hook order; indicator in real borders incl. N/A;
-latency; daemon client label.
+latency; daemon client label. Remote: plain-SSH remap/prompt, htop over
+SSH, leaving the remote app for the remote shell; nested tmux with status
+line (keyecho and htop: never remap), with inner split and status off
+(borders), hooks-only through nested tmux (mode reported, confidence low),
+status-off single-pane (documented limitation: remaps), local tmux-in-tmux
+(`command`).
 
 ## Ad-hoc probing recipes
 
 - Use bash scripts in the scratchpad: the agent's Bash tool runs **zsh**,
   which does not word-split `$T`-style command variables. Put probes in
   `bash script.sh` files.
+- **What did tmux really do with a key?** Start the inner server with
+  `-vv` (writes `tmux-server-PID.log` in the cwd): look for
+  `complete key`, `key table …`, `writing key 0x.. (x) to %N`.
 - A second tmux version: `docker build --build-arg TMUX_VERSION=3.7c -t tmux-modal-tmuxsrc:3.7c -f tests/docker/tmux-src.Dockerfile tests/docker`
   (image has neovim, vim-nox, htop).
 - To test the owner's real config without touching their server:
@@ -69,6 +86,5 @@ latency; daemon client label.
 
 ## Still missing (planned)
 
-- SSH tier (sshd container, `ssh localhost`) and nested-tmux tier — M5.
 - vim-family mandatory fixture set (brief §9) — M7.
 - 20-pane CPU benchmark per profile — M6.

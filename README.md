@@ -16,9 +16,10 @@ Two independent things can subscribe to that:
    can react — e.g. switch an outer keyboard layer off while vim is in
    normal mode and on while you type.
 
-> **Status: pre-release (0.1).** Milestones done: detector, spec engine,
-> `validate`, htop end to end, status indicator, transition hook. Still to
-> come: SSH/nested-tmux test tier, the remaining bundled specs (less, man,
+> **Status: pre-release (0.2).** Milestones done: detector, spec engine,
+> `validate`, htop end to end, status indicator, transition hook, SSH and
+> nested-tmux handling (tested against a real sshd). Still to
+> come: the remaining bundled specs (less, man,
 > tig, k9s, lazygit, ranger/lf/nnn, ncdu, mc, btop, REPLs), and the
 > hooks-only `vim`/`nvim` specs. Today only **htop** is recognised; every
 > other full-screen app shows as **N/A** and is left completely alone.
@@ -62,6 +63,7 @@ For every pane the daemon publishes these pane options:
 | `@modal_mode` | `normal`, `insert`, …, `unknown` (a full-screen app no spec knows), `none` (no full-screen app) |
 | `@modal_bucket` | `commanding`, `typing`, `unknown`, `none` |
 | `@modal_confidence` | `high` or `low` |
+| `@modal_nested` | empty, or why the pane looks like it shows another tmux: `command`, `status-line`, `borders`, `title` (see [SSH and nested tmux](#ssh-and-nested-tmux)) |
 | `@modal_indicator` | a ready-rendered tag, see below |
 
 Put the indicator wherever you like; a pane border is the natural place,
@@ -105,7 +107,8 @@ The command runs through `/bin/sh -c`, detached, with:
 | `MODAL_BUCKET` | `typing`, `commanding`, `none`, `unknown` |
 | `MODAL_MODE_TO`, `MODAL_MODE_FROM` | e.g. `normal` → `insert` |
 | `MODAL_APP`, `MODAL_APP_FROM` | spec names (empty for no app) |
-| `MODAL_CONFIDENCE` | `low` when the mode came from corroboration rather than a positive marker |
+| `MODAL_CONFIDENCE` | `low` when the mode came from corroboration rather than a positive marker, or through a nested tmux |
+| `MODAL_NESTED` | same as `@modal_nested`: empty unless the pane shows another tmux |
 | `MODAL_EVENT` | `mode` (mode changed), `focus` (focus moved to another pane), `stop` (daemon exiting) |
 | `MODAL_PANE`, `MODAL_PANE_ACTIVE`, `MODAL_WINDOW`, `MODAL_SESSION`, `MODAL_SESSION_ID`, `MODAL_TIMESTAMP_MS` | where and when |
 
@@ -238,13 +241,47 @@ fallback: concluding it from the *absence* of a mode marker requires the
 app's identity to be re-confirmed on the same capture. A garbled or
 unrecognisable screen gives `unknown` — pass-through — never `normal`.
 
-### Nested tmux
+### SSH and nested tmux
 
-If you run tmux on the remote host too, the inner tmux is a terminal of its
-own: it swallows the application's escape state and adds its status line
-to what we see. The plugin must never break there; the worst outcome is
-`unknown` (N/A, pass-through). The SSH and nested-tmux test tier is the next
-milestone.
+Over plain SSH (`ssh host`, then `htop`; or `ssh -t host htop`) detection
+and remapping work exactly as locally, with nothing installed on the remote
+host: the pane's command is `ssh`, so the application is recognised from
+its screen alone. This is tested against a real sshd in a container.
+
+If you run **tmux on the remote host too**, the inner tmux is a terminal of
+its own: it holds the alternate screen for as long as it runs, draws its
+status line and pane borders over the application, and has its own prefix
+key and copy mode. So:
+
+- **Keys are never remapped through a nested tmux.** A key-remapping app
+  (htop) shows as N/A (`unknown`, pass-through) there. The inner tmux's
+  status line would otherwise hide the row htop shows its search prompt
+  on, and the inner prefix key or an inner split would send remapped keys
+  somewhere else.
+- **Hooks-only apps** (vim/nvim, coming) still report their mode, from the
+  screen minus the inner status line, with `MODAL_CONFIDENCE=low`, except
+  when the inner window is split (then `unknown`: the outer screen cannot
+  tell which inner pane has the keyboard).
+- `@modal_nested` / `MODAL_NESTED` say why a pane was taken as nested:
+  `command` (a local `tmux` client in the pane), `status-line` (tmux's
+  default status line on the first or last row), `borders` (inner pane
+  borders, box-drawing or VT100 line-drawing), `title` (the pane title has
+  the shape of tmux's `set-titles-string`; only when `set-titles` is on).
+
+**Known limitation:** a remote tmux with its status line turned off (or a
+heavily customised one) and a single pane draws exactly what the
+application draws, so it cannot be told apart from plain SSH, and htop's
+keys are remapped as usual. That is still correct — the keys reach the one
+inner pane — except right after you press the inner prefix key: `prefix j`
+arrives at the inner tmux as `prefix Down`. Use the escape leader
+(`prefix _ j`) or turn the plugin off for that pane
+(`set -p @modal_enabled off`) if that bites.
+
+The brief's cheap tier-1 signals for nesting (alternate screen held with no
+toggles, frozen history, a scroll region short of the pane) turned out not
+to distinguish the cases on tmux 3.4: plain `ssh -t host htop` shows the
+same values, and the inner tmux did not leave a scroll region set. They are
+not used.
 
 `#{cursor_shape}` (what nvim uses to show insert/normal) is absent in
 tmux 3.4 and 3.5a and present in 3.7c (the exact release that added it is
@@ -274,21 +311,22 @@ commanding = ["normal"]
 command             = ["myapp"]   # local fast path only (an SSH pane says "ssh")
 requires_alt_screen = true
 combine             = "weighted"
-threshold           = 100
+threshold           = 60
   [[match.clause]]
   regex  = '^MyApp v[0-9]+ +'     # POSIX-ish ERE (Go RE2 syntax), right-trimmed line
   row    = 0
   weight = 60
   [[match.clause]]
-  regex  = 'F1 Help +F10 Quit$'
+  regex  = '(F1 Help +F10 Quit|Search:( .*)?)$'   # the bar, or the prompt that replaces it
   rows   = [-1, -1]               # negative = from the bottom
-  weight = 60
+  weight = "required"             # see "Anchor the rows you read" below
 
 [[insert_when]]                   # first hit wins; no hit => normal
 name  = "search"
 regex = '^Search:( |$)'           # NOT '^Search: ' — lines are right-trimmed
 rows  = [-2, -1]
 col   = 0
+cursor_rows = [-2, -1]            # and the cursor is on it: a short marker is then specific enough
 
 [keys]                            # omit for a hooks-only spec
 j = "Down"
@@ -303,6 +341,14 @@ Clause keys: `regex` with `rows`/`row`, `col`/`cols`, `anchor`
 `"bonus"` or `"required"`). Also: `always = "insert"`, `[[corroborate]]`,
 `[default_mode]`, `[escape] leader`, `[shadowed]` (documentation), `hook`,
 `translated = false`.
+
+**Anchor the rows you read.** A remapping spec concludes its commanding
+mode from the *absence* of a prompt. Make sure the rows the mode rules read
+are the app's own: give the identity a `weight = "required"` clause on
+those rows (the bar the prompt replaces, or the prompt itself). Otherwise,
+under a remote tmux whose status line covers the last row, the other
+anchors still match, the prompt one row up goes unseen, and keys get
+remapped while you type. `validate` and `lint` warn about this.
 
 ### `tmux-modal validate`
 
@@ -343,13 +389,16 @@ reimplementation of the detector.
 
 ```sh
 go test ./internal/...          # unit + golden fixtures (no tmux needed)
-go test ./tests/integration/    # real tmux, real htop, real attached client
+go test ./tests/integration/    # real tmux, real htop, real attached client; SSH tier needs docker
 scripts/fixtures/htop.sh LABEL docker run --rm -it IMAGE htop   # recapture fixtures
+scripts/fixtures/nested.sh      # recapture the nested-tmux fixtures
 ```
 
 Integration tests run each case on two private tmux servers (`-L`,
 `-f /dev/null`): the outer one's pane runs `tmux attach` to the inner one,
-so keystrokes go through a real client's key tables. Fixtures are captured
+so keystrokes go through a real client's key tables. The SSH tier runs the
+application in an sshd container (`tests/docker/sshd.Dockerfile`, built on
+first use) and skips itself without docker. Fixtures are captured
 inside containers (`tests/docker/`) so they contain no host data.
 
 ## License

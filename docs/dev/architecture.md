@@ -20,7 +20,7 @@ tmux server
 | `specs.go` | `//go:embed specs` — bundled specs (`specs/*.toml`, `specs/groups/*.toml`) |
 | `internal/screen` | `Screen` (lines, optional cells, cursor, flags; full-screen row coordinates, `Top` for partial captures), SGR parser (state carried across lines), colour normalisation, fixture file format |
 | `internal/spec` | TOML load (bundled then user dirs; shadow by file stem), `normalise` sugar, `resolve` extends (list = mixin chain, cycle check), `merge`, `compile` to `Spec`/`Rule`/`Clause`, clause/rule `Eval` (tri-state), `lint`, `LocaleAudit` |
-| `internal/classify` | `EvalIdentity` (Identified vs Confirmed), `Classify` (always → mode rules → absence needs confirmed identity → corroboration veto → default), `Identify` (all specs, priority order), `Pane` (entry point: sticky app, shell fast path) |
+| `internal/classify` | `EvalIdentity` (Identified vs Confirmed), `Classify` (always → mode rules → absence needs confirmed identity → corroboration veto → default), `Identify` (all specs, priority order), `Pane` (entry point: nested detection + status-row strip, sticky app, shell fast path, nested policy); `nested.go` `DetectNested` |
 | `internal/validate` | the score-sheet report |
 | `internal/tmux` | `Exec` runner, `Control` client (pipelined `Send`/`Wait`, guarded block parser, `ClientLabel`), `Quote`/`Command`, `ListPanes` tier-1 snapshot, `CaptureArgs`/`Fill`, `Capture` |
 | `internal/daemon` | `daemon.go` lifecycle/reconcile/shutdown/`runLines`; `cycle.go` scheduler, examine, transition, publish, indicator, focus sweep, hook events; `sessions.go` key-table ownership, client re-point, install, recovery; `keys.go` binding generation; `hooks.go` runner; `config.go` options/profiles/unescape; `sys.go` lock + CPU throttle; `log.go` |
@@ -36,6 +36,8 @@ tmux server
 5. The daemon never sends keys to panes.
 6. Every failure mode (spec error, tmux error, crash) degrades to pass-through; a spec that fails to load is skipped with a warning.
 7. Formats in status/border only read `@modal_*` variables.
+8. A pane that looks nested (`@modal_nested` non-empty) never reports a mode of a key-remapping spec, so it is never remapped (D20).
+9. A remapping spec's commanding default is only concluded when a required identity clause anchors the rows its mode rules read (D21; `lint` checks).
 
 ## Per-pane state (`paneState`)
 
@@ -43,17 +45,17 @@ tmux server
 `modeState{App,Mode,Bucket,Confidence}`), `pending`/`pendingN` (confirmation
 before resuming remap), `due` (next examination), `burstStart`,
 `lastOutput`, `lastExam`, `inScope`, `indicator`, `altToggles` (counted, not
-yet used — intended for nested-tmux detection, §3.8).
+used: the §3.8 tier-1 nesting signals proved useless, F21).
 
 Invalidations (tier 1): alt-screen toggle or command change → drop identity,
 examine now; resize → examine now; newly in scope → examine now.
 
-Capture band: sticky + healthy identity + spec's rules all bottom-relative →
+Capture band: sticky + healthy identity + not nested + spec's rules all bottom-relative →
 capture only `max(CaptureBottom, @modal_capture_rows)` rows; otherwise full
 screen. (htop's identity uses top rows, so htop captures the full screen.)
 
 ## Published per-pane options
 
 `@modal_app`, `@modal_mode`, `@modal_bucket`, `@modal_confidence`,
-`@modal_indicator`. Server/session: `@modal_daemon_pid` (global),
+`@modal_nested`, `@modal_indicator`. Server/session: `@modal_daemon_pid` (global),
 `@modal_saved_key_table` (session, only while owned).

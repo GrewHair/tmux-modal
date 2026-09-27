@@ -6,26 +6,11 @@ milestone: full test suite, commit (conventional commits), push, CI green,
 update [status.md](status.md), README, and — if daemon code changed — bump
 `VERSION` and tag a release so the owner's install picks it up.
 
-## M5 — SSH and nested tmux
+## M5 — SSH and nested tmux — done (v0.2.0)
 
-- Docker image with sshd (key auth for `demo`), htop, vim, tmux (distro 3.4
-  and/or 3.7c from `tmux-src.Dockerfile`). Integration tests: local tmux pane
-  runs `ssh -t demo@container htop`; assert htop detection and remapping
-  exactly as locally (pane command is `ssh`: screen-only identity).
-- Nested: pane runs `ssh -t … tmux new htop` (inner tmux with its status
-  line). Assert graceful `unknown` — never remapping — and that no spec
-  false-positives on the inner status line. Also inner tmux with status off
-  and a single pane: htop may then be correctly recognised; that is fine
-  (keys go through to the inner active pane) — decide and document.
-- Implement brief §3.8 nested detection (all O(1)): alt-screen latched since
-  command became ssh with zero toggles (`altToggles` already counted),
-  `history_size` frozen, `scroll_region_lower != pane_height-1`, bonus
-  title shape `*:*:* - "*"`. Use it to (a) publish a `@modal_nested` flag and
-  (b) optionally strip a detected inner status row before matching.
-  Never let it enable remapping on its own.
-- Measure the nested `cursor_shape` 500 ms delay cause if cheap (inner
-  tmux redraw timer?) — see findings F11.
-- Update README "Nested tmux" section with measured behaviour.
+See decisions D20–D22, findings F21–F25, `tests/integration/remote_test.go`,
+`tests/fixtures/nested/`. Carried forward: the nested `cursor_shape`
+delay (F11) — investigate in M7 with nvim, where it matters.
 
 ## M6 — remaining specs, CPU budget, benchmark
 

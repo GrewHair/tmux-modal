@@ -25,3 +25,15 @@
   verified end to end on a sandbox server with their real config. Owner
   restarted tmux: "everything seems to work alright".
 - Wrote these dev notes before context compaction.
+- M5: sshd container (`tests/docker/sshd.Dockerfile`) and remote
+  integration tier; plain-SSH detection/remapping identical to local.
+  Measured the §3.8 tier-1 nesting signals — none discriminate (F21).
+  Found that htop under a remote tmux read as **normal while its search
+  prompt was open** (inner status line over the last row; F22): fixed with
+  a required bottom-bar anchor, screen-based nesting detection (status
+  line, borders in UTF-8 and VT100 letters, local `tmux` command, title),
+  never-remap policy for nested panes, and a lint for the pattern.
+  Nested fixtures (16) captured in containers. Chased an intermittent
+  latency-test failure down to bash `read -t` dropping bytes in the test
+  app (F25, via `tmux -vv`); rewrote the test app in Go. Key-table change
+  and client re-point now go in one command list (D22). Released v0.2.0.

@@ -109,6 +109,49 @@ threshold 100, but "any two of those three clear the threshold" is false
 **F20. TOML placement:** a top-level key appended after a `[[table]]` header
 belongs to that table (bit an integration test).
 
+## SSH and nested tmux (M5; sshd container `tests/docker/sshd.Dockerfile`, tmux 3.4 both sides)
+
+**F21. The brief's tier-1 nesting signals (§3.8) do not discriminate.**
+Measured per 0.5 s: plain `ssh -t host htop` also shows `alternate_on=1`
+from the first read with zero toggles (the command becomes `ssh` and htop
+enters the alt screen between two reads), and `history_size` frozen.
+`scroll_region_lower` stayed `pane_height-1` under a remote tmux even after
+it scrolled shell output (`seq 100`) and ran htop. `pane_title` is the
+local host name unless the inner tmux has `set-titles on`. Nesting is
+therefore detected from the screen (status line, borders), the local
+command (`tmux`) and the title shape only.
+
+**F22. Under a remote tmux, htop's top anchors still match** (PID header,
+meters), while the inner status line covers the last row. With the bottom
+bar as optional evidence the identity was confirmed and the missing
+`Search:` prompt (now one row up) read as **normal → remap while typing**.
+Fixed twice over: the bottom bar is `required` in `specs/htop.toml`, and
+remapping is disabled for nested panes (D20). A lint now flags the pattern
+(D21). Fixtures: `tests/fixtures/nested/`.
+
+**F23. Inner pane borders come in two alphabets.** With a UTF-8 locale on
+the remote the inner tmux draws `│ ─ ├ …`; without one (no `LANG` in a
+bare container) it uses the VT100 line-drawing charset, and the outer
+grid stores — and `capture-pane` returns — the plain letters `x q t u w v n`.
+
+**F24. The inner tmux's command prompt opens asynchronously.** Sending
+`C-b : set … Enter` in one `send-keys` delivers the text to the
+application (htop then started `strace` on `s`). Wait ~0.3 s after `C-b :`
+(`scripts/fixtures/nested.sh`).
+
+## Test-harness pitfalls
+
+**F25. bash `read -t` loses bytes.** The bash test app polled with
+`read -rsn1 -t 0.1` (so its SIGWINCH trap could redraw). Roughly one run in
+four lost a key: `tmux -vv` showed `writing key 0x2f (/) to %0`, the app
+never saw it. Blocking `read` defers the trap (no redraw on resize), and
+`set -o posix` did not make SIGWINCH interrupt `read` in bash 5.2. The app
+is now a small Go program (`tests/integration/keyecho/`). A
+self-inflicted variant: typing a key less than 20 ms after Escape merges
+the two into `ESC/` in any app that disambiguates Escape by timeout — wait
+for the *app* (screen), not only for the daemon's published state, before
+the next key.
+
 ## Performance (one pane, WSL2, tmux 3.4)
 
 Keypress → published mode (`TestDetectionLatency`): into typing 37 ms

@@ -172,3 +172,38 @@ before the first push to remove the host name.
 
 The owner asked to publish after M4 (not M8) and to keep pushing. Push after
 each milestone (CI must be green); tag a release when daemon code changes.
+
+## D20. Nested multiplexers: never remap — M5
+
+`classify.DetectNested` (O(1) per capture, full screen only for borders):
+local command `tmux`/`tmate`/`screen`/`zellij`/`byobu` → `command`; else,
+only when the alternate screen is on and **no spec claims the pane's
+command** (a local htop is never nested): tmux's default status line on
+the last or first row → `status-line` (the row is then removed before
+matching); an interior full-height column of vertical border characters
+or full-width row of horizontal ones (UTF-8 or VT100 letters) → `borders`
+(`Split`); the default `set-titles-string` shape → `title`. Policy in
+`classify.Pane`: a key-remapping spec reports `unknown` (reason says what
+it would have been); a hooks-only spec reports its mode with confidence
+`low`, or `unknown` when split. Published as `@modal_nested` /
+`MODAL_NESTED`. Nested panes are always captured in full (no band). A
+remote tmux with status off and one pane is indistinguishable from plain
+SSH and remaps as usual — the plan allowed this ("keys go through to the
+inner active pane"); the inner-prefix caveat is in the README.
+
+## D21. Absence must be anchored where the mode rules read — M5
+
+A remapping spec whose default is commanding must have a required
+identity clause (or a clause under `combine = "all"`) on the rows its
+mode-rule regexes read; `lint` warns otherwise (`lintAbsenceAnchor`).
+htop's bottom-bar clause became `required` (threshold 100 → 40: bar plus
+the PID header or both meters, the same acceptance as before when the bar
+is present). Found by F22.
+
+## D22. Key-table change and client re-point in one command list — M5
+
+`set-option key-table X ; switch-client -c C -T X …` is sent as one control
+line, so no keystroke can arrive between the two (such a key would be
+discarded, see D3). Theoretical window; the latency-test flake that
+prompted the look turned out to be F25. The option comes first, so a
+failing re-point (client just detached) cannot drop it (F4).

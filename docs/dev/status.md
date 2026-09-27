@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-27, after milestone 4 and release v0.1.0._
+_Last updated: 2026-09-27, after milestone 5 and release v0.2.0._
 
 ## Milestones (brief §12)
 
@@ -10,15 +10,15 @@ _Last updated: 2026-09-27, after milestone 4 and release v0.1.0._
 | 2 | Spec loader, matcher, `validate`, golden fixtures | **done** |
 | 3 | htop end to end (local), key-table sync, focus reconciliation | **done**, reviewed by the owner at the checkpoint |
 | 4 | Status indicator and transition hook | **done** |
-| 5 | SSH integration tests; nested-tmux fallback | **next** — see [milestones.md](milestones.md) |
-| 6 | Remaining bundled specs, CPU-budget self-throttling, benchmark | todo (throttling already implemented, benchmark not) |
+| 5 | SSH integration tests; nested-tmux fallback | **done** — sshd container tier, nested detection (D20), absence-anchor lint (D21) |
+| 6 | Remaining bundled specs, CPU-budget self-throttling, benchmark | **next** — see [milestones.md](milestones.md) (throttling already implemented, benchmark not) |
 | 7 | `vim-family` specs, hooks-only path, per-spec `poll_interval` | todo (hooks-only path already implemented and tested; `poll_interval` parsed but not yet used by the scheduler) |
 | 8 | README, CI, publish | **done early** at the owner's request (repo public, CI green, v0.1.0 released); README must keep growing with each milestone |
 
 ## Where things live
 
 - Repo: https://github.com/GrewHair/tmux-modal (public). CI: `.github/workflows/ci.yml`; release on `v*` tags: `release.yml` (static binaries for linux/darwin/freebsd, amd64/arm64 + linux/arm, SHA256SUMS).
-- Current release: **v0.1.0**. `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
+- Current release: **v0.2.0**. `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
 
 ## The owner is dogfooding it
 
@@ -36,7 +36,8 @@ Owner feedback so far: "everything seems to work alright".
 ## Known gaps right now
 
 - Only htop is recognised; every other full-screen app is `unknown` (N/A, pass-through).
-- No SSH / nested-tmux tests yet (M5). Nested detection heuristics from brief §3.8 are not implemented; nested tmux currently falls back to `unknown` simply because no spec matches the combined screen.
+- Nested tmux with the inner status line off (or customised beyond tmux's default shape) and a single pane is indistinguishable from plain SSH: keys are remapped (documented in README; `prefix j` then reaches the inner tmux as `prefix Down`).
+- Nested `cursor_shape` ~0.5 s delay (F11): cause still unknown; matters for nvim over nested tmux (M7).
 - `@modal_burst_decay` is parsed but unused (event-driven scheduling made it moot; reserved for a polling fallback).
 - Spec `poll_interval` is parsed but not consulted by the scheduler.
 - CPU budget: implemented (`sys.go`), measures only the daemon's own CPU, not the tmux server work it causes. No 5/20-pane benchmark yet.
