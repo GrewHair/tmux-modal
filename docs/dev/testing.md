@@ -96,8 +96,9 @@ filter stay letters; options screen), lazygit (filter, menu, new-branch
 prompt), ranger/lf/nnn prompts, ncdu, mc, fzf; an overlay giving tig keys,
 written while the daemon runs (`TestAppOverlayAddsKeys`). vim and nvim over
 SSH, every mode, key table never touched (`vim_test.go`), also inside a
-remote tmux with its status line at the bottom, top, off, and split
-(`TestNestedTmuxVim`; each case on its own remote tmux socket and file,
+remote tmux with its status line at the bottom, top, off, and split (vim
+read in its inner pane, the shell and htop beside it unknown; the prefix
+for the remote tmux is `C-b C-b`) (`TestNestedTmuxVim`; each case on its own remote tmux socket and file,
 killed afterwards: the remote tmux outlives the SSH connection), and hook latency
 keypress → FIFO listener, local vim (defaults only) and over SSH
 (`TestVimHookLatency`, -v for numbers). Remote: plain-SSH remap/prompt, htop over

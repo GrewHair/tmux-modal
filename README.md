@@ -16,15 +16,13 @@ Two independent things can subscribe to that:
    can react — e.g. switch an outer keyboard layer off while vim is in
    normal mode and on while you type.
 
-> **Status: pre-release (0.6).** Milestones done: detector, spec engine,
-> `validate`, status indicator, transition hook, SSH and nested-tmux
-> handling (tested against a real sshd), [vim and neovim](#vim-and-neovim)
-> for the hook, and [bundled specs](#bundled-specs)
-> for htop, btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc,
-> fzf and common REPLs, any of which [can be given keys](#add-keys-to-any-app).
-> Still to come: the hooks-only `vim`/`nvim` specs.
-> Any full-screen app no spec recognises shows as **N/A** and is left
-> completely alone.
+> **Status: 1.0.** Recognises [vim and neovim](#vim-and-neovim) (for the
+> hook) and, through [bundled specs](#bundled-specs), htop, btop, less,
+> man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and common REPLs,
+> any of which [can be given keys](#add-keys-to-any-app); locally, over SSH
+> and through a [remote tmux](#ssh-and-nested-tmux) (tested against a real
+> sshd). Any full-screen app no spec recognises shows as **N/A** and is
+> left completely alone.
 
 ## Install
 
@@ -245,9 +243,10 @@ Known limits — the screen alone cannot tell:
 - **Over SSH, before vim is first recognised**, its command line (only
   tildes on screen) reads as unknown; once vim has been seen, it is known.
 - **Inside a remote tmux** it works the same (the inner status line is
-  removed first; low confidence), except when the remote window is split
-  (unknown: which inner pane has the keyboard is invisible from outside).
-  Escape takes the inner tmux's `escape-time` (500 ms on tmux 3.4; `set -s
+  removed first; low confidence), also when the remote window is split:
+  vim shows its cursor, so the inner pane with the cursor is the one read.
+  While vim redraws (Escape out of visual, say) it hides the cursor for a
+  moment, which reads as unknown for about 100 ms. Escape takes the inner tmux's `escape-time` (500 ms on tmux 3.4; `set -s
   escape-time 10` on the remote fixes that) plus vim's `ttimeoutlen`.
 
 ## Key remapping
@@ -361,14 +360,17 @@ tmux server spends on top of its own baseline to serve the daemon
 
 | Panes | `@modal_scope` | frugal: daemon / server | balanced | snappy |
 |---|---|---|---|---|
-| 5 | `active` (default) | 0.20 % / +0.20 % | 0.13 % / +0.17 % | 0.23 % / +0.40 % |
-| 5 | `all` / `visible` | 0.33 % / +0.57 % | 0.33 % / +0.53 % | 0.60 % / +0.93 % |
-| 20 | `active` (default) | 0.10 % / +0.30 % | 0.17 % / +0.33 % | 0.27 % / +0.50 % |
-| 20 | `all` / `visible` | 1.50 % / +3.63 % | 1.63 % / +4.16 % | 2.36 % / +5.46 % |
+| 5 | `active` (default) | 0.10 % / +0.23 % | 0.13 % / +0.20 % | 0.23 % / +0.37 % |
+| 5 | `all` / `visible` | 0.47 % / +0.70 % | 0.47 % / +0.80 % | 0.73 % / +1.10 % |
+| 20 | `active` (default) | 0.23 % / +0.77 % | 0.17 % / +0.33 % | 0.50 % / +0.70 % |
+| 20 | `all` / `visible` | 2.26 % / +5.30 % | 1.47 % / +3.23 % | 2.70 % / +6.20 % |
+| 1 vim, typed into at 10 keys/s | any | 1.13 % / +0.73 % | 1.20 % / +0.83 % | 1.16 % / +0.76 % |
 
 With the default scope only the focused pane of each attached session is
 examined, and tmux stops streaming the other panes' output to the daemon,
-so the cost barely grows with the number of panes. `visible`/`all`
+so the cost barely grows with the number of panes. Typing is the busiest
+case for one pane: every keystroke redraws, so the pane is examined at the
+burst cadence the whole time (about 1 % either way, whatever the profile). `visible`/`all`
 examine every busy pane each time it redraws: 20 constantly redrawing
 panes is the expensive case, and `@modal_cpu_budget` (2 %) then stretches
 the intervals. Idle panes cost nothing in any scope.
@@ -424,10 +426,15 @@ then:
   table by default, only `l`). Type the escape leader first
   (`prefix _ l`), or set `@modal_nested_remap off` to leave every nested
   pane alone (N/A).
-- **Inner window split into several panes:** N/A (`unknown`,
-  pass-through). The outer screen shows all inner panes at once and does
-  not say which one has the keyboard, so no mode is claimed and keys go
-  through untouched.
+- **Inner window split into several panes:** the outer screen shows all
+  inner panes at once. tmux draws the cursor only in the pane that has the
+  keyboard, so while the cursor is visible that inner pane is cut out
+  along the borders (splits within splits too) and read on its own: vim,
+  prompts and anything else that shows a cursor work as usual. When the
+  cursor is hidden (htop and btop hide it) nothing on screen says which
+  pane is focused: N/A (`unknown`, pass-through), keys untouched. A shell
+  in an inner pane is N/A too (no spec knows a shell on the alternate
+  screen; `MODAL_TYPING=1` either way).
 - `@modal_nested` / `MODAL_NESTED` say why a pane was taken as nested:
   `command`, `status-line`, `borders` or `title`.
 
@@ -567,7 +574,7 @@ go test ./tests/integration/    # real tmux, real htop, real attached client; SS
 scripts/fixtures/htop.sh LABEL docker run --rm -it IMAGE htop   # recapture fixtures
 scripts/fixtures/nested.sh      # recapture the nested-tmux fixtures
 scripts/fixtures/apps.sh [ubuntu-24.04|ubuntu-22.04|debian-bookworm] [app...]   # the other apps
-TMUX_MODAL_BENCH=1 go test ./tests/integration/ -run TestBenchmarkCPU -v -timeout 30m   # CPU table below
+TMUX_MODAL_BENCH=1 go test ./tests/integration/ -run TestBenchmarkCPU -v -timeout 30m   # the CPU table above
 ```
 
 Integration tests run each case on two private tmux servers (`-L`,

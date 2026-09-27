@@ -286,6 +286,11 @@ trailing and added its full 30 ms to every call (D31).
 - A container user cannot read files in the scratch dir mounted with
   `-v` (permissions); pipe scripts in on stdin (`python3 - < script`).
 
+- The integration harness's own tmux uses `C-b` as its prefix too: keys
+  for a *remote* tmux need `C-b C-b <key>` (send-prefix passes one on).
+- htop discards typeahead when it quits: keys sent right after `q` are
+  lost; wait for the shell prompt before sending more.
+
 ## WSL and Windows (M7)
 
 
@@ -297,3 +302,15 @@ powershell.exe ~0.5 s (the toast example). Detached with `setsid … &` and
 stdio to /dev/null, the hook returns in < 10 ms with the server up, down
 (connection refused at once), or hung (`--connect-timeout 1 -m 2` bounds
 the background curl). Detached calls can arrive out of order.
+
+
+## Split remote tmux (M8)
+
+**F41. The cursor marks the focused inner pane**: through a split remote
+tmux (3.4) the outer pane's cursor is visible exactly when the inner
+focused pane shows its cursor, and it sits inside that pane (fixtures
+`tests/fixtures/nested/*/split-*`). vim shows it in every mode but hides it
+for ~100 ms while redrawing (Escape out of visual), so a split reads
+unknown for that moment; htop and btop hide it throughout. vim's
+showmode and showcmd share a 40-column inner pane's last row
+(`-- VISUAL -1` in a narrow pane: the marker is still matched).

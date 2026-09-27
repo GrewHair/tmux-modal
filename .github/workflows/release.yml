@@ -11,8 +11,8 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
       - name: Check VERSION matches the tag
@@ -27,7 +27,11 @@ jobs:
               -o "dist/tmux-modal-$os-$arch" ./cmd/tmux-modal
           done
           (cd dist && sha256sum tmux-modal-* > SHA256SUMS)
+      - name: Release notes from CHANGELOG.md
+        run: |
+          awk -v v="$(cat VERSION)" '/^## /{p = ($2 == v); next} p' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "no CHANGELOG.md section for $(cat VERSION)"; exit 1; }
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/* --title "$GITHUB_REF_NAME" --generate-notes
+        run: gh release create "$GITHUB_REF_NAME" dist/* --title "$GITHUB_REF_NAME" --notes-file notes.md

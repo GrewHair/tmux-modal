@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-28, after M7 (overlays v0.5.0, vim/neovim v0.6.0, AHK hook example). Next: M8._
+_Last updated: 2026-09-28, after M8 (1.0.0: split remote tmux by cursor, benchmark, changelog). All brief milestones done; next: whatever the owner's dogfooding brings up._
 
 ## Milestones (brief §12)
 
@@ -13,7 +13,7 @@ _Last updated: 2026-09-28, after M7 (overlays v0.5.0, vim/neovim v0.6.0, AHK hoo
 | 5 | SSH integration tests; nested-tmux fallback | **done** — sshd container tier, nested detection (D20), absence-anchor lint (D21) |
 | 6 | Remaining bundled specs, CPU-budget self-throttling, benchmark | **done** — 25 specs (D23–D26), fixtures from three distros, SSH app tier, benchmark + output gating (D28) |
 | 7 | Spec overlays (owner's request, D29), then `vim-family` specs | **done** — overlays (v0.5.0), vim/nvim hooks-only specs (v0.6.0, D30, D31); and `examples/hooks/ahk-http.sh` for the owner's AHK v2 endpoint ([milestones.md](milestones.md)) |
-| 8 | README, CI, publish | **next** — published early at the owner's request (repo public, CI green since v0.1.0); what is left is the polish pass in [milestones.md](milestones.md) M8 |
+| 8 | README, CI, publish | **done** — 1.0.0: README pass, benchmark re-run (with a vim typing case), CHANGELOG.md as release notes, CI actions bumped, and B1's cursor part (D32) at the owner's request |
 
 ## Where things live
 
@@ -60,8 +60,9 @@ Don't rewrite again without the owner asking.
   `ttimeoutlen`).
 - less over SSH is recognised only once it shows one of its own prompts
   (`(END)`, HELP, a message); REPLs only locally (D25, D26).
-- Inner tmux split into several panes: always `unknown`. Improvement
-  designed and deferred by the owner: [backlog.md](backlog.md) B1.
+- Inner tmux split into several panes: the inner pane with the visible
+  cursor is read (D32); with the cursor hidden (htop, btop) `unknown`. The
+  border-colour signal for that is in [backlog.md](backlog.md) B1.
 - Remapping through a nested tmux: after the inner prefix key, a remapped
   key arrives remapped (`prefix l` → `prefix Right`); owner accepted.
 - Inside a remote tmux, Escape reaches the app after the inner tmux's

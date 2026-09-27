@@ -3,6 +3,8 @@ package integration
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"testing"
@@ -17,7 +19,11 @@ import (
 //
 // Slow (about five minutes), so it runs only with TMUX_MODAL_BENCH=1:
 //
-//	TMUX_MODAL_BENCH=1 go test ./tests/integration/ -run TestBenchmarkCPU -v -timeout 20m
+//	TMUX_MODAL_BENCH=1 go test ./tests/integration/ -run TestBenchmarkCPU -v -timeout 30m
+//
+// Then one vim pane typed into at 10 keys a second, leaving and entering
+// insert every two seconds (skipped without a local vim): every keystroke
+// redraws, so the pane is examined at the burst cadence throughout.
 func TestBenchmarkCPU(t *testing.T) {
 	if os.Getenv("TMUX_MODAL_BENCH") == "" {
 		t.Skip("set TMUX_MODAL_BENCH=1 to run the CPU benchmark")
@@ -42,7 +48,57 @@ func TestBenchmarkCPU(t *testing.T) {
 			}
 		}
 	}
-	t.Logf("CPU, %% of one core, htop in every pane, %v per measurement:\n%s", window, strings.Join(report, "\n"))
+	if vim, err := exec.LookPath("vim"); err == nil {
+		for _, profile := range []string{"frugal", "balanced", "snappy"} {
+			t.Run("vim-typing/"+profile, func(t *testing.T) {
+				d, s, base := benchVim(t, vim, profile, window)
+				line := fmt.Sprintf("vim typed into  %-8s  daemon %5.2f%%  tmux server +%5.2f%% (baseline %.2f%%)",
+					profile, d, s-base, base)
+				t.Log(line)
+				report = append(report, line)
+			})
+		}
+	}
+	t.Logf("CPU, %% of one core, %v per measurement:\n%s", window, strings.Join(report, "\n"))
+}
+
+// benchVim: vim with its defaults, typed into through the attached client
+// for the baseline and again with the daemon running.
+func benchVim(t *testing.T, vim, profile string, window time.Duration) (daemon, server, baseline float64) {
+	f := filepath.Join(t.TempDir(), "notes.txt")
+	os.WriteFile(f, []byte("alpha\n"), 0o644)
+	h := newHarness(t, opts{w: 120, h: 40, cmd: []string{vim, "-u", "DEFAULTS", "-i", "NONE", "-n", f},
+		options: map[string]string{"@modal_profile": profile, "@modal_log_level": "warn"}})
+	pid, err := strconv.Atoi(h.tmuxIn("display-message", "-p", "#{pid}"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	time.Sleep(time.Second)
+	// Twenty keys every two seconds: "o", eighteen letters, Escape.
+	keys := append(append([]string{"o"}, strings.Split("the quick brown fo", "")...), "Escape")
+	measure := func(pids ...int) []float64 {
+		start := make([]time.Duration, len(pids))
+		for i, p := range pids {
+			start[i] = procCPU(p)
+		}
+		t0 := time.Now()
+		for i := 0; time.Since(t0) < window; i++ {
+			h.typeKeys(keys[i%len(keys)])
+			time.Sleep(100 * time.Millisecond)
+		}
+		el := time.Since(t0)
+		out := make([]float64, len(pids))
+		for i, p := range pids {
+			out[i] = 100 * float64(procCPU(p)-start[i]) / float64(el)
+		}
+		return out
+	}
+	baseline = measure(pid)[0]
+	h.typeKeys("Escape")
+	h.startDaemon()
+	h.expectState("main", "vim/normal/commanding", "root")
+	r := measure(h.daemon.Process.Pid, pid)
+	return r[0], r[1], baseline
 }
 
 func benchOnce(t *testing.T, panes int, scope, profile string, window time.Duration) (daemon, server, baseline float64) {

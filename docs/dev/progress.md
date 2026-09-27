@@ -107,3 +107,17 @@
   dogfooding refreshed, M8 plan made concrete, backlog B7 (M7 leftovers),
   findings F39 (harness pitfalls) and F40 (WSL/Windows), collaboration
   notes (default-config target, AHK v2 endpoint, verify before answering).
+
+**2026-09-28 (M8)**
+- README pass (status 1.0, nested split, benchmark table + vim typing row).
+  Benchmark re-run with 30 s windows; new `vim-typing` case.
+- Owner asked about B1's cost; answered (cursor-only: no extra CPU, about half the full design;
+  colour: version/theme-dependent, riskier) and was asked to build it
+  before 1.0. Built cursor-only (D32): `innerPanes`, `focusedPane`,
+  `Screen.Sub`; 12 new nested fixtures (vim focused in a split, three
+  panes, htop focused, shell focused) in both border alphabets; the split
+  case of `TestNestedTmuxVim` now drives vim in the split, moves focus to
+  the shell and htop (unknown) and back. Findings F41, harness pitfalls
+  (prefix through the harness tmux, htop dropping typeahead).
+- CHANGELOG.md, release notes from it; checkout/setup-go v7. Released
+  v1.0.0.

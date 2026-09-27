@@ -383,3 +383,25 @@ window after a call coalesce into one call with the final state at the
 window's end. The README's guarantee (one call with the final state per
 burst, reported from what the subscriber last saw) still holds; the first
 edge of a burst is additionally reported at once.
+
+## D32. Split remote tmux: the inner pane with the cursor — owner, M8
+
+Backlog B1, built before 1.0 at the owner's request, in the smaller of the
+two designs offered: **cursor only**. tmux draws the terminal cursor only
+in the focused pane, and only while that pane shows it, so a visible
+cursor inside an inner pane proves that pane has the keyboard.
+`classify.DetectNested` cuts the screen (inner status line removed) into
+inner panes the way tmux lays them out — a border spanning an area splits
+it, each part is cut again (`innerPanes`, depth ≤ 8) — and sets
+`Nested.Focus` to the pane holding the cursor; `PaneWith` classifies
+`Screen.Sub` of that rectangle with the usual nested policy (low
+confidence; `@modal_nested_remap` for remapping specs). No cursor, or a
+cursor on a border or the inner status line: unknown, as before.
+
+Not built: the active-border colour as a second signal (it would cover
+htop/btop, which hide the cursor). Its colouring depends on the inner
+tmux's version (from 3.3 only half of a shared border is coloured with two
+panes) and theme, and a wrong pick would remap keys while the user types
+in the other pane. No extra captures or colour for this: nested panes were
+already captured in full. Accepted side effect: vim hides the cursor for a
+moment while redrawing, which reads as unknown for ~100 ms in a split.

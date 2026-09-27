@@ -5,7 +5,15 @@ entry says why it exists, what was already decided, and how to build it.
 Promote an entry into [milestones.md](milestones.md) when it gets
 scheduled; delete it when done (record the outcome in decisions/findings).
 
-## B1. Split remote tmux: find the focused inner pane — deferred by the owner
+## B1. Split remote tmux: the rest (colour) — cursor part done in 1.0 (D32)
+
+**Done in 1.0 (D32):** the inner pane with the visible cursor is found and
+read. **Left:** with the cursor hidden (htop, btop focused in the split)
+it stays unknown; the active-border colour below (step 2, second bullet)
+would cover that. Build it only if the owner asks: it depends on the inner
+tmux's version and theme, and a wrong pick remaps keys while typing.
+
+The original design notes, kept for that:
 
 **Today:** when the tmux running inside a pane (usually on a remote host)
 has its window split into several panes, the outer screen shows all inner
@@ -69,8 +77,7 @@ from outside. Only revisit if the owner complains.
 
 ## B5. Small things
 
-- CI warns that `actions/checkout@v4` and `actions/setup-go@v5` target the
-  deprecated Node 20 runtime; bump when newer majors are out.
+- (Done in 1.0: CI actions bumped to checkout@v7 / setup-go@v7, Node 24.)
 - htop: typing digits starts an incremental PID search with no prompt drawn
   (findings F16). Digits are not remapped, so harmless; nothing to do
   unless a spec ever remaps digits.

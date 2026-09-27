@@ -116,7 +116,15 @@ arrivals. `windows-toast.sh` (since M4) remains as the slow demo. A warm
 bridge (one long-lived Windows process, no per-call start) is in the
 backlog (B7) if ~80–130 ms per call ever matters.
 
-## M8 — polish (next)
+## M8 — polish — done (v1.0.0)
+
+Done as planned below. Step 4: the owner asked for B1 before 1.0; built
+cursor-only (D32). B7 stays in the backlog. Benchmark: a vim-typing case
+was added (~1 % daemon CPU, any profile). CHANGELOG.md sections are now
+the GitHub release notes (`release.yml` fails without one for the tag);
+older releases' notes were filled from it.
+
+The plan as it was:
 
 From the brief: README complete (every option, spec authoring, shadowed
 keys per app, nested limitation, validate, measured costs, known vim gaps
