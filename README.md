@@ -16,7 +16,7 @@ Two independent things can subscribe to that:
    can react — e.g. switch an outer keyboard layer off while vim is in
    normal mode and on while you type.
 
-> **Status: pre-release (0.2).** Milestones done: detector, spec engine,
+> **Status: pre-release (0.3).** Milestones done: detector, spec engine,
 > `validate`, htop end to end, status indicator, transition hook, SSH and
 > nested-tmux handling (tested against a real sshd). Still to
 > come: the remaining bundled specs (less, man,
@@ -197,6 +197,7 @@ Details that make this safe:
 | `@modal_hook_timeout` | 500 | ms |
 | `@modal_hook_debounce` | 30 | ms |
 | `@modal_confirm_captures` | 2 | captures that must agree before remapping resumes |
+| `@modal_nested_remap` | `on` | remap keys inside a tmux running in the pane (usually on a remote host); `off`: such panes are N/A, keys untouched. See [SSH and nested tmux](#ssh-and-nested-tmux) |
 | `@modal_log_level` | `warn` | log: `~/.local/state/tmux-modal/<server>.log` |
 
 Profiles: `frugal` 100/500/5000 ms (burst/poll/idle), `balanced` 30/150/2000,
@@ -249,33 +250,29 @@ host: the pane's command is `ssh`, so the application is recognised from
 its screen alone. This is tested against a real sshd in a container.
 
 If you run **tmux on the remote host too**, the inner tmux is a terminal of
-its own: it holds the alternate screen for as long as it runs, draws its
-status line and pane borders over the application, and has its own prefix
-key and copy mode. So:
+its own: it draws its status line and pane borders over the application
+and has its own prefix key. The plugin recognises it (its default status
+line, pane borders, a local `tmux` client in the pane, or the `set-titles`
+title), removes the inner status line before looking at the screen, and
+then:
 
-- **Keys are never remapped through a nested tmux.** A key-remapping app
-  (htop) shows as N/A (`unknown`, pass-through) there. The inner tmux's
-  status line would otherwise hide the row htop shows its search prompt
-  on, and the inner prefix key or an inner split would send remapped keys
-  somewhere else.
-- **Hooks-only apps** (vim/nvim, coming) still report their mode, from the
-  screen minus the inner status line, with `MODAL_CONFIDENCE=low`, except
-  when the inner window is split (then `unknown`: the outer screen cannot
-  tell which inner pane has the keyboard).
+- **One inner pane:** works as usual — htop is recognised and remapped,
+  with `@modal_confidence` `low`. The one quirk: right after the *inner*
+  prefix key, a remapped key reaches the inner tmux remapped (`prefix l`
+  arrives as `prefix Right`; tmux binds none of `h j k` in its prefix
+  table by default, only `l`). Type the escape leader first
+  (`prefix _ l`), or set `@modal_nested_remap off` to leave every nested
+  pane alone (N/A).
+- **Inner window split into several panes:** N/A (`unknown`,
+  pass-through). The outer screen shows all inner panes at once and does
+  not say which one has the keyboard, so no mode is claimed and keys go
+  through untouched.
 - `@modal_nested` / `MODAL_NESTED` say why a pane was taken as nested:
-  `command` (a local `tmux` client in the pane), `status-line` (tmux's
-  default status line on the first or last row), `borders` (inner pane
-  borders, box-drawing or VT100 line-drawing), `title` (the pane title has
-  the shape of tmux's `set-titles-string`; only when `set-titles` is on).
+  `command`, `status-line`, `borders` or `title`.
 
-**Known limitation:** a remote tmux with its status line turned off (or a
-heavily customised one) and a single pane draws exactly what the
-application draws, so it cannot be told apart from plain SSH, and htop's
-keys are remapped as usual. That is still correct — the keys reach the one
-inner pane — except right after you press the inner prefix key: `prefix j`
-arrives at the inner tmux as `prefix Down`. Use the escape leader
-(`prefix _ j`) or turn the plugin off for that pane
-(`set -p @modal_enabled off`) if that bites.
+A remote tmux with its status line off and a single pane is not even
+recognised as nested — it looks exactly like plain SSH — which makes no
+difference with the default setting.
 
 The brief's cheap tier-1 signals for nesting (alternate screen held with no
 toggles, frozen history, a scroll region short of the pane) turned out not

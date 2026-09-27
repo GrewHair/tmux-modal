@@ -37,3 +37,5 @@
   latency-test failure down to bash `read -t` dropping bytes in the test
   app (F25, via `tmux -vv`); rewrote the test app in Go. Key-table change
   and client re-point now go in one command list (D22). Released v0.2.0.
+- Owner review of M5: remap through nested tmux by default
+  (`@modal_nested_remap`, default on); released v0.3.0.

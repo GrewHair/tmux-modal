@@ -216,13 +216,40 @@ func TestSSHAppExit(t *testing.T) {
 	h.expectScreen("main", "$ j")
 }
 
-// ---- nested tmux: never remap ------------------------------------------------
+// ---- nested tmux ---------------------------------------------------------------
 
-// The remote runs tmux with its default status line: the daemon must
-// notice the inner multiplexer and never remap, in any state.
-func TestNestedTmuxNeverRemaps(t *testing.T) {
+// The remote runs tmux with its default status line: the daemon removes
+// that line and remaps as usual (@modal_nested_remap defaults to on).
+func TestNestedTmuxRemaps(t *testing.T) {
 	requireRemote(t)
 	h := newHarness(t, opts{cmd: sshCmd("tmux new-session " + remoteKeyecho)})
+	h.startDaemon()
+	h.expectState("main", "keyecho/normal/commanding", "modal-keyecho")
+	if n := h.option("main", "@modal_nested"); n != "status-line" {
+		t.Fatalf("@modal_nested = %q, want status-line", n)
+	}
+	if c := h.option("main", "@modal_confidence"); c != "low" {
+		t.Fatalf("confidence %q, want low", c)
+	}
+	h.typeKeys("j")
+	h.expectScreen("main", "last=[Down]")
+	// The prompt is one row above the inner status line.
+	h.typeKeys("/")
+	h.expectState("main", "keyecho/insert/typing", "root")
+	h.typeKeys("j")
+	h.expectScreen("main", "PROMPT> j")
+	h.typeKeys("Escape")
+	h.expectState("main", "keyecho/normal/commanding", "modal-keyecho")
+	h.typeKeys("k")
+	h.expectScreen("main", "last=[Up]")
+}
+
+// With @modal_nested_remap off the daemon never remaps through a nested
+// tmux, in any state.
+func TestNestedTmuxRemapOff(t *testing.T) {
+	requireRemote(t)
+	h := newHarness(t, opts{cmd: sshCmd("tmux new-session " + remoteKeyecho),
+		options: map[string]string{"@modal_nested_remap": "off"}})
 	h.startDaemon()
 	h.expectScreen("main", "KEYECHO TEST APPLICATION")
 	h.expectState("main", "keyecho/unknown/unknown", "root")
@@ -242,21 +269,20 @@ func TestNestedTmuxNeverRemaps(t *testing.T) {
 	}
 }
 
-// htop under a remote tmux whose status line covers the last row: its top
-// anchors still match, but its bottom bar is gone, so "normal" must not be
-// concluded from the missing prompt.
+// htop under a remote tmux whose status line covers the last row: the
+// search prompt is one row up and must still be seen, or htop would read
+// as normal while the user types.
 func TestNestedTmuxHtop(t *testing.T) {
 	requireRemote(t)
 	h := newHarness(t, opts{w: 160, h: 40, cmd: sshCmd("tmux new-session env HTOPRC=/dev/null htop")})
 	h.startDaemon()
-	h.expectScreen("main", "F1Help")
-	h.expectState("main", "htop/unknown/unknown", "root")
-	h.typeKeys("/", "j")
+	h.expectState("main", "htop/normal/commanding", "modal-htop")
+	h.typeKeys("/")
+	h.expectState("main", "htop/insert/typing", "root")
+	h.typeKeys("j")
 	h.expectScreen("main", "Search: j")
 	h.typeKeys("Escape")
-	if st := h.state("main"); st != "htop/unknown/unknown" {
-		t.Fatalf("state %s", st)
-	}
+	h.expectState("main", "htop/normal/commanding", "modal-htop")
 }
 
 // Inner splits: the keyboard belongs to whichever inner pane is active,
@@ -325,10 +351,10 @@ func TestNestedLocalTmux(t *testing.T) {
 	h.expectState("main", "/none/none", "")
 	h.typeKeys(fmt.Sprintf("exec tmux -L %s attach", third), "Enter")
 	h.expectScreen("main", "KEYECHO TEST APPLICATION")
-	h.expectState("main", "keyecho/unknown/unknown", "root")
+	h.expectState("main", "keyecho/normal/commanding", "modal-keyecho")
 	if n := h.option("main", "@modal_nested"); n != "command" {
 		t.Fatalf("@modal_nested = %q, want command", n)
 	}
 	h.typeKeys("j")
-	h.expectScreen("main", "last=[j]")
+	h.expectScreen("main", "last=[Down]")
 }

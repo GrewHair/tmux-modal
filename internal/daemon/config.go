@@ -27,6 +27,7 @@ type Config struct {
 	HookDebounce time.Duration
 	LogLevel     string
 	Confirm      int // consecutive agreeing captures before remapping resumes
+	NestedRemap  bool
 
 	// Indicator templates by bucket, published per pane as @modal_indicator.
 	Indicator map[string]string
@@ -46,7 +47,7 @@ var optionNames = []string{
 	"@modal_scope", "@modal_capture_rows", "@modal_cpu_budget",
 	"@modal_spec_paths", "@modal_escape_leader", "@modal_color_matching",
 	"@modal_transition_hook", "@modal_hook_timeout", "@modal_hook_debounce",
-	"@modal_log_level", "@modal_confirm_captures",
+	"@modal_log_level", "@modal_confirm_captures", "@modal_nested_remap",
 	"@modal_indicator_format", "@modal_indicator_commanding",
 	"@modal_indicator_typing", "@modal_indicator_unknown", "@modal_indicator_none",
 }
@@ -116,6 +117,7 @@ func parseConfig(raw map[string]string) Config {
 		LogLevel:     pick(raw["@modal_log_level"], "warn", "debug", "info", "warn", "error"),
 		BurstDecay:   ms(atoi(raw["@modal_burst_decay"], 1200)),
 		Confirm:      atoi(raw["@modal_confirm_captures"], 2),
+		NestedRemap:  raw["@modal_nested_remap"] != "off",
 	}
 	if c.Confirm < 1 {
 		c.Confirm = 1

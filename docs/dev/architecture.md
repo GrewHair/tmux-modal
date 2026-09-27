@@ -36,7 +36,7 @@ tmux server
 5. The daemon never sends keys to panes.
 6. Every failure mode (spec error, tmux error, crash) degrades to pass-through; a spec that fails to load is skipped with a warning.
 7. Formats in status/border only read `@modal_*` variables.
-8. A pane that looks nested (`@modal_nested` non-empty) never reports a mode of a key-remapping spec, so it is never remapped (D20).
+8. A pane whose inner window is split never reports a mode; with `@modal_nested_remap off`, no nested pane reports a key-remapping spec's mode (D20).
 9. A remapping spec's commanding default is only concluded when a required identity clause anchors the rows its mode rules read (D21; `lint` checks).
 
 ## Per-pane state (`paneState`)

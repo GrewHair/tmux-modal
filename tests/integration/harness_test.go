@@ -220,10 +220,17 @@ func (h *harness) waitFor(what string, timeout time.Duration, cond func() bool) 
 // key-table to reach the given values.
 func (h *harness) expectState(target, state, table string) {
 	h.t.Helper()
-	h.waitFor(fmt.Sprintf("%s state %q key-table %q (have %q / %q)", target, state, table,
-		h.state(target), h.keyTable()), 5*time.Second, func() bool {
-		return h.state(target) == state && (table == "" || h.keyTable() == table)
-	})
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		st, kt := h.state(target), h.keyTable()
+		if st == state && (table == "" || kt == table) {
+			return
+		}
+		if time.Now().After(deadline) {
+			h.t.Fatalf("timed out waiting for %s state %q key-table %q (have %q / %q)", target, state, table, st, kt)
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
 }
 
 // expectScreen waits until the pane shows text.

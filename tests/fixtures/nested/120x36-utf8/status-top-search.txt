@@ -6,7 +6,7 @@
 # command: docker
 # title: fixture
 # expect_app: htop
-# expect_mode: unknown
+# expect_mode: insert
 # note: search, inner status on top
 # ---
 [0] 0:htop*                                                                                     "remote" 13:58 27-Sep-26

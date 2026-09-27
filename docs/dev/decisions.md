@@ -173,7 +173,7 @@ before the first push to remove the host name.
 The owner asked to publish after M4 (not M8) and to keep pushing. Push after
 each milestone (CI must be green); tag a release when daemon code changes.
 
-## D20. Nested multiplexers: never remap — M5
+## D20. Nested multiplexers — M5, revised by the owner
 
 `classify.DetectNested` (O(1) per capture, full screen only for borders):
 local command `tmux`/`tmate`/`screen`/`zellij`/`byobu` → `command`; else,
@@ -183,9 +183,12 @@ the last or first row → `status-line` (the row is then removed before
 matching); an interior full-height column of vertical border characters
 or full-width row of horizontal ones (UTF-8 or VT100 letters) → `borders`
 (`Split`); the default `set-titles-string` shape → `title`. Policy in
-`classify.Pane`: a key-remapping spec reports `unknown` (reason says what
-it would have been); a hooks-only spec reports its mode with confidence
-`low`, or `unknown` when split. Published as `@modal_nested` /
+`classify.PaneWith`: every spec reports its mode with confidence `low`,
+or `unknown` when split. **Owner's decision (after M5):** remapping
+through a nested tmux is **on by default**, option `@modal_nested_remap`
+(`off` → a remapping spec reports `unknown` there, as in v0.2.0). The owner
+accepted the inner-prefix quirk (tmux's default prefix table binds only
+`l` of hjkl). v0.2.0 shipped with nested remapping off. Published as `@modal_nested` /
 `MODAL_NESTED`. Nested panes are always captured in full (no band). A
 remote tmux with status off and one pane is indistinguishable from plain
 SSH and remaps as usual — the plan allowed this ("keys go through to the

@@ -257,12 +257,13 @@ func (d *Daemon) cycle() {
 
 // examine classifies one captured pane and applies the result.
 func (d *Daemon) examine(st *paneState, s *screen.Screen, full bool, now time.Time) {
-	res, _ := classify.Pane(d.set, s, st.app)
+	opt := classify.Options{NestedRemap: d.cfg.NestedRemap}
+	res, _ := classify.PaneWith(d.set, s, st.app, opt)
 	if st.app != "" && !res.Confirmed {
 		// Sticky identity not re-confirmed. If this capture is the full
 		// screen, see whether another app now owns the pane.
 		if full {
-			if alt, _ := classify.Pane(d.set, s, ""); alt.App != "" && alt.App != st.app && alt.Confirmed {
+			if alt, _ := classify.PaneWith(d.set, s, "", opt); alt.App != "" && alt.App != st.app && alt.Confirmed {
 				d.log.Infof("%s: identity %s -> %s", st.id, st.app, alt.App)
 				res, st.app, st.identFails = alt, alt.App, 0
 			}

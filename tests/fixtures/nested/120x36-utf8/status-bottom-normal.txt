@@ -6,7 +6,7 @@
 # command: docker
 # title: fixture
 # expect_app: htop
-# expect_mode: unknown
+# expect_mode: normal
 # note: htop in a remote tmux, default status line at the bottom
 # ---
 

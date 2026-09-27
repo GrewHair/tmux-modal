@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-27, after milestone 5 and release v0.2.0._
+_Last updated: 2026-09-27, after milestone 5 and release v0.3.0._
 
 ## Milestones (brief §12)
 
@@ -18,7 +18,7 @@ _Last updated: 2026-09-27, after milestone 5 and release v0.2.0._
 ## Where things live
 
 - Repo: https://github.com/GrewHair/tmux-modal (public). CI: `.github/workflows/ci.yml`; release on `v*` tags: `release.yml` (static binaries for linux/darwin/freebsd, amd64/arm64 + linux/arm, SHA256SUMS).
-- Current release: **v0.2.0**. `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
+- Current release: **v0.3.0** (v0.2.0 + remapping through nested tmux on by default, owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
 
 ## The owner is dogfooding it
 
@@ -36,7 +36,8 @@ Owner feedback so far: "everything seems to work alright".
 ## Known gaps right now
 
 - Only htop is recognised; every other full-screen app is `unknown` (N/A, pass-through).
-- Nested tmux with the inner status line off (or customised beyond tmux's default shape) and a single pane is indistinguishable from plain SSH: keys are remapped (documented in README; `prefix j` then reaches the inner tmux as `prefix Down`).
+- Inner tmux split into several panes: always `unknown` (the outer screen does not say which inner pane is focused). Possible improvement discussed with the owner: cut the screen at the inner borders and find the focused inner pane from the cursor position or the inner active-border colour — not built.
+- Remapping through a nested tmux: after the inner prefix key, a remapped key arrives remapped (`prefix l` → `prefix Right`); owner accepted.
 - Nested `cursor_shape` ~0.5 s delay (F11): cause still unknown; matters for nvim over nested tmux (M7).
 - `@modal_burst_decay` is parsed but unused (event-driven scheduling made it moot; reserved for a polling fallback).
 - Spec `poll_interval` is parsed but not consulted by the scheduler.

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Capture nested-multiplexer fixtures (tests/fixtures/nested/...): htop
 # running inside a tmux that itself runs "remotely" in a container, as seen
-# from the local pane. Every state must classify as unknown, never as a
-# mode that would remap keys.
+# from the local pane. With the inner status line removed htop's modes read
+# as usual; across inner splits everything must be unknown.
 # usage: nested.sh [image]   (default tmux-modal-sshd, tests/docker/sshd.Dockerfile)
 # shellcheck source=scripts/fixtures/lib.sh
 source "$(dirname "$0")/lib.sh"
@@ -36,15 +36,15 @@ for combo in 120x36:C.UTF-8 80x24:C; do
 	dir=$OUT/$size-$borders
 
 	remote "$w" "$h" new-session htop
-	snap "$dir/status-bottom-normal.txt" htop unknown "htop in a remote tmux, default status line at the bottom"
+	snap "$dir/status-bottom-normal.txt" htop normal "htop in a remote tmux, default status line at the bottom"
 	keys /; settle; keys abc; settle
-	snap "$dir/status-bottom-search.txt" htop unknown "search open one row above the inner status line"
+	snap "$dir/status-bottom-search.txt" htop insert "search open one row above the inner status line"
 	keys Escape; settle 0.6
 
 	inner_cmd 'set status-position top'
-	snap "$dir/status-top-normal.txt" htop unknown "inner status line on top: htop's bottom bar is on our last row"
+	snap "$dir/status-top-normal.txt" htop normal "inner status line on top: htop's bottom bar is on our last row"
 	keys /; settle
-	snap "$dir/status-top-search.txt" htop unknown "search, inner status on top"
+	snap "$dir/status-top-search.txt" htop insert "search, inner status on top"
 	keys Escape; settle 0.6
 
 	inner_cmd 'set status off'

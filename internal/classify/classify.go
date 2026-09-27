@@ -210,15 +210,34 @@ func NoApp(s *screen.Screen) Result {
 		Reason: "no full-screen application and no spec matched"}
 }
 
-// Pane classifies a pane from scratch or with a sticky app. It is the
-// single entry point shared by the daemon and validate.
+// Options adjust classification to the user's settings.
+type Options struct {
+	// NestedRemap (@modal_nested_remap, default on) lets a key-remapping
+	// spec report its mode through a nested multiplexer, so keys are
+	// remapped there too. The price: after the inner prefix key, a
+	// remapped key reaches the inner tmux mapped (prefix j arrives as
+	// prefix Down); the escape leader avoids that. Off: such panes are
+	// unknown (pass-through).
+	NestedRemap bool
+}
+
+// DefaultOptions are the options when the user sets nothing.
+var DefaultOptions = Options{NestedRemap: true}
+
+// Pane classifies a pane from scratch or with a sticky app, with the
+// default options. It is the entry point shared by the daemon and validate.
+func Pane(set *spec.Set, s *screen.Screen, stickyApp string) (Result, []Trace) {
+	return PaneWith(set, s, stickyApp, DefaultOptions)
+}
+
+// PaneWith is Pane with explicit options.
 //
 // A pane showing an inner multiplexer is classified on the screen minus
-// the inner status line, and then made safe: a key-remapping spec never
-// reports a mode there (the inner multiplexer owns a prefix key and copy
-// mode, and a split inner window mixes panes), and a hooks-only spec
-// reports its mode with low confidence, or unknown across inner splits.
-func Pane(set *spec.Set, s *screen.Screen, stickyApp string) (Result, []Trace) {
+// the inner status line, with low confidence. When the inner window is
+// split, the mode is unknown: the outer screen mixes several inner panes
+// and does not show which one has the keyboard. A key-remapping spec is
+// also unknown there unless opt.NestedRemap.
+func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (Result, []Trace) {
 	n := DetectNested(set, s)
 	if n.StatusRow >= 0 {
 		s = s.WithoutRow(n.StatusRow)
@@ -231,7 +250,7 @@ func Pane(set *spec.Set, s *screen.Screen, stickyApp string) (Result, []Trace) {
 	sp := set.Specs[res.App]
 	switch {
 	case res.App == "" || res.Mode == spec.ModeUnknown || res.Mode == spec.ModeNone:
-	case n.Split || sp == nil || sp.HasKeys():
+	case n.Split || sp == nil || (sp.HasKeys() && !opt.NestedRemap):
 		res.Reason = fmt.Sprintf("nested multiplexer (%s): would be %s, but %s", n.Evidence, res.Mode, nestedWhy(n))
 		res.Mode, res.Bucket, res.Confidence = spec.ModeUnknown, spec.ModeUnknown, Low
 	default:
@@ -245,7 +264,7 @@ func nestedWhy(n Nested) string {
 	if n.Split {
 		return "the inner window is split"
 	}
-	return "keys are never remapped through a nested multiplexer"
+	return "@modal_nested_remap is off"
 }
 
 func pane(set *spec.Set, s *screen.Screen, stickyApp string) (Result, []Trace) {

@@ -6,7 +6,7 @@
 # command: docker
 # title: fixture
 # expect_app: htop
-# expect_mode: unknown
+# expect_mode: normal
 # note: inner status line on top: htop's bottom bar is on our last row
 # ---
 [0] 0:htop*                                             "remote" 13:58 27-Sep-26
