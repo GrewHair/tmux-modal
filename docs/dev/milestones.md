@@ -6,11 +6,15 @@ milestone: full test suite, commit (conventional commits), push, CI green,
 update [status.md](status.md), README, and — if daemon code changed — bump
 `VERSION` and tag a release so the owner's install picks it up.
 
-## M5 — SSH and nested tmux — done (v0.2.0)
+## M5 — SSH and nested tmux — done (v0.2.0, revised in v0.3.0)
 
 See decisions D20–D22, findings F21–F25, `tests/integration/remote_test.go`,
-`tests/fixtures/nested/`. Carried forward: the nested `cursor_shape`
-delay (F11) — investigate in M7 with nvim, where it matters.
+`tests/fixtures/nested/`. After review the owner made remapping through a
+nested tmux the default (`@modal_nested_remap`, v0.3.0). Carried forward to
+[backlog.md](backlog.md): split remote tmux (B1), nested `cursor_shape`
+delay (B2, look at it in M7).
+
+**Next up: M6.**
 
 ## M6 — remaining specs, CPU budget, benchmark
 

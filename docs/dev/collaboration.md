@@ -22,6 +22,18 @@
   adds (the `TMUX-MODAL-DAEMON` client label); three-way indicator
   NORMAL / INSERT / N/A; no shell fallback daemon; don't burn cycles on
   unfocused panes.
+- **Separate solved from unsolved.** After M5 the owner could not tell
+  fixed problems from open ones in a long report. Report as: what's done;
+  then a short numbered list of what is genuinely unsolved; then choices
+  that are theirs. Don't narrate bugs that are already fixed as if they
+  were limitations.
+- **Pragmatic defaults, cautious behaviour behind a flag.** The owner
+  prefers the useful behaviour on by default when the risk is small and
+  understood (e.g. remapping through nested tmux), with an option to turn
+  it off — rather than the safest-but-less-useful default. Still never
+  ship something that remaps keys while the user is typing.
+- **Deferring is fine.** Ideas the owner defers go to `backlog.md` with
+  the design so far.
 - The brief asked for a stop-and-report after M3; that checkpoint happened
   and the owner approved the design deviations (decisions D1–D3). No further
   mandatory checkpoints, but report at each milestone.

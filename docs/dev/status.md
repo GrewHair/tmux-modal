@@ -11,7 +11,7 @@ _Last updated: 2026-09-27, after milestone 5 and release v0.3.0._
 | 3 | htop end to end (local), key-table sync, focus reconciliation | **done**, reviewed by the owner at the checkpoint |
 | 4 | Status indicator and transition hook | **done** |
 | 5 | SSH integration tests; nested-tmux fallback | **done** — sshd container tier, nested detection (D20), absence-anchor lint (D21) |
-| 6 | Remaining bundled specs, CPU-budget self-throttling, benchmark | **next** — see [milestones.md](milestones.md) (throttling already implemented, benchmark not) |
+| 6 | Remaining bundled specs, CPU-budget self-throttling, benchmark | **next** — see [milestones.md](milestones.md) (throttling already implemented, benchmark not); unscheduled items in [backlog.md](backlog.md) |
 | 7 | `vim-family` specs, hooks-only path, per-spec `poll_interval` | todo (hooks-only path already implemented and tested; `poll_interval` parsed but not yet used by the scheduler) |
 | 8 | README, CI, publish | **done early** at the owner's request (repo public, CI green, v0.1.0 released); README must keep growing with each milestone |
 
@@ -36,7 +36,7 @@ Owner feedback so far: "everything seems to work alright".
 ## Known gaps right now
 
 - Only htop is recognised; every other full-screen app is `unknown` (N/A, pass-through).
-- Inner tmux split into several panes: always `unknown` (the outer screen does not say which inner pane is focused). Possible improvement discussed with the owner: cut the screen at the inner borders and find the focused inner pane from the cursor position or the inner active-border colour — not built.
+- Inner tmux split into several panes: always `unknown` (the outer screen does not say which inner pane is focused). Improvement designed and deferred by the owner: [backlog.md](backlog.md) B1.
 - Remapping through a nested tmux: after the inner prefix key, a remapped key arrives remapped (`prefix l` → `prefix Right`); owner accepted.
 - Nested `cursor_shape` ~0.5 s delay (F11): cause still unknown; matters for nvim over nested tmux (M7).
 - `@modal_burst_decay` is parsed but unused (event-driven scheduling made it moot; reserved for a polling fallback).
