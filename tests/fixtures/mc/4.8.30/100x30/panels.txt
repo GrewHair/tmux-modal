@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 11,28
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: mc [demo@fx]:~
+# expect_app: mc
+# expect_mode: insert
+# note: panels: letters go to the command line
+# ---
+  Left     File     Command     Options     Right
+┌<─ ~ ──────────────────────────────────────.[^]>┐┌<─ ~ ──────────────────────────────────────.[^]>┐
+│.n          Name           │ Size  │Modify time ││.n          Name           │ Size  │Modify time │
+│/..                        │UP--DIR│Sep 27 15:54││/..                        │UP--DIR│Sep 27 15:54│
+│/.cache                    │   4096│Sep 27 16:21││/.cache                    │   4096│Sep 27 16:21│
+│/.config                   │   4096│Sep 27 16:21││/.config                   │   4096│Sep 27 16:21│
+│/.local                    │   4096│Sep 27 16:21││/.local                    │   4096│Sep 27 16:21│
+│/repo                      │   4096│Sep 27 15:54││/repo                      │   4096│Sep 27 15:54│
+│/tree                      │   4096│Sep 27 15:54││/tree                      │   4096│Sep 27 15:54│
+│ .bash_logout              │    220│Mar 31  2024││ .bash_logout              │    220│Mar 31  2024│
+│ .bashrc                   │   3771│Mar 31  2024││ .bashrc                   │   3771│Mar 31  2024│
+│ .gitconfig                │     79│Sep 27 15:54││ .gitconfig                │     79│Sep 27 15:54│
+│ .profile                  │    807│Mar 31  2024││ .profile                  │    807│Mar 31  2024│
+│ sample.txt                │  42893│Sep 27 15:54││ sample.txt                │  42893│Sep 27 15:54│
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+├────────────────────────────────────────────────┤├────────────────────────────────────────────────┤
+│UP--DIR                                         ││UP--DIR                                         │
+└─────────────────────────── 878G / 1007G (87%) ─┘└─────────────────────────── 878G / 1007G (87%) ─┘
+Hint: Tab changes your current panel.
+demo@fx:~$
+ 1Help     2Menu     3View     4Edit     5Copy     6RenMov   7Mkdir    8Delete   9PullDn  10Quit

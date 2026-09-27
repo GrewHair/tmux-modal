@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 10,23
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: lazygit
+# expect_mode: insert
+# note: typing a filter
+# ---
+╭─[1]─Status──────────────╮╭─[0]─Diff──────────────────────────────────────────╮
+│repo → main              ││No changed files                                   │
+╰─────────────────────────╯│                                                   │
+╭─[2]─Files - Worktrees -─╮│                                                   │
+│                         ││                                                   │
+│                         ││                                                   │
+│                         ││                                                   │
+│                         ││                                                   │
+│                         ││                                                   │
+│                         ││                                                   │
+│                         ││                                                   │
+│                         ││                                                   │
+│                         ││                                                   │
+╰──────────────────0 of 0─╯│                                                   │
+╭─[3]─Local branches - Re─╮│                                                   │
+│  * main                 ││                                                   │
+╰──────────────────1 of 1─╯│                                                   │
+╭─[4]─Commits - Reflog────╮│                                                   │
+│14686ade de ○ Add file 6 ││                                                   │
+╰──────────────────1 of 6─╯╰───────────────────────────────────────────────────╯
+╭─[5]─Stash───────────────╮╭─Command log───────────────────────────────────────╮
+│                         ││press '`'                                          │
+╰──────────────────0 of 0─╯╰───────────────────────────────────────────────────╯
+Filter: ab

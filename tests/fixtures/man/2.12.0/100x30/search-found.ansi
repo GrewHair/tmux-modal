@@ -1,0 +1,30 @@
+       List  information about the FILEs (the current directory by default).  [7mSort[0m entries alpha‐
+       betically if none of [1m-cftuvSUX [0mnor [1m--[7msort[0;1m [0mis specified.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       [1m-a[0m, [1m--all[0m
+              do not ignore entries starting with .
+
+       [1m-A[0m, [1m--almost-all[0m
+              do not list implied . and ..
+
+       [1m--author[0m
+              with [1m-l[0m, print the author of each file
+
+       [1m-b[0m, [1m--escape[0m
+              print C-style escapes for nongraphic characters
+
+       [1m--block-size[0m=[4mSIZE[0m
+              with [1m-l[0m, scale sizes by SIZE when printing them; e.g., '--block-size=M';  see  SIZE
+              format below
+
+       [1m-B[0m, [1m--ignore-backups[0m
+              do not list implied entries ending with ~
+
+       [1m-c     [0mwith  [1m-lt[0m:  [7msort[0m  by,  and show, ctime (time of last change of file status informa‐
+              tion); with [1m-l[0m: show ctime and [7msort[0m by name; otherwise: [7msort[0m by ctime, newest first
+
+       [1m-C     [0mlist entries by columns
+
+[7m Manual page ls(1) line 10 (press h for help or q to quit)[0m

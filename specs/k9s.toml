@@ -1,0 +1,62 @@
+# k9s — Kubernetes TUI. Hooks-only: k9s already moves with j/k (and
+# G / g), so there is nothing to remap.
+#
+# Verified against k9s 0.51.0 without a cluster (tests/fixtures/k9s). The
+# header block (Context / Cluster / User / K9s Rev + logo) is the identity
+# anchor; ctrl-e hides it, and then k9s is not recognised (N/A). Prompts
+# open in a box right under the header:
+#   │ 🐶> portforward      `:` command
+#   │ 🐩/abc               `/` filter
+# The icons are configurable (ui.noIcons), so they are optional here; only
+# a non-ASCII icon may precede the marker (help rows read "│ <a> ..."). k9s
+# hides the terminal cursor even in prompts. Escape closes a prompt.
+name     = "k9s"
+priority = 50
+modes    = ["normal", "insert", "command"]
+translated = false
+# The prompt markers are one character after the box edge; they are only
+# looked for on the rows right under the header.
+lint_ignore = ["under-specified"]
+
+[buckets]
+typing     = ["insert", "command"]
+commanding = ["normal"]
+
+[match]
+command             = ["k9s"]
+requires_alt_screen = true
+combine             = "weighted"
+threshold           = 100
+
+  [[match.clause]]
+  regex  = '^Context: +\S'
+  row    = 0
+  weight = 40
+
+  [[match.clause]]
+  regex  = '^Cluster: +\S'
+  row    = 1
+  weight = 30
+
+  [[match.clause]]
+  regex  = '^K9s Rev: v?[0-9]'
+  rows   = [2, 6]
+  weight = 50
+
+  # The logo, top right.
+  [[match.clause]]
+  regex  = '____  __ ________$'
+  row    = 0
+  weight = 30
+
+[[mode_when]]
+name  = "command"
+mode  = "command"
+regex = '^│ [^ -~]?>( |$)'
+rows  = [0, 10]
+
+[[mode_when]]
+name  = "filter"
+mode  = "insert"
+regex = '^│ [^ -~]?/'
+rows  = [0, 10]

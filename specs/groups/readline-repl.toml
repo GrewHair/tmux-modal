@@ -1,0 +1,18 @@
+# readline-repl: interactive interpreters and clients that read lines of
+# text. They are always typing: an always-insert spec is not a remap, it
+# exists so that no weaker spec claims the pane and so that the indicator
+# and hooks say "typing" (§5.4). Not matchable on its own.
+#
+# They run on the primary screen, and are recognised locally by their
+# command name only: over SSH the pane command is ssh, and a prompt such as
+# ">>> " is far too weak to identify anything, so a remote REPL reads like
+# the remote shell it was started from (none, also a typing state).
+description = "Line-reading REPL: always insert, no key map"
+always = "insert"
+modes  = ["insert"]
+
+[buckets]
+typing = ["insert"]
+
+[match]
+requires_alt_screen = false

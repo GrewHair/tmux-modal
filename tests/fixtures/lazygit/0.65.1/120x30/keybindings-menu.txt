@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 120x30
+# cursor: 119,29
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: lazygit
+# expect_mode: normal
+# note: keybindings menu
+# ---
+╭─[1]─Status───────────────────────────╮╭─[0]─Staged changes───────────────────────────────────────────────────────────╮
+│repo → main                           ││diff --git a/file1.txt b/file1.txt                                            ▐
+╰──────────────────────────────────────╯│index 89b24ec..ad02f48 100644                                                 ▐
+╭─[2]─Files - Worktrees - Submodules───╮│--- a/file1.txt                                                               ▐
+│M  file1.txt       ╭─Keybindings─────────────────────────────────────────────(Type to filter)─────╮                   ▐
+│                   │              ─── Local                                                       ▐                   ▐
+│                   │     <ctrl+o> Copy path to clipboard                                          ▐                   ▐
+│                   │      <space> Stage                                                           ▐                   ▐
+│                   │     <ctrl+b> Filter files by status                                          ▐                   ▐
+│                   │            y Copy to clipboard...                                            │                   ▐
+╰───────────────────│            c Commit                                                          │                   ▐
+╭─[3]─Local branches│            w Commit changes without pre-commit hook                          │                   ▐
+│  * main           │            A Amend last commit                                               │                   ▐
+│                   │            C Commit changes using git editor                                 │                   ▐
+│                   │     <ctrl+f> Find base commit for fixup                                      │                   ▐
+│                   │            e Edit                                                            │                   ▐
+│                   │            o Open file                                                       │                   ▐
+│                   │            i Ignore or exclude file...                                       │                   ▐
+╰───────────────────│            r Refresh files                                                   │                   ▐
+╭─[4]─Commits - Refl│            s Stash                                                           │                   ▐
+│14686ade de ○ Add f╰──────────────────────────────────────────────────────────────────────1 of 65─╯                   ▐
+│1170a5c3 de ○ Add file 5              ▐│                                                                              │
+│6667a3eb de ○ Add file 4              ▐│                                                                              │
+│b8f389ac de ○ Add file 3              ▐│                                                                              │
+│e59cd44c de ○ Add file 2              ││                                                                              │
+╰───────────────────────────────1 of 6─╯╰──────────────────────────────────────────────────────────────────────────────╯
+╭─[5]─Stash────────────────────────────╮╭─Command log──────────────────────────────────────────────────────────────────╮
+│                                      ││  git add -- file1.txt                                                        │
+╰───────────────────────────────0 of 0─╯╰──────────────────────────────────────────────────────────────────────────────╯
+Execute: <enter> | Close/Cancel: <esc>                                                        Donate Ask Question 0.65.1

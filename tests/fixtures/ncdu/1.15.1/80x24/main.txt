@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 0,2
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: ncdu
+# expect_mode: normal
+# note: directory list
+# ---
+ncdu 1.15.1 ~ Use the arrow keys to navigate, press ? for help
+--- /home/demo/tree ------------------------------------------------------------
+   20.0 KiB [##########] /src
+   20.0 KiB [##########] /docs
+   20.0 KiB [##########] /data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Total disk usage:  64.0 KiB  Apparent size:  38.2 KiB  Items: 15

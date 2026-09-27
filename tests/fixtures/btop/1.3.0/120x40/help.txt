@@ -1,0 +1,53 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 80,38
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: btop
+# expect_mode: normal
+# expect_mode_mono: unknown
+# expect_mode_remote: unknown
+# note: help overlay; covers the proc box
+# ---
+╭─┐¹cpu┌──┐menu┌┐preset *┌─────────██████╗─████████╗─██████╗2██████╗────────────────┐BAT▲ 94% ■■■■■■■■■■ ┌┐- 2000ms +┌─╮
+│                                  ██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗   ██╗    ██╗                                     │
+│                                  ██████╔╝   ██║   ██║   ██║██████╔╝ ██████╗██████╗                                   │
+│                                  ██╔══██╗   ██║   ██║   ██║██╔═══╝  ╚═██╔═╝╚═██╔═╝               ┌─────────┐3.0 GHz┌╮│
+│                                  ██████╔╝   ██║   ╚██████╔╝██║        ╚═╝   │╚═╝ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   4%││
+│                                  ╚═════╝    ╚═╝    ╚═════╝ ╚═╝      ⢸      v1.3.0⣀⣀⢠⣀⣀⣀⣀⣀⣀⣀   9%│C4  ⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀   3%││
+│                   ╭─┐help┌─────────────────────────────────────────────────────────────────────╮│C5  ⣀⣀⣀⣀⣀⣀⢀⣀⣀⣀   2%││
+│                   │        Key:        Description:                                            ││C6  ⣀⣀⢠⣀⢀⣀⣀⣀⡀⣀   1%││
+│                   │       Mouse 1      Clicks buttons and selects in process list.             ││C7  ⣀⣀⣀⣀⡀⣀⡀⣀⣀⣀   2%││
+│                   │    Mouse scroll    Scrolls any scrollable list/text under cursor.          │ LAV: 1.01 0.53 0.41││
+│                   │       Esc, m       Toggles main menu.                                      │────────────────────╯│
+│ up 07:29:22       │          p         Cycle view presets forwards.                            │                     │
+╰───────────────────│      shift + p     Cycle view presets backwards.                           │─────────────────────╯
+╭─┐²mem┌────────────│          1         Toggle CPU box.                                         │┐tree┌┐< cpu lazy >┌─╮
+│ Total:         15.│          2         Toggle MEM box.                                         │r:  MemB       Cpu%  │
+├─Used:──────────2.2│          3         Toggle NET box.                                         │o   5.9M ⣀⢀⣀⣀⣀  0.0  │
+│  15%              │          4         Toggle PROC box.                                        │                     │
+│                 ⣀⣀│          5         Toggle GPU box.                                         │                     │
+├─Available:─────13.│          d         Toggle disks view in MEM box.                           │                     │
+│  85%            ⣶⣶│        F2, o       Shows options.                                          │                     │
+│                 ⣿⣿│      F1, ?, h      Shows this window.                                      │                     │
+├─Cached:────────3.7│      ctrl + z      Sleep program and put in background.                    │                     │
+│  24%              │     q, ctrl + c    Quits program.                                          │                     │
+│                 ⣤⣤│        +, -        Add/Subtract 100ms to/from update timer.                │                     │
+├─Free:──────────8.9│      Up, Down      Select in process list.                                 │                     │
+│  58%            ⣀⣀│        Enter       Show detailed information for selected process.         │                     │
+│                 ⣿⣿│      Spacebar      Expand/collapse the selected process in tree view.      │                     │
+╰───────────────────│   Pg Up, Pg Down   Jump 1 page in process list.                            │                     │
+╭─┐³net┌┐172.17.0.48│      Home, End     Jump to first or last page in process list.             │                     │
+│10K                │     Left, Right    Select previous/next sorting column.                    │                     │
+│                   │        b, n        Select previous/next network device.                    │                     │
+│                   │          i         Toggle disks io mode with big graphs.                   │                     │
+│                   │          z         Toggle totals reset for current network device          │                     │
+│                 ⢀⣀│          a         Toggle auto scaling for the network graphs.             │                     │
+│                 ⠈⠉│          y         Toggle synced scaling mode for network graphs.          │                     │
+│                   │        f, /        To enter a process filter.                              │                     │
+│                   │       delete       Clear any entered filter.                               │                     │
+│                   │          c         Toggle per-core cpu usage of processes.                 │                     │
+│10K                │          r         Reverse sorting order in processes box.                 │                     │
+╰───────────────────╰─┘↑ page 1/2 ↓└─────────────────────────────────────────────────────────────╯ls└─────────────┘0/1└╯

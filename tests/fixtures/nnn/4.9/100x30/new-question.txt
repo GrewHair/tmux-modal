@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 28,29
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nnn
+# expect_mode: unknown
+# note: new: one-key question over the status bar; not text entry
+# ---
+1 2 3 4 ~/tree
+
+ docs/
+ src/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+['f'ile]/'d'ir/'s'ym/'h'ard?

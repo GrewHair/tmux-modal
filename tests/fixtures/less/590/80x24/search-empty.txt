@@ -1,0 +1,37 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 1,23
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: less
+# expect_mode: insert
+# expect_mode_mono: unknown
+# expect_mode_remote: unknown
+# note: search prompt just opened
+# ---
+Sample text line 2
+Sample text line 3
+Sample text line 4
+Sample text line 5
+Sample text line 6
+Sample text line 7
+Sample text line 8
+Sample text line 9
+Sample text line 10
+Sample text line 11
+Sample text line 12
+Sample text line 13
+Sample text line 14
+Sample text line 15
+Sample text line 16
+Sample text line 17
+Sample text line 18
+Sample text line 19
+Sample text line 20
+Sample text line 21
+Sample text line 22
+Sample text line 23
+Sample text line 24
+/

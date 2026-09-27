@@ -1,0 +1,9 @@
+# python — the Python REPL (and IPython, bpython, ptpython).
+# Always insert (see groups/readline-repl.toml); recognised by the local
+# command name only.
+name     = "python"
+priority = 20
+extends  = "readline-repl"
+
+[match]
+command = ["python", "python2", "python3", "python3.*", "ipython", "ipython3", "bpython", "ptpython"]

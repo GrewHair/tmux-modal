@@ -1,0 +1,34 @@
+# tig — text-mode interface for git. Hooks-only: tig already moves with
+# j/k (h is help), so there is nothing to remap.
+#
+# Verified against tig 2.5.8 (tests/fixtures/tig). The last row is the
+# prompt/message line; each view has a title bar just above it, e.g.
+#   [main] Unstaged changes                                   100%
+#   [main] 1468… - commit 1 of 6    100%x[diff] 1468… - line 1 of 24  100%
+# (split views put two bars on one row). The cursor is hidden except in a
+# prompt: `:` command, `/` `?` search. Prompts are readline: Escape does
+# not close them (it is a meta prefix); Enter runs, C-c cancels.
+name     = "tig"
+priority = 50
+extends  = ["colon-command", "slash-search", "curses-tui"]
+modes    = ["normal", "insert", "command"]
+translated = false
+# The title bar is anchored to one row and column 0, but the shortest view
+# names are three letters, which the character count calls weak.
+lint_ignore = ["match: under-specified"]
+
+[buckets]
+typing     = ["insert", "command"]
+commanding = ["normal"]
+
+[match]
+command             = ["tig"]
+requires_alt_screen = true
+
+  # The (bottom) view's title bar.
+  [[match.clause]]
+  regex = '^\[(main|diff|log|reflog|tree|blob|blame|refs|status|stage|stash|grep|pager|help)\] .* [0-9]{1,3}%'
+  row   = -2
+
+# (inherited: command-line `:`, search `/` `?`, and cursor-on-prompt as the
+# catch-all for any other prompt tig opens)

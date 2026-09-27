@@ -1,5 +1,9 @@
 # curses-tui: full-screen curses applications that keep the cursor hidden
 # except while a text prompt has focus. Not matchable on its own.
+#
+# No key map: most TUIs already have vim-style navigation, and a group
+# that hooks-only specs extend must not smuggle keys into them. Specs that
+# remap (htop, btop) declare their own [keys].
 description = "Full-screen curses TUI with a hidden cursor outside prompts"
 modes = ["normal", "insert"]
 
@@ -11,16 +15,10 @@ commanding = ["normal"]
 requires_alt_screen = true
 
 # A visible cursor parked on the bottom rows means a prompt has focus.
-# Tier 1: needs no capture at all. Verified for htop 3.x, where
-# cursor_flag is 1 exactly while Search:/Filter: is open.
+# Tier 1: needs no capture at all. Verified for htop 3.x, tig, ranger, lf
+# and nnn, which show the cursor exactly while a prompt is open.
 [[mode_when]]
 name           = "cursor-on-prompt"
 mode           = "insert"
 cursor_rows    = [-2, -1]
 cursor_visible = true
-
-[keys]
-h = "Left"
-j = "Down"
-k = "Up"
-l = "Right"

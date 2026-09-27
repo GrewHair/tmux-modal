@@ -1,0 +1,24 @@
+╭─[1]─Status──────────────╮╭─[0]─Unstaged changes──────────────────────────────╮
+│repo → main              ││[1mdiff --git a/file1.txt b/file1.txt[0m                 ▐
+╰─────────────────────────╯│[1mindex 89b24ec..ad02f48 100644[0m                      ▐
+╭[1m[32m╭────────────────────────────────────────────────────────────────────────────╮[0m▐
+│[1m[32m│[39mThanks for using lazygit! Seriously you rock. Three things to share with[0m    [1m[32m│[0m▐
+│[1m[32m│[39myou:[0m                                                                        [1m[32m│[0m▐
+│[1m[32m│[0m                                                                            [1m[32m│[0m▐
+│[1m[32m│[39m 1) If you want to learn about lazygit's features, watch this vid:[0m          [1m[32m│[0m▐
+│[1m[32m│[39m      [4mhttps://youtu.be/CPLdltN7wgE[0m                                          [1m[32m│[0m▐
+│[1m[32m│[0m                                                                            [1m[32m│[0m▐
+│[1m[32m│[39m 2) Be sure to read the latest release notes at:[0m                            [1m[32m│[0m▐
+│[1m[32m│[39m      [4mhttps://github.com/jesseduffield/lazygit/releases[0m                     [1m[32m│[0m▐
+│[1m[32m│[0m                                                                            [1m[32m│[0m▐
+╰[1m[32m│[39m 3) If lazygit has made your life easier, you can say thanks by clicking the[32m│[0m▐
+╭[1m[32m│[39m    donate button at the bottom right. Donation does not grant priority[0m     [1m[32m│[0m▐
+│[1m[32m│[39msupport,[0m                                                                    [1m[32m│[0m│
+╰[1m[32m│[39m    but it is much appreciated.[0m                                             [1m[32m│[0m│
+╭[1m[32m│[0m                                                                            [1m[32m│[0m│
+│[1m[32m│[39mPress <enter> to get started.[0m                                               [1m[32m│[0m│
+╰[1m[32m╰────────────────────────────────────────────────────────────────────────────╯[0m╯
+╭─[5]─Stash───────────────╮╭─Command log───────────────────────────────────────╮
+│                         ││[32mpress '`'[39m                                          │
+╰──────────────────0 of 0─╯╰───────────────────────────────────────────────────╯
+[34mConfirm: <enter> | Close/Cancel: <esc> | …[39m            [4m[35mDonate[0m [4m[33mAsk Question[0m 0.65.1

@@ -1,0 +1,21 @@
+# man — manual pages. man-db shows them with less and its own reverse-video
+# bar, " Manual page ls(1) line 1 (press h for help or q to quit)".
+# Hooks-only, like less; prompts and mode rules: groups/less-prompts.toml.
+# Verified with man-db 2.12 and less 590 (tests/fixtures/man).
+name     = "man"
+priority = 45                     # above less: "(press RETURN)" is shared
+extends  = "less-prompts"
+modes    = ["normal", "insert"]
+translated = false
+
+[buckets]
+typing     = ["insert"]
+commanding = ["normal"]
+
+[match]
+command             = ["man"]
+requires_alt_screen = true
+
+  [[match.clause]]
+  regex = '^ Manual page .* line [0-9]+'
+  row   = -1

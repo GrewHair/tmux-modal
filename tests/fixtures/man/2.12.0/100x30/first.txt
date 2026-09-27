@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 57,29
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: man
+# expect_mode: normal
+# note: man bar
+# ---
+LS(1)                                     User Commands                                     LS(1)
+
+NAME
+       ls - list directory contents
+
+SYNOPSIS
+       ls [OPTION]... [FILE]...
+
+DESCRIPTION
+       List  information about the FILEs (the current directory by default).  Sort entries alpha‐
+       betically if none of -cftuvSUX nor --sort is specified.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -a, --all
+              do not ignore entries starting with .
+
+       -A, --almost-all
+              do not list implied . and ..
+
+       --author
+              with -l, print the author of each file
+
+       -b, --escape
+              print C-style escapes for nongraphic characters
+
+       --block-size=SIZE
+              with -l, scale sizes by SIZE when printing them; e.g., '--block-size=M';  see  SIZE
+              format below
+ Manual page ls(1) line 1 (press h for help or q to quit)

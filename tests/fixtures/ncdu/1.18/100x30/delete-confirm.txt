@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 44,16
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: ncdu
+# expect_mode: normal
+# note: delete confirmation: a yes/no selection
+# ---
+ncdu 1.18 ~ Use the arrow keys to navigate, press ? for help
+--- /home/demo/tree --------------------------------------------------------------------------------
+   20.0 KiB [##############] /src
+   20.0 KiB [##############] /docs
+   20.0 KiB [##############] /data
+
+
+
+
+
+
+
+                    lqqqConfirm deleteqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk
+                    x Are you sure you want to delete "src"                    x
+                    x                 and all of its contents?                 x
+                    x                                                          x
+                    x              yes      no     don't ask me again          x
+                    mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj
+
+
+
+
+
+
+
+
+
+
+
+ Total disk usage:  64.0 KiB  Apparent size:  38.2 KiB  Items: 15

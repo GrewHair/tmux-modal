@@ -1,0 +1,23 @@
+[1m[37m[42mQuick reference for tig keybindings:[0m[42m
+
+[36m[49m[-] generic bindings[39m
+[34mView switching[39m
+                           m [33mview-main           [39mShow main view
+                           d [33mview-diff           [39mShow diff view
+                           l [33mview-log            [39mShow log view
+                           L [33mview-reflog         [39mShow reflog view
+                           t [33mview-tree           [39mShow tree view
+                           f [33mview-blob           [39mShow blob view
+                           b [33mview-blame          [39mShow blame view
+                           r [33mview-refs           [39mShow refs view
+                        s, S [33mview-status         [39mShow status view
+                           c [33mview-stage          [39mShow stage view
+                           y [33mview-stash          [39mShow stash view
+                           g [33mview-grep           [39mShow grep view
+                           p [33mview-pager          [39mShow pager view
+                           h [33mview-help           [39mShow help view
+[34mView manipulation[39m
+                     <Enter> [33menter[39m               Enter and open selected line
+                           < [33mback[39m                Go back to the previous view st
+         <Down>, <Ctrl-N>, J [33mnext[39m                Move to next
+[1m[37m[44m[help] - line 1 of 128[0m[44m                                                      [1m[37m 17%

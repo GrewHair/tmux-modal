@@ -1,0 +1,37 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 30,20
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: btop
+# expect_mode: insert
+# expect_mode_mono: unknown
+# expect_mode_remote: unknown
+# note: options: editable fields, never remapped; covers the proc box
+# ---
+╭─┐¹cpu┌──┐menu██████╗t████████╗─██████╗2██████╗───────┐BAT▲ 94% ┌┐- 2000ms +┌─╮
+│              ██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗7-1██╗G7┌─██╗───────┐3.0 GHz┌╮│
+│              ██████╔╝   ██║   ██║ │C██║██████╔╝■██████╗██████╗■■■■■■■■■   3%││
+│              ██╔══██╗   ██║⣀⣀⣀██║⣀│C██║██╔═══╝6%╚═██╔═╝╚═██╔═╝│C6  ⣀⢀⣀⣀⡀  3%││
+│              ██████╔╝   ██║⠉⠉⠉╚██████╔╝██║⢀⣀  3%│C╚═╝⣀⣀⣀⣀╚═╝2%│C7  ⢀⣀⣀⢀⣀  2%││
+│              ╚═════╝    ╚═╝    ╚═════╝ ╚═╝⡀⢀  6%│C5  ⣀⣀v1.3.0%│L 1 0 0      ││
+╭─┐tab→┌─────────────────────────────────────────────────────────────────────╮╯│
+│   [general]       2cpu        3gpu        4mem        5net        6proc    │─╯
+├─────────────────────────────┬──────────────────────────────────────────────┤─╮
+│       Color theme 1/30      │ Set color theme.                             │ │
+│ ←         Default         → │                                              │ │
+│       Theme background      │ Choose from all theme files in (usually)     │ │
+│             True            │ "/usr/[local/]share/btop/themes" and         │ │
+│          Truecolor          │ "~/.config/btop/themes".                     │ │
+│             True            │                                              │ │
+│          Force tty          │ "Default" for builtin default theme.         │ │
+│            False            │ "TTY" for builtin 16-color theme.            │ │
+│           Vim keys          │                                              │ │
+│            False            │ For theme updates see:                       │ │
+│           Presets           │ https://github.com/aristocratos/btop         │ │
+│  cpu:1:default,proc:0:defa  │                                              │ │
+╰─┘↑ page 1/3 ↓└──────────────┴──────────────────────────────────────────────╯ │
+│10K            ╰─┘upload└────────╯││                                          │
+╰──────────────────────────────────╯╰┘↑ select ↓└┘info ↵└┘signals└────────┘0/1└╯

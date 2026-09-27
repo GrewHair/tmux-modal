@@ -1,13 +1,14 @@
 # A remote host for the SSH and nested-tmux integration tier: sshd with
-# key-only login for `demo`, and the apps under test (htop, vim) plus tmux
-# for the nested case. Nothing tmux-modal related is installed remotely —
-# the plugin must work with zero remote configuration.
+# key-only login for `demo`, the apps under test, and tmux for the nested
+# case. Nothing tmux-modal related is installed remotely — the plugin must
+# work with zero remote configuration.
 ARG BASE=ubuntu:24.04
 FROM ${BASE}
+ARG LAZYGIT_VERSION=0.65.1
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      openssh-server htop vim-nox less tmux locales \
-    && rm -rf /var/lib/apt/lists/* \
+COPY apps-install.sh /usr/local/sbin/apps-install.sh
+RUN APPS="openssh-server htop vim-nox less man-db tmux locales tig btop ncdu ranger lf nnn mc fzf git ca-certificates curl" \
+      LAZYGIT_VERSION=${LAZYGIT_VERSION} sh /usr/local/sbin/apps-install.sh \
     && mkdir -p /run/sshd \
     && useradd -m -s /bin/bash demo \
     && mkdir -p /home/demo/.ssh && chmod 700 /home/demo/.ssh \
@@ -15,6 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && sed -i -e 's/^#\?PasswordAuthentication .*/PasswordAuthentication no/' \
               -e 's/^#\?PermitRootLogin .*/PermitRootLogin no/' /etc/ssh/sshd_config \
     && echo 'AcceptEnv LANG LC_*' >> /etc/ssh/sshd_config
+COPY --chown=demo:demo apps-home.sh /tmp/apps-home.sh
+RUN su demo -c 'sh /tmp/apps-home.sh'
 # The test mounts its public key at /authorized_keys; the entrypoint installs
 # it with the permissions sshd insists on.
 COPY sshd-entrypoint.sh /usr/local/bin/sshd-entrypoint.sh

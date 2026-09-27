@@ -1,0 +1,9 @@
+# sqlite3 — the SQLite shell.
+# Always insert (see groups/readline-repl.toml); recognised by the local
+# command name only.
+name     = "sqlite3"
+priority = 20
+extends  = "readline-repl"
+
+[match]
+command = ["sqlite3", "sqlite", "litecli"]

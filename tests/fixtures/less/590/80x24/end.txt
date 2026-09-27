@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 5,23
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: less
+# expect_mode: normal
+# note: (END)
+# ---
+Sample text line 1978
+Sample text line 1979
+Sample text line 1980
+Sample text line 1981
+Sample text line 1982
+Sample text line 1983
+Sample text line 1984
+Sample text line 1985
+Sample text line 1986
+Sample text line 1987
+Sample text line 1988
+Sample text line 1989
+Sample text line 1990
+Sample text line 1991
+Sample text line 1992
+Sample text line 1993
+Sample text line 1994
+Sample text line 1995
+Sample text line 1996
+Sample text line 1997
+Sample text line 1998
+Sample text line 1999
+Sample text line 2000
+(END)

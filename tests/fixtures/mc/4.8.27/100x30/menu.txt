@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 11,28
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: mc [demo@fx]:~
+# expect_app: mc
+# expect_mode: insert
+# note: pull-down menu
+# ---
+  Left     File     Command     Options     Right
+┌<─ ~ ──────────────────────────────────────.[^]>┐┌<─ ~ ──────────────────────────────────────.[^]>┐
+│.n          Name           │ Size  │Modify time ││.n          Name           │ Size  │Modify time │
+│/..                        │UP--DIR│Sep 27 16:28││/..                        │UP--DIR│Sep 27 16:28│
+│/.cache                    │   4096│Sep 27 16:36││/.cache                    │   4096│Sep 27 16:36│
+│/.config                   │   4096│Sep 27 16:36││/.config                   │   4096│Sep 27 16:36│
+│/.local                    │   4096│Sep 27 16:36││/.local                    │   4096│Sep 27 16:36│
+│/repo                      │   4096│Sep 27 16:28││/repo                      │   4096│Sep 27 16:28│
+│/tree                      │   4096│Sep 27 16:28││/tree                      │   4096│Sep 27 16:28│
+│ .bash_logout              │    220│Jan  6  2022││ .bash_logout              │    220│Jan  6  2022│
+│ .bashrc                   │   3771│Jan  6  2022││ .bashrc                   │   3771│Jan  6  2022│
+│ .gitconfig                │     79│Sep 27 16:28││ .gitconfig                │     79│Sep 27 16:28│
+│ .profile                  │    807│Jan  6  2022││ .profile                  │    807│Jan  6  2022│
+│ sample.txt                │  42893│Sep 27 16:28││ sample.txt                │  42893│Sep 27 16:28│
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+│                           │       │            ││                           │       │            │
+├────────────────────────────────────────────────┤├────────────────────────────────────────────────┤
+│UP--DIR                                         ││UP--DIR                                         │
+└───────────────────────────── 877G/1007G (87%) ─┘└───────────────────────────── 877G/1007G (87%) ─┘
+Hint: Want your plain shell? Press C-o, and get back to MC with C-o again.
+demo@fx:~$
+ 1Help     2Menu     3View     4Edit     5Copy     6RenMov   7Mkdir    8Delete   9PullDn  10Quit

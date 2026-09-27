@@ -1,0 +1,37 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 4,23
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: ranger
+# expect_mode: command
+# expect_mode_mono: unknown
+# expect_mode_remote: unknown
+# note: typing in the console
+# ---
+demo@fx /home/demo/repo
+ demo      repo                      7   file1.txt
+ ubuntu    tree                      3   file2.txt
+           sample.txt           41.9 K   file3.txt
+                                         file4.txt
+                                         file5.txt
+                                         file6.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+:abc

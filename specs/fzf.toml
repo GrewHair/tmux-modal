@@ -1,0 +1,31 @@
+# fzf — fuzzy finder (also skim, sk).
+#
+# Always insert: every letter typed goes to the query. Recognised by its
+# command, and over SSH by the match counter next to the query line in the
+# default and --reverse layouts (fzf 0.44). --height runs inline on the
+# primary screen, where only the command can tell.
+name     = "fzf"
+priority = 30
+always   = "insert"
+modes    = ["insert"]
+
+[buckets]
+typing = ["insert"]
+
+[match]
+command             = ["fzf", "sk"]
+requires_alt_screen = false
+combine             = "all"
+
+  # "  12/1000 ─────" (or "  12/1000 (3)" with selections); default layout
+  # just above the query row, --reverse just below it.
+  [[match.clause]]
+  regex = '^  [0-9]+/[0-9]+( \([0-9]+\))?( [─-]{8,})?$'
+  rows  = [-2, -2]
+
+  [[match.clause]]
+  regex = '^>( |$)'
+  row   = -1
+  [[match.clause]]
+  cursor_rows    = [-1, -1]
+  cursor_visible = true

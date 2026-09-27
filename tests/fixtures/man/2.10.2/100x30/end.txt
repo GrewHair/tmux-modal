@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 69,29
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: man
+# expect_mode: normal
+# note: at the end
+# ---
+       With --color=auto, ls emits color codes only when standard output is connected to a termi‐
+       nal.  The LS_COLORS environment variable can change the settings.  Use the dircolors  com‐
+       mand to set it.
+
+   Exit status:
+       0      if OK,
+
+       1      if minor problems (e.g., cannot access subdirectory),
+
+       2      if serious trouble (e.g., cannot access command-line argument).
+
+AUTHOR
+       Written by Richard M. Stallman and David MacKenzie.
+
+REPORTING BUGS
+       GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+       Report any translation bugs to <https://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2020  Free  Software  Foundation, Inc.  License GPLv3+: GNU GPL version 3 or
+       later <https://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO  WARRANTY,
+       to the extent permitted by law.
+
+SEE ALSO
+       Full documentation <https://www.gnu.org/software/coreutils/ls>
+       or available locally via: info '(coreutils) ls invocation'
+
+GNU coreutils 8.32                         August 2026                                      LS(1)
+ Manual page ls(1) line 208/236 (END) (press h for help or q to quit)

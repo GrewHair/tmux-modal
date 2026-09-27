@@ -1,0 +1,53 @@
+# less-prompts: the prompts less draws on its last row, shared by the less
+# and man specs (man pages are shown by less). Not matchable on its own.
+#
+# Verified against less 590 (tests/fixtures/less, tests/fixtures/man):
+#   /home/demo/sample.txt   file name, in reverse video, until the first move
+#   :                       the idle prompt after that (not a command line)
+#   (END)                   reverse video; "& (END)" while a filter is on
+#   /abc  ?abc  Non-match / text prompts: insert (search, filter &/, shell !,
+#   &/abc  !cmd  Examine:   pipe |, option -, :e Examine, s log file, marks)
+# Escape does NOT close a less prompt (it starts a line-editing sequence);
+# Enter runs it, C-c / C-g or backspacing past the start cancel it.
+# The cursor is always visible on the last row, so a visible cursor proves
+# nothing; the rules below use it only as geometry.
+description = "less's last-row prompts"
+extends = "slash-search"
+modes   = ["normal", "insert"]
+
+[buckets]
+typing     = ["insert"]
+commanding = ["normal"]
+
+# --- mode detection: first hit wins -----------------------------------
+# less's own prompts (file name, (END), HELP, messages, man's bar) are in
+# reverse video; text prompts never are. This also keeps a file name that
+# starts with "/" from reading as a search. Without a colour capture this
+# rule cannot fire: "/home/x" then reads as insert, the harmless direction.
+[[mode_when]]
+name = "reverse-video-prompt"
+mode = "normal"
+  [[mode_when.clause]]
+  row   = -1
+  col   = 0
+  attrs = "reverse"
+  weight = 100
+  [[mode_when.clause]]
+  cursor_rows = [-1, -1]
+
+[[mode_when]]
+name = "idle-prompt"
+mode = "normal"
+regex = '^(& )?:$'
+rows  = [-1, -1]
+col   = 0
+cursor_rows = [-1, -1]
+
+[[insert_when]]
+name  = "text-prompt"
+regex = '^(((Non-match|Keep-pos|Regex-off|First-file|EOF-ignore|Wrap|Non-wrap|Highlight-off) )+[/?]|&/|!|\||-|:?[+]|(Examine|Log file|log file|Tag|set mark|goto mark|clear mark):( |$))'
+rows  = [-1, -1]
+col   = 0
+cursor_rows = [-1, -1]
+
+# (inherited from slash-search: search)

@@ -1,0 +1,9 @@
+# lldb — the LLVM debugger.
+# Always insert (see groups/readline-repl.toml); recognised by the local
+# command name only.
+name     = "lldb"
+priority = 20
+extends  = "readline-repl"
+
+[match]
+command = ["lldb", "lldb-[0-9]*"]

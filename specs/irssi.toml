@@ -1,0 +1,10 @@
+# irssi — IRC client: the input line always has the keyboard.
+# Always insert (see groups/readline-repl.toml): its window is a full-screen
+# curses UI, but keys always go to the input line. Recognised by the local
+# command name only.
+name     = "irssi"
+priority = 20
+extends  = "readline-repl"
+
+[match]
+command = ["irssi"]

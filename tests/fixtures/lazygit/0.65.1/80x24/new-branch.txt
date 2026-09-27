@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 2,11
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: lazygit
+# expect_mode: insert
+# note: new branch name prompt
+# ---
+╭─[1]─Status──────────────╮╭─[0]─Log───────────────────────────────────────────╮
+│repo → main              ││* commit 14686ad (HEAD -> main)                    ▐
+╰─────────────────────────╯│| Author: demo <demo@example.invalid>              ▐
+╭─[2]─Files - Worktrees -─╮│| Date:   25 minutes ago                           ▐
+│M  file1.txt             ││|                                                  ▐
+╰──────────────────1 of 1─╯│|     Add file 6                                   ▐
+╭─[3]─Local branches - Re─╮│|                                                  ▐
+│  * main                 ││* commit 1170a5c                                   ▐
+│                         ││| Author: demo <demo@example.invalid>              │
+│                         ││| Date:   25 minutes ago                           │
+│╭─New branch name (branch is off of 'main')──────────────────────────────────╮│
+││                                                                            ││
+│╰────────────────────────────────────────────────────────────────────────────╯│
+│                         ││* commit 6667a3e                                   │
+│                         ││| Author: demo <demo@example.invalid>              │
+│                         ││| Date:   25 minutes ago                           │
+╰──────────────────1 of 1─╯│|                                                  │
+╭─[4]─Commits - Reflog────╮│|     Add file 4                                   │
+│14686ade de ○ Add file 6 ││|                                                  │
+╰──────────────────1 of 6─╯╰───────────────────────────────────────────────────╯
+╭─[5]─Stash───────────────╮╭─Command log───────────────────────────────────────╮
+│                         ││  git add -- file1.txt                             │
+╰──────────────────0 of 0─╯╰───────────────────────────────────────────────────╯
+Confirm: <enter> | Close/Cancel: <esc>                Donate Ask Question 0.65.1

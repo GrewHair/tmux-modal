@@ -1,0 +1,9 @@
+# gdb — the GNU debugger's command line (also its TUI layout, where keys still go to the command line).
+# Always insert (see groups/readline-repl.toml); recognised by the local
+# command name only.
+name     = "gdb"
+priority = 20
+extends  = "readline-repl"
+
+[match]
+command = ["gdb", "gdb-multiarch"]

@@ -1,0 +1,30 @@
+╭─[1]─Status───────────────────────────╮╭─[0]─Unstaged changes─────────────────────────────────────────────────────────╮
+│repo → main                           ││[1mdiff --git a/file1.txt b/file1.txt[0m                                            ▐
+╰──────────────────────────────────────╯│[1mindex 89b24ec..ad02f48 100644[0m                                                 ▐
+╭─[2]─[32mFiles [39m- Worktrees - Submodules───╮│[1m--- a/file1.txt[0m                                                               ▐
+│[1m [38;5;9mM[39m file1.txt                          [0m││[1m+++ b/file1.txt[0m                                                               ▐
+│                                      ││[36m@@ -1 +1,2 @@[39m                                                                 ▐
+│                                      ││ line 1                                                                       ▐
+│                   [1m[32m╭──────────────────────────────────────────────────────────────────────────────╮[0m                   ▐
+│                   [1m[32m│[39mThanks for using lazygit! Seriously you rock. Three things to share with you:[0m [1m[32m│[0m                   ▐
+│                   [1m[32m│[0m                                                                              [1m[32m│[0m                   ▐
+╰───────────────────[1m[32m│[39m 1) If you want to learn about lazygit's features, watch this vid:[0m            [1m[32m│[0m                   ▐
+╭─[3]─[32mLocal branches[1m│[39m      [4mhttps://youtu.be/CPLdltN7wgE[0m                                            [1m[32m│[0m                   ▐
+│[32m  *[39m main           [1m[32m│[0m                                                                              [1m[32m│[0m                   ▐
+│                   [1m[32m│[39m 2) Be sure to read the latest release notes at:[0m                              [1m[32m│[0m                   ▐
+│                   [1m[32m│[39m      [4mhttps://github.com/jesseduffield/lazygit/releases[0m                       [1m[32m│[0m                   ▐
+│                   [1m[32m│[0m                                                                              [1m[32m│[0m                   ▐
+│                   [1m[32m│[39m 3) If lazygit has made your life easier, you can say thanks by clicking the[0m  [1m[32m│[0m                   ▐
+│                   [1m[32m│[39m    donate button at the bottom right. Donation does not grant priority[0m       [1m[32m│[0m                   ▐
+╰───────────────────[1m[32m│[39msupport,[0m                                                                      [1m[32m│[0m                   ▐
+╭─[4]─[32mCommits [39m- Refl[1m[32m│[39m    but it is much appreciated.[0m                                               [1m[32m│[0m                   ▐
+│[32m14686ade[39m [38;5;160mde[39m [38;5;160m○[39m Add f[1m[32m│[0m                                                                              [1m[32m│[0m                   ▐
+│[32m1170a5c3[39m [38;5;160mde[39m [38;5;160m○[39m Add f[1m[32m│[39mPress <enter> to get started.[0m                                                 [1m[32m│[0m                   │
+│[32m6667a3eb[39m [38;5;160mde[39m [38;5;160m○[39m Add f[1m[32m╰──────────────────────────────────────────────────────────────────────────────╯[0m                   │
+│[32mb8f389ac[39m [38;5;160mde[39m [38;5;160m○[39m Add file 3              ▐│                                                                              │
+│[32me59cd44c[39m [38;5;160mde[39m [38;5;160m○[39m Add file 2              ││                                                                              │
+╰───────────────────────────────1 of 6─╯╰──────────────────────────────────────────────────────────────────────────────╯
+╭─[5]─Stash────────────────────────────╮╭─Command log──────────────────────────────────────────────────────────────────╮
+│                                      ││[32mwhat's new.[39m                                                                   │
+╰───────────────────────────────0 of 0─╯╰──────────────────────────────────────────────────────────────────────────────╯
+[34mConfirm: <enter> | Close/Cancel: <esc> | Copy to clipboard: <ctrl+o>[39m                          [4m[35mDonate[0m [4m[33mAsk Question[0m 0.65.1

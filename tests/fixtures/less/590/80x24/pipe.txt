@@ -1,0 +1,37 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 1,23
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: less
+# expect_mode: normal
+# expect_mode_mono: unknown
+# expect_mode_remote: unknown
+# note: reading a pipe: ':' from the start
+# ---
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+:

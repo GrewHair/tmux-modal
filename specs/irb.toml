@@ -1,0 +1,9 @@
+# irb — the Ruby REPL (irb, pry).
+# Always insert (see groups/readline-repl.toml); recognised by the local
+# command name only.
+name     = "irb"
+priority = 20
+extends  = "readline-repl"
+
+[match]
+command = ["irb", "pry"]

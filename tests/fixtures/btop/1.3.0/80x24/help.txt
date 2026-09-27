@@ -1,0 +1,37 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 35,22
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: btop
+# expect_mode: normal
+# expect_mode_mono: unknown
+# expect_mode_remote: unknown
+# note: help overlay; covers the proc box
+# ---
+╭─┐¹cpu┌──┐menu██████╗t████████╗─██████╗2██████╗───────┐BAT▲ 94% ┌┐- 2000ms +┌─╮
+│              ██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗7-1██╗G7┌─██╗───────┐3.0 GHz┌╮│
+│              ██████╔╝   ██║   ██║ │C██║██████╔╝■██████╗██████╗■■■■■■■■■   4%││
+│              ██╔══██╗   ██║⣀⣀⣀██║⣀│C██║██╔═══╝6%╚═██╔═╝╚═██╔═╝│C6  ⢀⣀⣀⡀⢀  6%││
+│              ██████╔╝   ██║⠉⠉⠉╚██████╔╝██║⣀⢀  6%│C╚═╝⣀⣀⣀⣀╚═╝4%│C7  ⣀⣀⢀⣀⣀  1%││
+│              ╚═════╝    ╚═╝    ╚═════╝ ╚═╝⢀⡀  4%│C5  ⣀⣀v1.3.0%│L 1 0 0      ││
+╭─┐help┌─────────────────────────────────────────────────────────────────────╮╯│
+│        Key:        Description:                                            │─╯
+│       Mouse 1      Clicks buttons and selects in process list.             │─╮
+│    Mouse scroll    Scrolls any scrollable list/text under cursor.          │ │
+│       Esc, m       Toggles main menu.                                      │ │
+│          p         Cycle view presets forwards.                            │ │
+│      shift + p     Cycle view presets backwards.                           │ │
+│          1         Toggle CPU box.                                         │ │
+│          2         Toggle MEM box.                                         │ │
+│          3         Toggle NET box.                                         │ │
+│          4         Toggle PROC box.                                        │ │
+│          5         Toggle GPU box.                                         │ │
+│          d         Toggle disks view in MEM box.                           │ │
+│        F2, o       Shows options.                                          │ │
+│      F1, ?, h      Shows this window.                                      │ │
+│      ctrl + z      Sleep program and put in background.                    │ │
+│     q, ctrl + c    Quits program.                                          │ │
+╰─┘↑ page 1/3 ↓└─────────────────────────────────────────────────────────────╯└╯

@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 5,23
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: tig
+# expect_mode: command
+# note: typing a command
+# ---
+2026-09-27 16:17 +0000 Not Committed Yet o Unstaged changes
+2026-09-27 15:54 +0000 demo              o [main] Add file 6
+2026-09-27 15:54 +0000 demo              o Add file 5
+2026-09-27 15:54 +0000 demo              o Add file 4
+2026-09-27 15:54 +0000 demo              o Add file 3
+2026-09-27 15:54 +0000 demo              o Add file 2
+2026-09-27 15:54 +0000 demo              I Add file 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[main] 14686adef134d3aa706b78c3648e48398807d39c - commit 1 of 6             100%
+:help

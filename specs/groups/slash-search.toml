@@ -1,0 +1,22 @@
+# slash-search: a `/` (forward) or `?` (backward) search prompt on the last
+# row, as in less, man, tig and the file managers. Not matchable on its own.
+#
+# The marker alone is two characters, so the rule also needs the cursor on
+# that row: every app using this group shows the cursor at the end of the
+# search text while the prompt is open.
+description = "Bottom-line / and ? search prompts"
+modes = ["insert"]
+
+[buckets]
+typing = ["insert"]
+
+[[mode_when]]
+name = "search"
+mode = "insert"
+  [[mode_when.clause]]
+  regex = '^[/?]'
+  row   = -1
+  col   = 0
+  [[mode_when.clause]]
+  cursor_rows    = [-1, -1]
+  cursor_visible = true

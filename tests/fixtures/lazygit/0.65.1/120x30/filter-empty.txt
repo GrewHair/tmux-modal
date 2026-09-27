@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 120x30
+# cursor: 8,29
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: lazygit
+# expect_mode: insert
+# note: filter prompt
+# ---
+╭─[1]─Status───────────────────────────╮╭─[0]─Unstaged changes─────────────────────────────────────────────────────────╮
+│repo → main                           ││diff --git a/file1.txt b/file1.txt                                            ▐
+╰──────────────────────────────────────╯│index 89b24ec..ad02f48 100644                                                 ▐
+╭─[2]─Files - Worktrees - Submodules───╮│--- a/file1.txt                                                               ▐
+│ M file1.txt                          ││+++ b/file1.txt                                                               ▐
+│                                      ││@@ -1 +1,2 @@                                                                 ▐
+│                                      ││ line 1                                                                       ▐
+│                                      ││+change                                                                       ▐
+│                                      ││                                                                              ▐
+│                                      ││                                                                              ▐
+╰───────────────────────────────1 of 1─╯│                                                                              ▐
+╭─[3]─Local branches - Remotes - Tags──╮│                                                                              ▐
+│  * main                              ││                                                                              ▐
+│                                      ││                                                                              ▐
+│                                      ││                                                                              ▐
+│                                      ││                                                                              ▐
+│                                      ││                                                                              ▐
+│                                      ││                                                                              ▐
+╰───────────────────────────────1 of 1─╯│                                                                              ▐
+╭─[4]─Commits - Reflog─────────────────╮│                                                                              ▐
+│14686ade de ○ Add file 6              ▐│                                                                              ▐
+│1170a5c3 de ○ Add file 5              ▐│                                                                              │
+│6667a3eb de ○ Add file 4              ▐│                                                                              │
+│b8f389ac de ○ Add file 3              ▐│                                                                              │
+│e59cd44c de ○ Add file 2              ││                                                                              │
+╰───────────────────────────────1 of 6─╯╰──────────────────────────────────────────────────────────────────────────────╯
+╭─[5]─Stash────────────────────────────╮╭─Command log──────────────────────────────────────────────────────────────────╮
+│                                      ││what's new.                                                                   │
+╰───────────────────────────────0 of 0─╯╰──────────────────────────────────────────────────────────────────────────────╯
+Filter:

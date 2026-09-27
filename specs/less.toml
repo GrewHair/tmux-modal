@@ -1,0 +1,33 @@
+# less — the pager. Hooks-only: less already moves with j/k/g/G/C-d/C-u,
+# so there is nothing to remap; the spec exists for the indicator and the
+# transition hook. Prompts and mode rules: groups/less-prompts.toml.
+#
+# Identity needs one of the prompts only less draws: (END), HELP, "lines
+# N-M", "Waiting for data...", "(press RETURN)". The first screen of
+# `less file` shows only the file name, and the idle prompt is a bare ":"
+# (vim's command line looks the same), so over SSH less is recognised once
+# one of those appears, and stays recognised (sticky) while it runs.
+# Locally the command name identifies it at once.
+name     = "less"
+priority = 40
+extends  = "less-prompts"
+modes    = ["normal", "insert"]
+translated = false                # prompts are not translated
+
+[buckets]
+typing     = ["insert"]
+commanding = ["normal"]
+
+[match]
+command             = ["less"]
+requires_alt_screen = false         # git runs less without the alternate screen (LESS=FRX)
+combine             = "all"
+
+  [[match.clause]]
+  regex = '^(&? ?\(END\)|.* \(END\)|HELP -- (Press RETURN for more, or q when done|END -- Press g to see it again, or q when done)|Waiting for data\.\.\. \(interrupt to abort\)|.*  \(press RETURN\)|.*lines [0-9]+-[0-9]+(/[0-9]+)?( [0-9]+%)?|.*byte [0-9]+(/[0-9]+)?( [0-9]+%)?)$'
+  row   = -1
+
+  # less keeps the cursor on the prompt row, visible, at all times.
+  [[match.clause]]
+  cursor_rows    = [-1, -1]
+  cursor_visible = true

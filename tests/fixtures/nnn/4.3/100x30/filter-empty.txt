@@ -1,0 +1,43 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 1,29
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: nnn
+# expect_mode: insert
+# expect_mode_mono: unknown
+# expect_mode_remote: unknown
+# note: filter prompt '/'
+# ---
+1 2 3 4 ~/tree
+
+ data/
+ docs/
+ src/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                                     str [/], ic [:]
+/

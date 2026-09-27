@@ -1,0 +1,46 @@
+# tmux-modal fixture v1
+# size: 120x36
+# cursor: 0,35
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: tig
+# expect_mode: normal
+# note: status view
+# ---
+On branch main
+Changes to be committed:
+  (no files)
+Changes not staged for commit:
+M file1.txt
+Untracked files:
+  (no files)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[status] Nothing to update                                                                                          100%

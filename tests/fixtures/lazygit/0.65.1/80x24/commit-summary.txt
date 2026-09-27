@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 2,8
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: lazygit
+# expect_mode: insert
+# note: commit message summary
+# ---
+╭─[1]─Status──────────────╮╭─[0]─Staged changes────────────────────────────────╮
+│repo → main              ││diff --git a/file1.txt b/file1.txt                 ▐
+╰─────────────────────────╯│index 89b24ec..ad02f48 100644                      ▐
+╭─[2]─Files - Worktrees -─╮│--- a/file1.txt                                    ▐
+│M  file1.txt             ││+++ b/file1.txt                                    ▐
+│                         ││@@ -1 +1,2 @@                                      ▐
+│                         ││ line 1                                            ▐
+│╭─Commit summary───────────────────────────────────────────────────── 0 ─────╮▐
+││                                                                            │▐
+│╰────────────────────────────────────────────────────────────────────────────╯▐
+│╭─Commit description──Press <tab> to toggle focus, <ctrl+o> to open menu─────╮▐
+││                                                                            │▐
+││                                                                            │▐
+╰│                                                                            │▐
+╭│                                                                            │▐
+││                                                                            ││
+╰│                                                                            ││
+╭│                                                                            ││
+│╰────────────────────────────────────────────────────────────────────────────╯│
+╰──────────────────1 of 6─╯╰───────────────────────────────────────────────────╯
+╭─[5]─Stash───────────────╮╭─Command log───────────────────────────────────────╮
+│                         ││  git add -- file1.txt                             │
+╰──────────────────0 of 0─╯╰───────────────────────────────────────────────────╯
+                                                      Donate Ask Question 0.65.1

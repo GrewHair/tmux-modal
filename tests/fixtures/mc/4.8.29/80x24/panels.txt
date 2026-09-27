@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 11,22
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: mc [demo@fx]:~
+# expect_app: mc
+# expect_mode: insert
+# note: panels: letters go to the command line
+# ---
+  Left     File     Command     Options     Right
+┌<─ ~ ────────────────────────────.[^]>┐┌<─ ~ ────────────────────────────.[^]>┐
+│.n     Name      │ Size  │Modify time ││.n     Name      │ Size  │Modify time │
+│/..              │UP--DIR│Sep 27 16:30││/..              │UP--DIR│Sep 27 16:30│
+│/.cache          │   4096│Sep 27 16:38││/.cache          │   4096│Sep 27 16:38│
+│/.config         │   4096│Sep 27 16:38││/.config         │   4096│Sep 27 16:38│
+│/.local          │   4096│Sep 27 16:38││/.local          │   4096│Sep 27 16:38│
+│/repo            │   4096│Sep 27 16:30││/repo            │   4096│Sep 27 16:30│
+│/tree            │   4096│Sep 27 16:30││/tree            │   4096│Sep 27 16:30│
+│ .bash_logout    │    220│May  7 20:33││ .bash_logout    │    220│May  7 20:33│
+│ .bashrc         │   3526│May  7 20:33││ .bashrc         │   3526│May  7 20:33│
+│ .gitconfig      │     79│Sep 27 16:30││ .gitconfig      │     79│Sep 27 16:30│
+│ .profile        │    807│May  7 20:33││ .profile        │    807│May  7 20:33│
+│ sample.txt      │  42893│Sep 27 16:30││ sample.txt      │  42893│Sep 27 16:30│
+│                 │       │            ││                 │       │            │
+│                 │       │            ││                 │       │            │
+│                 │       │            ││                 │       │            │
+│                 │       │            ││                 │       │            │
+├──────────────────────────────────────┤├──────────────────────────────────────┤
+│UP--DIR                               ││UP--DIR                               │
+└───────────────── 877G / 1007G (87%) ─┘└───────────────── 877G / 1007G (87%) ─┘
+Hint: Tab changes your current panel.
+demo@fx:~$
+ 1Help   2Menu   3View   4Edit   5Copy   6RenMov 7Mkdir  8Delete 9PullDn10Quit

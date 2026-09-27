@@ -1,0 +1,24 @@
+
+                   [1mSUMMARY[0m [1mOF[0m [1mLESS[0m [1mCOMMANDS[0m
+
+      Commands marked with * may be preceded by a number, [4mN[0m.
+      Notes in parentheses indicate the behavior if [4mN[0m is given.
+      A key preceded by a caret indicates the Ctrl key; thus ^K is ctrl-K.
+
+  h  H                 Display this help.
+  q  :q  Q  :Q  ZZ     Exit.
+ ---------------------------------------------------------------------------
+
+                           [1mMOVING[0m
+
+  e  ^E  j  ^N  CR  *  Forward  one line   (or [4mN[0m lines).
+  y  ^Y  k  ^K  ^P  *  Backward one line   (or [4mN[0m lines).
+  f  ^F  ^V  SPACE  *  Forward  one window (or [4mN[0m lines).
+  b  ^B  ESC-v      *  Backward one window (or [4mN[0m lines).
+  z                 *  Forward  one window (and set window to [4mN[0m).
+  w                 *  Backward one window (and set window to [4mN[0m).
+  ESC-SPACE         *  Forward  one window, but don't stop at end-of-file.
+  d  ^D             *  Forward  one half-window (and set half-window to [4mN[0m).
+  u  ^U             *  Backward one half-window (and set half-window to [4mN[0m).
+  ESC-)  RightArrow *  Right one half screen width (or [4mN[0m positions).
+[7mHELP -- Press RETURN for more, or q when done[0m

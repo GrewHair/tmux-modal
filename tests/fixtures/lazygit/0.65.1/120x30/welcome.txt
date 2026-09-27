@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 120x30
+# cursor: 119,29
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: lazygit
+# expect_mode: normal
+# note: first-run popup
+# ---
+╭─[1]─Status───────────────────────────╮╭─[0]─Unstaged changes─────────────────────────────────────────────────────────╮
+│repo → main                           ││diff --git a/file1.txt b/file1.txt                                            ▐
+╰──────────────────────────────────────╯│index 89b24ec..ad02f48 100644                                                 ▐
+╭─[2]─Files - Worktrees - Submodules───╮│--- a/file1.txt                                                               ▐
+│ M file1.txt                          ││+++ b/file1.txt                                                               ▐
+│                                      ││@@ -1 +1,2 @@                                                                 ▐
+│                                      ││ line 1                                                                       ▐
+│                   ╭──────────────────────────────────────────────────────────────────────────────╮                   ▐
+│                   │Thanks for using lazygit! Seriously you rock. Three things to share with you: │                   ▐
+│                   │                                                                              │                   ▐
+╰───────────────────│ 1) If you want to learn about lazygit's features, watch this vid:            │                   ▐
+╭─[3]─Local branches│      https://youtu.be/CPLdltN7wgE                                            │                   ▐
+│  * main           │                                                                              │                   ▐
+│                   │ 2) Be sure to read the latest release notes at:                              │                   ▐
+│                   │      https://github.com/jesseduffield/lazygit/releases                       │                   ▐
+│                   │                                                                              │                   ▐
+│                   │ 3) If lazygit has made your life easier, you can say thanks by clicking the  │                   ▐
+│                   │    donate button at the bottom right. Donation does not grant priority       │                   ▐
+╰───────────────────│support,                                                                      │                   ▐
+╭─[4]─Commits - Refl│    but it is much appreciated.                                               │                   ▐
+│14686ade de ○ Add f│                                                                              │                   ▐
+│1170a5c3 de ○ Add f│Press <enter> to get started.                                                 │                   │
+│6667a3eb de ○ Add f╰──────────────────────────────────────────────────────────────────────────────╯                   │
+│b8f389ac de ○ Add file 3              ▐│                                                                              │
+│e59cd44c de ○ Add file 2              ││                                                                              │
+╰───────────────────────────────1 of 6─╯╰──────────────────────────────────────────────────────────────────────────────╯
+╭─[5]─Stash────────────────────────────╮╭─Command log──────────────────────────────────────────────────────────────────╮
+│                                      ││what's new.                                                                   │
+╰───────────────────────────────0 of 0─╯╰──────────────────────────────────────────────────────────────────────────────╯
+Confirm: <enter> | Close/Cancel: <esc> | Copy to clipboard: <ctrl+o>                          Donate Ask Question 0.65.1

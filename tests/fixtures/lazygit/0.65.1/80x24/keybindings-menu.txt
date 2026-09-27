@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 79,23
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: lazygit
+# expect_mode: normal
+# note: keybindings menu
+# ---
+╭─[1]─Status──────────────╮╭─[0]─Staged changes────────────────────────────────╮
+│repo → main              ││diff --git a/file1.txt b/file1.txt                 ▐
+╰─────────────────────────╯│index 89b24ec..ad02f48 100644                      ▐
+╭╭─Keybindings───────────────────────────────────────────(Type to filter)─────╮▐
+││              ─── Local                                                     ▐▐
+││     <ctrl+o> Copy path to clipboard                                        ▐▐
+││      <space> Stage                                                         │▐
+││     <ctrl+b> Filter files by status                                        │▐
+││            y Copy to clipboard...                                          │▐
+││            c Commit                                                        │▐
+││            w Commit changes without pre-commit hook                        │▐
+││            A Amend last commit                                             │▐
+││            C Commit changes using git editor                               │▐
+╰│     <ctrl+f> Find base commit for fixup                                    │▐
+╭│            e Edit                                                          │▐
+│╰────────────────────────────────────────────────────────────────────1 of 65─╯│
+╰──────────────────1 of 1─╯│                                                   │
+╭─[4]─Commits - Reflog────╮│                                                   │
+│14686ade de ○ Add file 6 ││                                                   │
+╰──────────────────1 of 6─╯╰───────────────────────────────────────────────────╯
+╭─[5]─Stash───────────────╮╭─Command log───────────────────────────────────────╮
+│                         ││  git add -- file1.txt                             │
+╰──────────────────0 of 0─╯╰───────────────────────────────────────────────────╯
+Execute: <enter> | Close/Cancel: <esc>                Donate Ask Question 0.65.1

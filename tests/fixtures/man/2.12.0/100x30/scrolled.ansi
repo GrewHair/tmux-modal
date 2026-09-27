@@ -1,0 +1,30 @@
+[1mNAME[0m
+       ls - list directory contents
+
+[1mSYNOPSIS[0m
+       [1mls [0m[[4mOPTION[0m]... [[4mFILE[0m]...
+
+[1mDESCRIPTION[0m
+       List  information about the FILEs (the current directory by default).  Sort entries alpha‐
+       betically if none of [1m-cftuvSUX [0mnor [1m--sort [0mis specified.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       [1m-a[0m, [1m--all[0m
+              do not ignore entries starting with .
+
+       [1m-A[0m, [1m--almost-all[0m
+              do not list implied . and ..
+
+       [1m--author[0m
+              with [1m-l[0m, print the author of each file
+
+       [1m-b[0m, [1m--escape[0m
+              print C-style escapes for nongraphic characters
+
+       [1m--block-size[0m=[4mSIZE[0m
+              with [1m-l[0m, scale sizes by SIZE when printing them; e.g., '--block-size=M';  see  SIZE
+              format below
+
+       [1m-B[0m, [1m--ignore-backups[0m
+[7m Manual page ls(1) line 3 (press h for help or q to quit)[0m

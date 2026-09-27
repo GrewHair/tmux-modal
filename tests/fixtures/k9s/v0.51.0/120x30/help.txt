@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 120x30
+# cursor: 23,28
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: k9s
+# expect_mode: normal
+# note: help
+# ---
+Context: n/a [RW]                                  <esc> Back                                  ____  __ ________
+Cluster: n/a                                                                                  |    |/  /   __   \______
+User:    n/a                                                                                  |       /\____    /  ___/
+K9s Rev: v0.51.0                                                                              |    \   \  /    /\___  \
+K8s Rev: n/a                                                                                  |____|\__ \/____//____  /
+CPU:     n/a                                                                                           \/           \/
+MEM:     n/a
+┌──────────────────────────────────────────────────────── Help ────────────────────────────────────────────────────────┐
+│ RESOURCE                         GENERAL                                NAVIGATION                     HOTKEYS       │
+│ <ctrl-d>   Delete                <ctrl-a>       Aliases                 <j>         Down                             │
+│ <?>        Help                  <q>            Back                    <shift-g>   Goto Bottom                      │
+│ <r>        Rename                <esc>          Back/Clear              <g>         Goto Top                         │
+│ <shift-n>  Sort Name             <ctrl-u>       Command Clear           <[>         History Back                     │
+│ <shift-o>  Sort Selected Column  <:cmd>         Command mode            <]>         History Forward                  │
+│ <shift-s>  Sort Status           <tab>          Field Next              <->         Last Used Command                │
+│ <ctrl-z>   Toggle Faults         <backtab>      Field Previous          <h>         Left                             │
+│ <ctrl-w>   Toggle Wide           </term>        Filter mode             <ctrl-f>    Page Down                        │
+│                                  <?>            Help                    <ctrl-b>    Page Up                          │
+│                                  <space>        Mark                    <l>         Right                            │
+│                                  <ctrl-\>       Mark Clear              <k>         Up                               │
+│                                  <ctrl-space>   Mark Range                                                           │
+│                                  <:q>           Quit                                                                 │
+│                                  <ctrl-r>       Reload                                                               │
+│                                  <ctrl-s>       Save                                                                 │
+│                                  <shift-right>  Select Next Column                                                   │
+│                                  <shift-left>   Select Previous Column                                               │
+│                                  <ctrl-g>       Toggle Crumbs                                                        │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+  <contexts>   <help>
+                                     😎 Synchronizing contexts in "-" namespace...

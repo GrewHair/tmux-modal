@@ -1,0 +1,24 @@
+╭─[1]─Status──────────────╮╭─[0]─Staged changes────────────────────────────────╮
+│repo → main              ││[1mdiff --git a/file1.txt b/file1.txt[0m                 ▐
+╰─────────────────────────╯│[1mindex 89b24ec..ad02f48 100644[0m                      ▐
+╭[1m[32m╭─Keybindings───────────────────────────────────────────(Type to filter)─────╮[0m▐
+│[1m[32m│[0m              [1m[32m─── Local[0m                                                     [1m[32m▐[0m▐
+│[1m[32m│[39m[44m     [38;5;14m<ctrl+o>[39m Copy path to clipboard                                        [32m[49m▐[0m▐
+│[1m[32m│[0m      [36m<space>[39m Stage                                                         [1m[32m│[0m▐
+│[1m[32m│[0m     [36m<ctrl+b>[39m Filter files by status                                        [1m[32m│[0m▐
+│[1m[32m│[0m            [36my[39m Copy to clipboard...                                          [1m[32m│[0m▐
+│[1m[32m│[0m            [36mc[39m Commit                                                        [1m[32m│[0m▐
+│[1m[32m│[0m            [36mw[39m Commit changes without pre-commit hook                        [1m[32m│[0m▐
+│[1m[32m│[0m            [36mA[39m Amend last commit                                             [1m[32m│[0m▐
+│[1m[32m│[0m            [36mC[39m Commit changes using git editor                               [1m[32m│[0m▐
+╰[1m[32m│[0m     [36m<ctrl+f>[39m Find base commit for fixup                                    [1m[32m│[0m▐
+╭[1m[32m│[0m            [36me[39m Edit                                                          [1m[32m│[0m▐
+│[1m[32m╰────────────────────────────────────────────────────────────────────1 of 65─╯[0m│
+╰──────────────────1 of 1─╯│                                                   │
+╭─[4]─[32mCommits [39m- Reflog────╮│                                                   │
+│[32m14686ade[39m [38;5;160mde[39m [38;5;160m○[39m Add file 6 ││                                                   │
+╰──────────────────1 of 6─╯╰───────────────────────────────────────────────────╯
+╭─[5]─Stash───────────────╮╭─Command log───────────────────────────────────────╮
+│                         ││  git add -- file1.txt                             │
+╰──────────────────0 of 0─╯╰───────────────────────────────────────────────────╯
+[34mExecute: <enter> | Close/Cancel: <esc>[39m                [4m[35mDonate[0m [4m[33mAsk Question[0m 0.65.1

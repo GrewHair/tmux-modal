@@ -1,0 +1,36 @@
+# ranger — file manager. Hooks-only: ranger already moves with hjkl.
+#
+# Verified against ranger 1.9.3 (tests/fixtures/ranger). Row 0 shows
+# "user@host /path", the last row the file's details and "1/3  All".
+# Every text prompt is ranger's console on the last row, starting with ":"
+# (`/` opens ":search ", `cw` ":rename ", `a` ":rename name"), with the
+# cursor visible; it is hidden otherwise.
+name     = "ranger"
+priority = 50
+extends  = ["colon-command", "curses-tui"]
+modes    = ["normal", "insert", "command"]
+translated = false
+
+[buckets]
+typing     = ["insert", "command"]
+commanding = ["normal"]
+
+[match]
+command             = ["ranger"]
+requires_alt_screen = true
+combine             = "weighted"
+threshold           = 100
+
+  [[match.clause]]
+  regex  = '^[^ @:]+@[^ @:]+ [/~]'
+  row    = 0
+  weight = 50
+
+  # Status bar: permissions, links, owner, group, size, date, then
+  # "46.7K sum, 878G free  1/3  All".
+  [[match.clause]]
+  regex  = '^[-dlcbps][-rwxsStTl]{9} .* sum, .* free  [0-9]+/[0-9]+  (All|Top|Bot|[0-9]+%)$'
+  row    = -1
+  weight = 50
+
+# (inherited: command-line `:`, cursor-on-prompt)

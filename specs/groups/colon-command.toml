@@ -1,0 +1,19 @@
+# colon-command: a `:` command line on the last row, reported as mode
+# "command" (typing bucket), as in tig, ranger and lf. Not matchable on its
+# own. Not for less, whose idle prompt is a bare ":".
+description = "Bottom-line : command prompt"
+modes = ["command"]
+
+[buckets]
+typing = ["command"]
+
+[[mode_when]]
+name = "command-line"
+mode = "command"
+  [[mode_when.clause]]
+  regex = '^:'
+  row   = -1
+  col   = 0
+  [[mode_when.clause]]
+  cursor_rows    = [-1, -1]
+  cursor_visible = true

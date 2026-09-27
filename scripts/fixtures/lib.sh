@@ -28,11 +28,16 @@ keys() { t send-keys -t %0 "$@"; }
 
 settle() { sleep "${1:-0.4}"; }
 
-# snap FILE APP MODE [NOTE]: save pane %0 as a fixture
+# snap FILE APP MODE [NOTE [KEY=VALUE...]]: save pane %0 as a fixture;
+# KEY=VALUE pairs become extra header lines (e.g. expect_mode_remote=unknown).
 snap() {
 	local file=$1 app=$2 mode=$3 note=${4:-}
+	shift 3
+	shift || true
+	local meta=()
+	for m in "$@"; do meta+=(-meta "$m"); done
 	mkdir -p "$(dirname "$file")"
 	TMUX="$(t display -p '#{socket_path}'),0,0" "$BIN" capture \
-		-o "$file" -expect-app "$app" -expect-mode "$mode" -note "$note" %0
+		-o "$file" -expect-app "$app" -expect-mode "$mode" -note "$note" "${meta[@]}" %0
 	echo "captured $file ($app/$mode)"
 }

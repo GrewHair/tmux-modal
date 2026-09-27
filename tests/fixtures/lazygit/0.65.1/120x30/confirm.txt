@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 120x30
+# cursor: 119,29
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: lazygit
+# expect_mode: normal
+# note: confirmation popup: no text field
+# ---
+╭─[1]─Status───────────────────────────╮╭─[0]─Patch────────────────────────────────────────────────────────────────────╮
+│repo → main                           ││commit 14686adef134d3aa706b78c3648e48398807d39c (HEAD -> main)                ▐
+╰──────────────────────────────────────╯│Author: demo <demo@example.invalid>                                           ▐
+╭─[2]─Files - Worktrees - Submodules───╮│Date:   Sun Sep 27 15:54:51 2026 +0000                                        ▐
+│M  file1.txt                          ││                                                                              ▐
+│                                      ││    Add file 6                                                                ▐
+│                                      ││---                                                                           ▐
+│                                      ││ file6.txt | 6 ++++++                                                         ▐
+│                                      ││ 1 file changed, 6 insertions(+)                                              ▐
+│                                      ││                                                                              ▐
+╰───────────────────────────────1 of 1─╯│diff --git a/file6.txt b/file6.txt                                            ▐
+╭─[3]─Local branches - Remotes - Tags──╮│new file mode 100644                                                          ▐
+│  * main                              ││index 0000000..f985857                                                        ▐
+│                   ╭─Drop commit──────────────────────────────────────────────────────────────────╮                   ▐
+│                   │Are you sure you want to drop the selected commit(s)?                         │                   │
+│                   ╰──────────────────────────────────────────────────────────────────────────────╯                   │
+│                                      ││+line 1                                                                       │
+│                                      ││+line 2                                                                       │
+╰───────────────────────────────1 of 1─╯│+line 3                                                                       │
+╭─[4]─Commits - Reflog─────────────────╮│+line 4                                                                       │
+│14686ade de ○ Add file 6              ▐│+line 5                                                                       │
+│1170a5c3 de ○ Add file 5              ▐│+line 6                                                                       │
+│6667a3eb de ○ Add file 4              ▐│                                                                              │
+│b8f389ac de ○ Add file 3              ▐│                                                                              │
+│e59cd44c de ○ Add file 2              ││                                                                              │
+╰───────────────────────────────1 of 6─╯╰──────────────────────────────────────────────────────────────────────────────╯
+╭─[5]─Stash────────────────────────────╮╭─Command log──────────────────────────────────────────────────────────────────╮
+│                                      ││  git add -- file1.txt                                                        │
+╰───────────────────────────────0 of 0─╯╰──────────────────────────────────────────────────────────────────────────────╯
+Confirm: <enter> | Close/Cancel: <esc> | Copy to clipboard: <ctrl+o>                          Donate Ask Question 0.65.1

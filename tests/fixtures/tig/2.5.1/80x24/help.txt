@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 0,23
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: tig
+# expect_mode: normal
+# note: help view
+# ---
+Quick reference for tig keybindings:
+
+[-] generic bindings
+View switching
+                           m view-main           Show main view
+                           d view-diff           Show diff view
+                           l view-log            Show log view
+                           L view-reflog         Show reflog view
+                           t view-tree           Show tree view
+                           f view-blob           Show blob view
+                           b view-blame          Show blame view
+                           r view-refs           Show refs view
+                        s, S view-status         Show status view
+                           c view-stage          Show stage view
+                           y view-stash          Show stash view
+                           g view-grep           Show grep view
+                           p view-pager          Show pager view
+                           h view-help           Show help view
+View manipulation
+                     <Enter> enter               Enter and open selected line
+                           < back                Go back to the previous view st
+         <Down>, <Ctrl-N>, J next                Move to next
+[help] - line 1 of 123                                                       17%

@@ -1,0 +1,10 @@
+# weechat — IRC client: the input bar always has the keyboard.
+# Always insert (see groups/readline-repl.toml): its window is a full-screen
+# curses UI, but keys always go to the input line. Recognised by the local
+# command name only.
+name     = "weechat"
+priority = 20
+extends  = "readline-repl"
+
+[match]
+command = ["weechat", "weechat-curses"]

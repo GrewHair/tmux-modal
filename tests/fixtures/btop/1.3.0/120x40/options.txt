@@ -1,0 +1,53 @@
+# tmux-modal fixture v1
+# size: 120x40
+# cursor: 50,36
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: btop
+# expect_mode: insert
+# expect_mode_mono: unknown
+# expect_mode_remote: unknown
+# note: options: editable fields, never remapped; covers the proc box
+# ---
+╭─┐¹cpu┌──┐menu┌┐preset *┌─────────██████╗─████████╗─██████╗2██████╗────────────────┐BAT▲ 94% ■■■■■■■■■■ ┌┐- 2000ms +┌─╮
+│                                  ██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗   ██╗    ██╗                                     │
+│                                  ██████╔╝   ██║   ██║   ██║██████╔╝ ██████╗██████╗                                   │
+│                                  ██╔══██╗   ██║   ██║   ██║██╔═══╝  ╚═██╔═╝╚═██╔═╝               ┌─────────┐3.0 GHz┌╮│
+│                                  ██████╔╝   ██║   ╚██████╔╝██║        ╚═╝   │╚═╝ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   3%││
+│                                  ╚═════╝    ╚═╝    ╚═════╝ ╚═╝       ⢸     v1.3.0⣀⣀⣀⢠⣀⣀⣀⣀⣀⣀  11%│C4  ⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀   4%││
+│                   ╭─┐tab→┌─────────────────────────────────────────────────────────────────────╮│C5  ⣀⣀⣀⣀⣀⣀⣀⢀⣀⣀   1%││
+│                   │   [general]       2cpu        3gpu        4mem        5net        6proc    ││C6  ⣀⣀⣀⢠⣀⢀⣀⣀⣀⡀   2%││
+│                   ├─────────────────────────────┬──────────────────────────────────────────────┤│C7  ⣀⣀⣀⣀⣀⡀⣀⡀⣀⣀   2%││
+│                   │       Color theme 1/30      │ Set color theme.                             │ LAV: 1.10 0.54 0.41││
+│                   │ ←         Default         → │                                              │────────────────────╯│
+│ up 07:29:18       │       Theme background      │ Choose from all theme files in (usually)     │                     │
+╰───────────────────│             True            │ "/usr/[local/]share/btop/themes" and         │─────────────────────╯
+╭─┐²mem┌────────────│          Truecolor          │ "~/.config/btop/themes".                     │┐tree┌┐< cpu lazy >┌─╮
+│ Total:         15.│             True            │                                              │r:  MemB       Cpu%  │
+├─Used:──────────2.2│          Force tty          │ "Default" for builtin default theme.         │o   5.9M ⣀⣀⢀⣀⣀  0.0  │
+│  15%              │            False            │ "TTY" for builtin 16-color theme.            │                     │
+│                  ⣀│           Vim keys          │                                              │                     │
+├─Available:─────13.│            False            │ For theme updates see:                       │                     │
+│  85%             ⣶│           Presets           │ https://github.com/aristocratos/btop         │                     │
+│                  ⣿│  cpu:1:default,proc:0:defa  │                                              │                     │
+├─Cached:────────3.7│         Shown boxes         │                                              │                     │
+│  24%              │       cpu mem net proc      │                                              │                     │
+│                  ⣤│          Update ms          │                                              │                     │
+├─Free:──────────8.9│             2000            │                                              │                     │
+│  59%             ⣀│       Rounded corners       │                                              │                     │
+│                  ⣿│             True            │                                              │                     │
+╰───────────────────│         Graph symbol        │                                              │                     │
+╭─┐³net┌┐172.17.0.48│           braille           │                                              │                     │
+│10K                │         Clock format        │                                              │                     │
+│                   │              %X             │                                              │                     │
+│                   │        Base 10 sizes        │                                              │                     │
+│                   │            False            │                                              │                     │
+│                  ⣀│      Background update      │                                              │                     │
+│                  ⠉│             True            │                                              │                     │
+│                   │         Show battery        │                                              │                     │
+│                   │             True            │                                              │                     │
+│                   ╰─┘↑ page 1/2 ↓└──────────────┴──────────────────────────────────────────────╯                     │
+│10K                      ╰─┘upload└────────────────╯││                                                                │
+╰────────────────────────────────────────────────────╯╰┘↑ select ↓└┘info ↵└┘terminate└┘kill└┘signals└─────────────┘0/1└╯

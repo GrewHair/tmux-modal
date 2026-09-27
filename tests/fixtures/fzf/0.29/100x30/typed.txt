@@ -1,0 +1,41 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 4,29
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: fzf
+# expect_mode: insert
+# note: typing a query
+# ---
+  912
+  812
+  712
+  612
+  512
+  412
+  312
+  212
+  112
+  192
+  182
+  172
+  162
+  152
+  142
+  132
+  102
+  129
+  128
+  127
+  126
+  125
+  124
+  123
+  122
+  121
+  120
+> 12
+  28/1000
+> 12

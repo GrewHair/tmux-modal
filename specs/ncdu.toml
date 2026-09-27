@@ -1,0 +1,32 @@
+# ncdu — disk usage browser. Hooks-only: ncdu already moves with hjkl.
+#
+# ncdu 1.x has no text prompts at all (the delete confirmation is a
+# yes/no selection), so it is always normal once identified. Verified
+# with ncdu 1.19 (tests/fixtures/ncdu).
+name     = "ncdu"
+priority = 50
+modes    = ["normal"]
+
+[buckets]
+commanding = ["normal"]
+
+[match]
+command             = ["ncdu"]
+requires_alt_screen = true
+combine             = "weighted"
+threshold           = 100
+
+  [[match.clause]]
+  regex  = '^ncdu [0-9.]+ ~ Use the arrow keys to navigate, press \? for help'
+  row    = 0
+  weight = 100
+
+  [[match.clause]]
+  regex  = '^--- /.* -+$'
+  row    = 1
+  weight = 50
+
+  [[match.clause]]
+  regex  = '^ ?\*?Total disk usage: .* Apparent size:'
+  row    = -1
+  weight = 50

@@ -1,0 +1,30 @@
+# mc — Midnight Commander.
+#
+# Always insert. mc's shell command line is always live: in the panels,
+# typed letters go to it (`ab` shows up after the shell prompt), so there
+# is no "navigation mode" whose keys could safely be remapped, and telling
+# a focused dialog input from the panels would need focus detection the
+# screen does not reliably show (brief §5.4: ship always-insert rather than
+# something wrong). Verified with mc 4.8.30 (tests/fixtures/mc).
+name     = "mc"
+priority = 30
+always   = "insert"
+modes    = ["insert"]
+
+[buckets]
+typing = ["insert"]
+
+[match]
+command             = ["mc", "mcedit", "mcview"]
+requires_alt_screen = true
+combine             = "any"
+
+  # The menu bar (hidden with F9 > Options > Layout > menubar).
+  [[match.clause]]
+  regex = '^ +Left +File +Command +Options +Right$'
+  row   = 0
+
+  # The function-key bar of the panels (hidden with the keybar option).
+  [[match.clause]]
+  regex = '^ ?1 ?Help +2 ?Menu +3 ?View +4 ?Edit +5 ?Copy +6 ?RenMov'
+  row   = -1

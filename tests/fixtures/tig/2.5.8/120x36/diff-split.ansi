@@ -1,0 +1,35 @@
+[34m2026-09-27 16:17 +0000 [32mNot Committed Yet [34mo[39m Unstaged changes
+[34m2026-09-27 15:54 +0000 [32mdemo[39m              [34mo[39m [1m[36m[main][0m Add [30m[43mfile[39m[49m 6
+[1m[37m[42m2026-09-27 15:54 +0000 demo[0m[42m              [1m[37mo Add [0m[30m[43mfile[1m[37m[42m 5[0m[42m
+[34m[49m2026-09-27 15:54 +0000 [32mdemo[39m              [34mo[39m Add [30m[43mfile[39m[49m 4
+[34m2026-09-27 15:54 +0000 [32mdemo[39m              [34mo[39m Add [30m[43mfile[39m[49m 3
+[34m2026-09-27 15:54 +0000 [32mdemo[39m              [34mo[39m Add [30m[43mfile[39m[49m 2
+[34m2026-09-27 15:54 +0000 [32mdemo[39m              [34mI[39m Add [30m[43mfile[39m[49m 1
+
+
+
+
+[37m[44m[main] 1170a5c37f82526b468224800c368bf6da315838 - commit 2 of 6[39m                                                     [37m100%
+[1m[42mcommit 1170a5c37f82526b468224800c368bf6da315838[0m[42m
+[36m[49mAuthor:     demo <demo@example.invalid>[39m
+[33mAuthorDate: Sun Sep 27 15:54:51 2026 +0000[39m
+[35mCommit:     demo <demo@example.invalid>[39m
+[33mCommitDate: Sun Sep 27 15:54:51 2026 +0000[39m
+
+    Add file 5
+[34m---[39m
+[34m file5.txt [39m| 5 [32m+++++[39m
+ 1 file changed, 5 insertions(+)
+
+[33mdiff --git a/file5.txt b/file5.txt[39m
+[33mnew file mode 100644[39m
+[34mindex 0000000..94c99a3[39m
+[33m--- /dev/null[39m
+[33m+++ b/file5.txt[39m
+[35m@@ -0,0 +1,5 @@[39m
+[32m+line 1[39m
+[32m+line 2[39m
+[32m+line 3[39m
+[32m+line 4[39m
+[32m+line 5[39m
+[1m[37m[44m[diff][0m[44m [1m[37m1170a5c37f82526b468224800c368bf6da315838 - line 1 of 22[0m[44m                                                      [1m[37m100%

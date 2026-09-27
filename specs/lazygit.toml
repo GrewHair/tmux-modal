@@ -1,0 +1,39 @@
+# lazygit — git TUI. Hooks-only: lazygit already moves with hjkl.
+#
+# Verified against lazygit 0.65.1 (tests/fixtures/lazygit). lazygit shows
+# the terminal cursor exactly while a text field has focus: the commit
+# summary and description, the `/` filter, the `:` shell command, new
+# branch / rename prompts. Menus (?), confirmations and the panels keep it
+# hidden. That is the whole mode rule, and it needs no capture.
+name     = "lazygit"
+priority = 50
+modes    = ["normal", "insert"]
+translated = false                # the cursor rule reads no text
+
+[buckets]
+typing     = ["insert"]
+commanding = ["normal"]
+
+[match]
+command             = ["lazygit", "lg"]
+requires_alt_screen = true
+combine             = "weighted"
+threshold           = 100
+
+  # The side panels' titles: ╭─[1]─Status──  ╭─[2]─Files - Worktrees…
+  [[match.clause]]
+  regex           = '^╭─\[[1-5]\]─(Status|Files|Local branches|Commits|Stash)'
+  rows            = [0, -2]
+  min_occurrences = 2
+  weight          = 100
+
+  # The bottom line's right end ("Donate Ask Question 0.65.1").
+  [[match.clause]]
+  regex  = 'Donate Ask Question( [0-9]+\.[0-9]+\.[0-9]+)?$'
+  row    = -1
+  weight = 50
+
+[[mode_when]]
+name           = "text-field"
+mode           = "insert"
+cursor_visible = true

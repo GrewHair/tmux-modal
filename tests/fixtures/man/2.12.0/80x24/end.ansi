@@ -1,0 +1,24 @@
+
+       2      if serious trouble (e.g., cannot access command-line argument).
+
+[1mAUTHOR[0m
+       Written by Richard M. Stallman and David MacKenzie.
+
+[1mREPORTING BUGS[0m
+       GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+       Report any translation bugs to <https://translationproject.org/team/>
+
+[1mCOPYRIGHT[0m
+       Copyright  ©  2023  Free Software Foundation, Inc.  License GPLv3+: GNU
+       GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+       This is free software: you are free  to  change  and  redistribute  it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+[1mSEE ALSO[0m
+       [1mdircolors[0m(1)
+
+       Full documentation <https://www.gnu.org/software/coreutils/ls>
+       or available locally via: info '(coreutils) ls invocation'
+
+GNU coreutils 9.4                 August 2026                            [4mLS[0m(1)
+[7m Manual page ls(1) line 227/249 (END) (press h for help or q to quit)[0m

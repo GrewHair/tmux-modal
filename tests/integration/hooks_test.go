@@ -73,7 +73,8 @@ func TestIndicatorInBorders(t *testing.T) {
 		"@modal_scope":                "visible",
 	}})
 	h.tmuxIn("split-window", "-d", "-h", "-t", "main", "bash --norc --noprofile")
-	h.tmuxIn("split-window", "-d", "-h", "-t", "main", "less /etc/passwd")
+	// keyecho under another name: full screen, but no spec matches it.
+	h.tmuxIn("split-window", "-d", "-h", "-t", "main", "-e", "KEYECHO_NAME=NOSPEC", keyecho)
 	h.startDaemon()
 	border := func(want string) {
 		h.t.Helper()
@@ -83,7 +84,7 @@ func TestIndicatorInBorders(t *testing.T) {
 		})
 	}
 	border("<0:[NORMAL]>")
-	border("<1:[N/A]>") // less: no spec yet
+	border("<1:[N/A]>")
 	border("<2:>")
 	h.typeKeys("/")
 	border("<0:[INSERT:keyecho]>")
