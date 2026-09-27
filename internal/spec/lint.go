@@ -88,6 +88,33 @@ func (sp *Spec) lintAbsenceAnchor() {
 		}
 		return true
 	}
+	// pinned: an identity clause fixed to one row pins the application to
+	// that edge of the pane: anything foreign between the two (an inner tmux
+	// status line, a shorter app) would move the anchor off its row. So it
+	// vouches for mode rows counted from the same edge, even beyond it (tig's
+	// title bar on row -2 for its prompt on row -1). It says nothing about
+	// the other edge: htop anchored at the top still needed its bottom bar.
+	pinned := func(id, m *Clause) bool {
+		if id.RowA != id.RowB {
+			return false
+		}
+		if id.RowA < 0 {
+			return m.RowA < 0 && m.RowB < 0
+		}
+		return m.RowA >= 0 && m.RowB >= 0
+	}
+	// binding: identity cannot be confirmed without the clause, because it
+	// is required or the other numeric weights cannot reach the threshold
+	// (combine = "all" is the case where none can be spared).
+	var total float64
+	for _, c := range id.Clauses {
+		if c.WeightKind == WeightNumeric && c.Weight > 0 {
+			total += c.Weight
+		}
+	}
+	binding := func(c *Clause) bool {
+		return c.WeightKind == WeightRequired || (c.WeightKind == WeightNumeric && total-c.Weight < id.Threshold)
+	}
 	for _, r := range sp.ModeRules {
 		for _, m := range r.Clauses {
 			if m.Kind != KindRegex || m.Negate {
@@ -95,8 +122,7 @@ func (sp *Spec) lintAbsenceAnchor() {
 			}
 			vouched := false
 			for _, c := range id.Clauses {
-				binding := c.WeightKind == WeightRequired || (id.Combine == "all" && c.WeightKind == WeightNumeric)
-				if c.Kind == KindRegex && !c.Negate && binding && covers(c, m) {
+				if c.Kind == KindRegex && !c.Negate && binding(c) && (covers(c, m) || pinned(c, m)) {
 					vouched = true
 				}
 			}

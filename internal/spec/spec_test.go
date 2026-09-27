@@ -393,6 +393,30 @@ j = "Down"
 	if warned(`"required"`) {
 		t.Error("a required bottom-bar anchor must satisfy the lint")
 	}
+	// A weighted clause the threshold cannot do without binds like a
+	// required one: 50 + 50 against 100 (ranger, lf, nnn).
+	w := func(sub ...string) bool {
+		b := body("50")
+		for i := 0; i < len(sub); i += 2 {
+			if !strings.Contains(b, sub[i]) {
+				t.Fatalf("test body lacks %q", sub[i])
+			}
+		}
+		b = strings.NewReplacer(sub...).Replace(b)
+		sp := mustSpec(t, load(t, map[string]string{"app.toml": b}), "app")
+		return strings.Contains(strings.Join(sp.Warnings, "\n"), "no required identity clause anchors those rows")
+	}
+	if w("threshold = 40", "threshold = 100") {
+		t.Error("a weighted anchor the threshold needs must satisfy the lint")
+	}
+	// An anchor pinned to one row pins the app to that edge: row -2 vouches
+	// for a prompt on row -1 (tig), row 0 does not (htop).
+	if w("threshold = 40", "threshold = 100", "row = -1\n  weight", "row = -2\n  weight") {
+		t.Error("an anchor pinned on row -2 must vouch for row -1")
+	}
+	if !w("threshold = 40", "threshold = 100", "'^F1 Help +F2 Quit bottom bar'\n  row = -1", "'^F1 Help +F2 Quit bottom bar'\n  row = 1") {
+		t.Error("anchors pinned at the top must not vouch for the bottom row")
+	}
 
 	// Mixed ranges ([0, -2]: all but the last row, as btop's filter rule
 	// reads) are compared by resolving them: the anchor must cover them.
@@ -455,5 +479,91 @@ command = ["[python"]
 `})
 	if bad.Specs["bad"] != nil || !strings.Contains(strings.Join(bad.Warnings, "\n"), "match.command") {
 		t.Errorf("a malformed command glob must fail the spec: %v", bad.Warnings)
+	}
+}
+
+// An overlay user file merges onto the bundled spec of the same file name
+// instead of replacing it: bundled rules keep applying, the user's come
+// first, [keys] merge key by key and false removes one.
+func TestOverlayMergesOntoBundled(t *testing.T) {
+	bundled := fstest.MapFS{
+		"groups/g.toml": {Data: []byte(group)},
+		"app.toml": {Data: []byte(`
+extends = "g"
+priority = 30
+lint_ignore = ["under-specified", "no screen identity"]
+[match]
+command = ["app"]
+[[mode_when]]
+name = "bundled-rule"
+mode = "insert"
+regex = '^Find:'
+row = -1
+col = 0
+[keys]
+k = "Up"
+`)},
+	}
+	user := fstest.MapFS{
+		"app.toml": {Data: []byte(`
+overlay = true
+name = "renamed"
+[[mode_when]]
+name = "user-rule"
+mode = "insert"
+regex = '^Jump to:'
+row = -1
+col = 0
+[keys]
+k = false
+l = "Right"
+`)},
+		"nothing.toml": {Data: []byte("overlay = true\n[keys]\nh = \"Left\"\n")},
+	}
+	set := spec.Load([]spec.Source{{FS: bundled, Dir: ".", Label: "b"}, {FS: user, Dir: ".", Label: "u"}})
+	sp := mustSpec(t, set, "app")
+	if set.Specs["renamed"] != nil {
+		t.Error("an overlay must not rename the spec")
+	}
+	if sp.Priority != 30 || len(sp.Identity.Commands) != 1 {
+		t.Errorf("bundled scalars lost: priority %d, commands %v", sp.Priority, sp.Identity.Commands)
+	}
+	if !strings.Contains(sp.File, "b:") || !strings.Contains(sp.File, "u:") {
+		t.Errorf("File should name both files: %q", sp.File)
+	}
+	var rules []string
+	for _, r := range sp.ModeRules {
+		rules = append(rules, r.Name)
+	}
+	if got := strings.Join(rules, ","); got != "user-rule,bundled-rule,parent-rule" {
+		t.Errorf("rule order = %s", got)
+	}
+	keys := map[string]string{}
+	for _, k := range sp.Keys {
+		keys[k.Key] = k.Send
+	}
+	if len(keys) != 3 || keys["h"] != "Left" || keys["j"] != "Down" || keys["l"] != "Right" {
+		t.Errorf("keys = %v (want h j from the group, l from the overlay, k removed)", keys)
+	}
+	if len(sp.Warnings) != 0 {
+		t.Errorf("the bundled lint_ignore should still apply: %v", sp.Warnings)
+	}
+	w := strings.Join(set.Warnings, "\n")
+	if !strings.Contains(w, "no nothing.toml to overlay") || !strings.Contains(w, `name "renamed" ignored`) {
+		t.Errorf("warnings = %v", set.Warnings)
+	}
+
+	// keys = false drops the whole inherited key map.
+	user["app.toml"] = &fstest.MapFile{Data: []byte("overlay = true\nkeys = false\n")}
+	set = spec.Load([]spec.Source{{FS: bundled, Dir: ".", Label: "b"}, {FS: user, Dir: ".", Label: "u"}})
+	if sp := mustSpec(t, set, "app"); sp.HasKeys() || len(sp.ModeRules) != 2 {
+		t.Errorf("keys = false: keys %v, %d rules", sp.Keys, len(sp.ModeRules))
+	}
+
+	// Without overlay the user file still shadows the bundled one outright.
+	user["app.toml"] = &fstest.MapFile{Data: []byte("modes=[\"normal\"]\n[buckets]\ncommanding=[\"normal\"]\n[match]\ncommand=[\"app\"]\n")}
+	set = spec.Load([]spec.Source{{FS: bundled, Dir: ".", Label: "b"}, {FS: user, Dir: ".", Label: "u"}})
+	if sp := mustSpec(t, set, "app"); len(sp.ModeRules) != 0 || sp.HasKeys() {
+		t.Errorf("a plain user file should replace the bundled spec, got %d rules", len(sp.ModeRules))
 	}
 }

@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-27, after milestone 6, release v0.4.0 and the history rewrite._
+_Last updated: 2026-09-27, M7 part 1 (overlays), release v0.5.0._
 
 ## Milestones (brief §12)
 
@@ -12,13 +12,13 @@ _Last updated: 2026-09-27, after milestone 6, release v0.4.0 and the history rew
 | 4 | Status indicator and transition hook | **done** |
 | 5 | SSH integration tests; nested-tmux fallback | **done** — sshd container tier, nested detection (D20), absence-anchor lint (D21) |
 | 6 | Remaining bundled specs, CPU-budget self-throttling, benchmark | **done** — 25 specs (D23–D26), fixtures from three distros, SSH app tier, benchmark + output gating (D28) |
-| 7 | Spec overlays (owner's request, D29), then `vim-family` specs | **next** — start with overlays + remap-ready specs ([milestones.md](milestones.md)); hooks-only path and `poll_interval` already implemented and tested |
+| 7 | Spec overlays (owner's request, D29), then `vim-family` specs | **in progress** — overlays + remap-ready specs **done** (v0.5.0); next: vim-family ([milestones.md](milestones.md)) |
 | 8 | README, CI, publish | **done early** at the owner's request (repo public, CI green, v0.1.0 released); README must keep growing with each milestone |
 
 ## Where things live
 
 - Repo: https://github.com/GrewHair/tmux-modal (public). CI: `.github/workflows/ci.yml`; release on `v*` tags: `release.yml` (static binaries for linux/darwin/freebsd, amd64/arm64 + linux/arm, SHA256SUMS).
-- Current release: **v0.4.0** (M6: bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`). v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
+- Current release: **v0.5.0** (M7 part 1: overlay user specs, every bundled spec remap-ready, spec files reloaded on change). v0.4.0 was M6 ( bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
 
 ## The owner is dogfooding it
 

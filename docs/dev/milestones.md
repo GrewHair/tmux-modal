@@ -23,7 +23,7 @@ specs detect only (D23); mc and fzf always insert; `cursor_flag` per app
 (F30); `_` is unbound in btop (the only new remapping spec). Per-submode
 key maps: not needed (btop's options screen is simply insert).
 
-**Next up: M7 — start with spec overlays (see below).**
+**Next up: M7 — overlays done (v0.5.0); the vim work is next (see below).**
 
 ### Original plan
 
@@ -48,7 +48,9 @@ Wire spec `poll_interval` into the scheduler (or M7).
 
 ## M7 — spec overlays, then vim-family (hooks-only)
 
-**Start here (owner's decision after M6, D29).** The owner wants the
+**Part 1 done in v0.5.0 (D29 has what was built and why the lint was
+widened rather than the specs rewritten).** Original plan kept below.
+The owner wants the
 *potential* to remap keys in any app, including the detection-only ones,
 for future cases. The engine is already one tier (a spec remaps iff it has
 `[keys]`); what is missing:
@@ -78,7 +80,7 @@ for future cases. The engine is already one tier (a spec remaps iff it has
    through in its prompts.
 4. Release (bump `VERSION`).
 
-Then the vim work:
+**Next: the vim work** (start here):
 
 - Group `vim-family`, specs `vim`, `nvim` (and `emacs -nw` experimental).
   Start from brief §6.2 but fix the weights (F19: any two of three anchors

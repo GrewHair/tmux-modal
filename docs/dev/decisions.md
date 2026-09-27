@@ -307,3 +307,28 @@ detection-only specs are not strict enough to remap safely (D21). Plan in
 every bundled spec made remap-ready, tested. The bundled specs stay
 detection-only by default (D23 unchanged).
 
+Done in v0.5.0:
+- `overlay = true` in a user file of the same stem merges onto the earlier
+  spec with the ordinary child-over-parent `merge`, except nothing is
+  withheld (the bundled `extends`, `lint_ignore` keep applying); the
+  overlay cannot rename (warned) and an overlay with nothing under it is
+  skipped with a warning. `keys = false` drops the whole map (and `keys`
+  is now validated: a table or false). `Spec.File` names both files.
+- Remap-ready is enforced by `TestBundledSpecsRemapReady` (every
+  non-always spec loaded with an overlay adding a key must be
+  lint-clean). Only k9s needed a spec change (`Context:` required,
+  threshold 60). The other four failures were the lint being too narrow,
+  and it was widened on two sound grounds: (1) a weighted identity clause
+  is *binding* when the other numeric weights cannot reach the threshold
+  (ranger/lf/nnn: 50 + 50 against 100 — their status line on row -1 is
+  replaced by the prompt, so normal can't be concluded while one is
+  open); (2) a binding clause *pinned* to one row fixes the app to that
+  edge, so it vouches for mode rows counted from the same edge (tig's
+  title bar on row -2 for the prompt on row -1: anything foreign below
+  would push it to -3). A top-pinned anchor still says nothing about the
+  bottom rows, which is the htop case D21 was written for.
+- The daemon logs per-spec lint warnings (bundled specs have none, so the
+  log shows only user specs and overlays), and reloads the user spec
+  directories when their files change (name/size/mtime stamp checked
+  every idle interval), so an overlay applies without a restart.
+

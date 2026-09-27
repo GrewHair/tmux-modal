@@ -16,11 +16,12 @@ Two independent things can subscribe to that:
    can react — e.g. switch an outer keyboard layer off while vim is in
    normal mode and on while you type.
 
-> **Status: pre-release (0.4).** Milestones done: detector, spec engine,
+> **Status: pre-release (0.5).** Milestones done: detector, spec engine,
 > `validate`, status indicator, transition hook, SSH and nested-tmux
 > handling (tested against a real sshd), and [bundled specs](#bundled-specs)
 > for htop, btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc,
-> fzf and common REPLs. Still to come: the hooks-only `vim`/`nvim` specs.
+> fzf and common REPLs, any of which [can be given keys](#add-keys-to-any-app).
+> Still to come: the hooks-only `vim`/`nvim` specs.
 > Any full-screen app no spec recognises shows as **N/A** and is left
 > completely alone.
 
@@ -166,7 +167,8 @@ keyboard layer, keep the AutoHotkey/kanata side running and feed it through
 and ncdu already move with `j`/`k` (most with `hjkl`, `g`/`G`); remapping
 would add risk and nothing else. Their specs exist for the indicator and
 the transition hook, and they never touch your key tables. Only apps that
-lack vim keys get a key map.
+lack vim keys get a key map. Every one of them is still ready to remap:
+[a three-line file](#add-keys-to-any-app) gives any app keys.
 
 **Over SSH** every spec works from the screen alone, with a few limits:
 - `less` shows nothing identifying on its first screen (just the file name)
@@ -182,7 +184,7 @@ lack vim keys get a key map.
 key sequence inside the prompt; close them with `Enter` or `C-c`. The mode
 follows whatever the app does.
 
-## Key remapping (htop, btop)
+## Key remapping
 
 With htop focused and in normal mode, the session's key table becomes
 `modal-htop`:
@@ -204,10 +206,38 @@ btop's `h` (help) and `k` (kill the selected process); `_h`, `_k` reach
 them. While the process filter (`f` or `/`) is being typed, and on the
 options screen, nothing is remapped; the main menu, help and the signal
 list (arrows pick a signal) are normal mode. If you prefer btop's own
-`vim_keys = True`, turn btop into a detection-only spec: copy
-`specs/btop.toml` to `~/.config/tmux-modal/specs/btop.toml` (a user spec
-shadows the bundled one of the same file name) and delete its `[keys]`
-table.
+`vim_keys = True`, drop the map with an overlay (below) holding
+`overlay = true` and `keys = false`.
+
+### Add keys to any app
+
+Any bundled spec can get keys, or lose or change some, without copying it.
+Put a file with the **same file name** in `~/.config/tmux-modal/specs/`
+and start it with `overlay = true`:
+
+```toml
+# ~/.config/tmux-modal/specs/tig.toml
+overlay = true
+
+[keys]
+K = "Down"          # add or change a key
+# j = false         # remove one the bundled spec maps
+# keys = false      # (top level, before any [table]) drop the whole map
+```
+
+The overlay is merged onto the bundled spec as if the bundled spec were
+its parent: `[keys]` key by key, scalars replaced, rule lists (like
+`[[insert_when]]`) added in front of the bundled ones. The detection itself
+stays the bundled one, so fixes to it in later versions still reach you.
+`tmux-modal validate ~/.config/tmux-modal/specs/tig.toml` prints the merged
+result. Without `overlay = true`, a file of the same name **replaces** the
+bundled spec instead. Spec files are re-read when they change (within
+`@modal_idle_interval`), so no restart is needed.
+
+Every bundled spec that can be in a commanding mode is held by a test to
+the rules a remapping spec must meet, so keys added this way are only
+applied when the app is positively recognised and no prompt is open. The
+daemon log warns if an overlay (or your own spec) breaks those rules.
 
 Details that make this safe:
 - Only the session `key-table` option is used, never a sticky
@@ -237,7 +267,7 @@ Details that make this safe:
 | `@modal_scope` | `active` | `active` (focused panes), `visible` (panes in current windows), `all` |
 | `@modal_capture_rows` | 6 | minimum bottom rows captured once an app is identified |
 | `@modal_cpu_budget` | 2 | % of one core; intervals stretch automatically above it (logged) |
-| `@modal_spec_paths` | `~/.config/tmux-modal/specs` | colon-separated; a user spec shadows a bundled one with the same file name |
+| `@modal_spec_paths` | `~/.config/tmux-modal/specs` | colon-separated; a user spec replaces a bundled one with the same file name, or with `overlay = true` [merges onto it](#add-keys-to-any-app) |
 | `@modal_escape_leader` | `_` | literal-key leader (a spec's `[escape] leader` wins) |
 | `@modal_color_matching` | `on` | `off` never captures colour |
 | `@modal_transition_hook` | *(none)* | see above |
@@ -250,7 +280,7 @@ Details that make this safe:
 Profiles: `frugal` 100/500/5000 ms (burst/poll/idle), `balanced` 30/150/2000,
 `snappy` 15/60/1000.
 
-Options are re-read every idle interval, so changes apply without restarting.
+Options, and the spec files in `@modal_spec_paths`, are re-read every idle interval, so changes apply without restarting.
 
 ### Measured (WSL2 on a laptop, tmux 3.4)
 
@@ -416,7 +446,11 @@ no key maps.
 **Anchor the rows you read.** A remapping spec concludes its commanding
 mode from the *absence* of a prompt. Make sure the rows the mode rules read
 are the app's own: give the identity a `weight = "required"` clause on
-those rows (the bar the prompt replaces, or the prompt itself). Otherwise,
+those rows (the bar the prompt replaces, or the prompt itself), or a
+required clause pinned to a single row on the same side of the screen
+(tig's title bar on row -2 proves row -1 is tig's: anything foreign below
+would push the title bar up). A weighted clause the threshold cannot be
+reached without counts as required. Otherwise,
 under a remote tmux whose status line covers the last row, the other
 anchors still match, the prompt one row up goes unseen, and keys get
 remapped while you type. `validate` and `lint` warn about this.

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	tmuxmodal "github.com/GrewHair/tmux-modal"
 	"github.com/GrewHair/tmux-modal/internal/classify"
@@ -131,6 +132,40 @@ func TestBundledSpecsLintClean(t *testing.T) {
 			if sp.MatchesCommand(sh) {
 				t.Errorf("%s claims the shell %s", sp.Name, sh)
 			}
+		}
+	}
+}
+
+// TestBundledSpecsRemapReady holds every bundled spec to the remapping lint
+// as if a user overlay had given it keys (D29): any app may be remapped
+// without first tightening its spec. Always-insert specs never remap.
+func TestBundledSpecsRemapReady(t *testing.T) {
+	entries, err := fs.ReadDir(tmuxmodal.Specs, "specs")
+	if err != nil {
+		t.Fatal(err)
+	}
+	overlays := fstest.MapFS{}
+	for _, e := range entries {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), ".toml") {
+			overlays[e.Name()] = &fstest.MapFile{Data: []byte("overlay = true\n[keys]\nF12 = \"F12\"\n")}
+		}
+	}
+	set := spec.Load([]spec.Source{
+		{FS: tmuxmodal.Specs, Dir: "specs", Label: "bundled"},
+		{FS: overlays, Dir: ".", Label: "overlay"},
+	})
+	for _, w := range set.Warnings {
+		t.Errorf("load: %s", w)
+	}
+	for _, sp := range set.Order {
+		if sp.Always != "" {
+			continue
+		}
+		if !sp.HasKeys() {
+			t.Errorf("%s: the overlay's keys did not apply", sp.Name)
+		}
+		for _, w := range sp.Warnings {
+			t.Errorf("%s: %s", sp.Name, w)
 		}
 	}
 }

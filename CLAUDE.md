@@ -12,4 +12,4 @@ Hard rules:
 - Before pushing: `gofmt -l .`, `go vet ./...`, `go test ./... -count=1`, shellcheck (also as `koalaman/shellcheck:v0.9.0`, CI's version); `grep -rIl "$(hostname)" . --exclude-dir=.git` must find nothing; CI must be green. Bump `VERSION` and tag a release when daemon code changes.
 - Update `docs/dev/status.md` and `docs/dev/progress.md` at each milestone.
 
-Next: milestone 7, starting with overlay user specs and remap-ready bundled specs (docs/dev/milestones.md, decision D29).
+Next: milestone 7, part 2 — the vim-family specs (docs/dev/milestones.md). Part 1, overlays and remap-ready specs, shipped in v0.5.0 (D29).

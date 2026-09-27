@@ -143,7 +143,9 @@ type rawSpec struct {
 }
 
 // Load reads specs from sources in order; a later source shadows an
-// earlier one by file name (so pass bundled first, user dirs after).
+// earlier one by file name (so pass bundled first, user dirs after),
+// unless the later file sets overlay = true: then it is merged onto the
+// earlier one as a child would be (see merge), keeping its name.
 // A spec that fails to parse or compile is skipped with a warning.
 func Load(sources []Source) *Set {
 	set := &Set{Specs: map[string]*Spec{}}
@@ -183,6 +185,29 @@ func Load(sources []Source) *Set {
 					group = g
 				}
 				key := sub + "/" + stem
+				overlay, ok := doc["overlay"].(bool)
+				if _, has := doc["overlay"]; has && !ok {
+					set.warn("%s: skipped: overlay must be true or false", label)
+					continue
+				}
+				delete(doc, "overlay")
+				if overlay {
+					// An overlay merges onto the spec it shadows instead of
+					// replacing it, so fixes to that spec keep reaching the user.
+					base, ok := raws[key]
+					if !ok {
+						set.warn("%s: skipped: overlay = true, but there is no %s.toml to overlay", label, stem)
+						continue
+					}
+					if n, ok := doc["name"].(string); ok && n != base.name {
+						set.warn("%s: name %q ignored: an overlay keeps the name of the spec it overlays (%q)", label, n, base.name)
+					}
+					delete(doc, "name")
+					delete(doc, "group")
+					base.doc = mergeSkip(normalise(doc), base.doc, nil)
+					base.file += " + " + label
+					continue
+				}
 				if old, ok := raws[key]; ok {
 					delete(byName, old.name)
 				}
@@ -341,9 +366,14 @@ var notInherited = map[string]bool{"name": true, "group": true, "extends": true,
 // merge overlays child on parent: scalars and scalar arrays in the child
 // win, tables merge key by key, arrays of tables concatenate child first.
 func merge(child, parent map[string]any) map[string]any {
+	return mergeSkip(child, parent, notInherited)
+}
+
+// mergeSkip is merge with the parent's keys in skip left out.
+func mergeSkip(child, parent map[string]any, skip map[string]bool) map[string]any {
 	out := deepCopy(child).(map[string]any)
 	for k, pv := range parent {
-		if notInherited[k] {
+		if skip[k] {
 			continue
 		}
 		cv, ok := out[k]
@@ -354,7 +384,7 @@ func merge(child, parent map[string]any) map[string]any {
 		cm, cIsMap := cv.(map[string]any)
 		pm, pIsMap := pv.(map[string]any)
 		if cIsMap && pIsMap {
-			out[k] = merge(cm, pm)
+			out[k] = mergeSkip(cm, pm, nil)
 			continue
 		}
 		if ct := tables(cv); ct != nil && isTableArray(cv) && isTableArray(pv) {
@@ -559,7 +589,13 @@ func compile(r *rawSpec, doc map[string]any, chain []string) (*Spec, error) {
 		return nil, fmt.Errorf("default_mode.otherwise %q is not declared", sp.OtherwiseMode)
 	}
 
-	// Keys.
+	// Keys. keys = false (an overlay's way to drop every inherited key)
+	// leaves the spec hooks-only.
+	if v, ok := doc["keys"]; ok {
+		if _, isMap := v.(map[string]any); !isMap && v != false {
+			return nil, fmt.Errorf("keys must be a table, or false for none")
+		}
+	}
 	if km, ok := doc["keys"].(map[string]any); ok {
 		names := make([]string, 0, len(km))
 		for k := range km {

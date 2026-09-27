@@ -19,7 +19,7 @@ tmux server
 | `cmd/tmux-modal/main.go` | CLI: `daemon`, `stop`, `validate`, `capture`, `lint`, `version` |
 | `specs.go` | `//go:embed specs` — bundled specs (`specs/*.toml`, `specs/groups/*.toml`) |
 | `internal/screen` | `Screen` (lines, optional cells, cursor, flags; full-screen row coordinates, `Top` for partial captures), SGR parser (state carried across lines), colour normalisation, fixture file format |
-| `internal/spec` | TOML load (bundled then user dirs; shadow by file stem), `normalise` sugar, `resolve` extends (list = mixin chain, cycle check), `merge`, `compile` to `Spec`/`Rule`/`Clause`, clause/rule `Eval` (tri-state), `lint`, `LocaleAudit` |
+| `internal/spec` | TOML load (bundled then user dirs; shadow by file stem, or merge when `overlay = true`, D29), `normalise` sugar, `resolve` extends (list = mixin chain, cycle check), `merge`, `compile` to `Spec`/`Rule`/`Clause`, clause/rule `Eval` (tri-state), `lint`, `LocaleAudit` |
 | `internal/classify` | `EvalIdentity` (Identified vs Confirmed), `Classify` (always → mode rules → absence needs confirmed identity → corroboration veto → default), `Identify` (all specs, priority order), `Pane` (entry point: nested detection + status-row strip, sticky app, shell fast path, nested policy); `nested.go` `DetectNested` |
 | `internal/validate` | the score-sheet report |
 | `internal/tmux` | `Exec` runner, `Control` client (pipelined `Send`/`Wait`, guarded block parser, `ClientLabel`), `Quote`/`Command`, `ListPanes` tier-1 snapshot, `CaptureArgs`/`Fill`, `Capture` |
@@ -37,7 +37,7 @@ tmux server
 6. Every failure mode (spec error, tmux error, crash) degrades to pass-through; a spec that fails to load is skipped with a warning.
 7. Formats in status/border only read `@modal_*` variables.
 8. A pane whose inner window is split never reports a mode; with `@modal_nested_remap off`, no nested pane reports a key-remapping spec's mode (D20).
-9. A remapping spec's commanding default is only concluded when a required identity clause anchors the rows its mode rules read (D21; `lint` checks).
+9. A remapping spec's commanding default should only be concluded when a binding identity clause anchors the rows its mode rules read, covering them or pinned to one row on the same edge (D21, D29; `lint` warns, and a unit test holds every bundled spec to it as if it had keys).
 
 ## Per-pane state (`paneState`)
 

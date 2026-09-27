@@ -118,7 +118,11 @@ func cmdValidate(args []string) error {
 		if _, err := os.Stat(target); err != nil {
 			return err
 		}
-		srcs = append(srcs, spec.FileSource(target))
+		// A file already in a spec path is loaded with it; loading it
+		// twice would apply an overlay twice.
+		if !inSpecPath(target, srcs) {
+			srcs = append(srcs, spec.FileSource(target))
+		}
 	}
 	set := spec.Load(srcs)
 	out := os.Stdout
@@ -132,7 +136,7 @@ func cmdValidate(args []string) error {
 	if target != "" {
 		name := target
 		if isFile {
-			name = specNameOf(target)
+			name = specNameOf(target, set)
 		}
 		sp = set.Specs[name]
 		if sp == nil {
@@ -181,12 +185,34 @@ func cmdValidate(args []string) error {
 	return nil
 }
 
-func specNameOf(file string) string {
-	set := spec.Load([]spec.Source{spec.FileSource(file)})
-	for name := range set.Specs {
-		return name
+// specNameOf finds the spec a file defines, or overlays, in a loaded set.
+func specNameOf(file string, set *spec.Set) string {
+	suffix := ":" + filepath.Base(file)
+	for name, sp := range set.Specs {
+		for _, f := range strings.Split(sp.File, " + ") {
+			if strings.HasSuffix(f, suffix) && sameFile(filepath.Dir(file), strings.TrimSuffix(f, suffix)) {
+				return name
+			}
+		}
 	}
 	return strings.TrimSuffix(filepath.Base(file), ".toml")
+}
+
+// inSpecPath reports whether a spec file sits in one of the loaded
+// directories.
+func inSpecPath(file string, srcs []spec.Source) bool {
+	for _, s := range srcs {
+		if s.Dir == "." && sameFile(filepath.Dir(file), s.Label) {
+			return true
+		}
+	}
+	return false
+}
+
+func sameFile(a, b string) bool {
+	fa, err1 := os.Stat(a)
+	fb, err2 := os.Stat(b)
+	return err1 == nil && err2 == nil && os.SameFile(fa, fb)
 }
 
 func orDash(s string) string {

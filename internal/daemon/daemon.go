@@ -7,9 +7,11 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -242,20 +244,51 @@ func (d *Daemon) applyConfig(c Config) {
 			d.republishIndicators()
 		}
 	}
-	key := strings.Join(c.SpecPaths, ":")
-	if key != d.specKey {
-		srcs := []spec.Source{d.bundled}
-		for _, p := range c.SpecPaths {
-			srcs = append(srcs, spec.DirSource(p))
-		}
+	srcs := []spec.Source{d.bundled}
+	for _, p := range c.SpecPaths {
+		srcs = append(srcs, spec.DirSource(p))
+	}
+	if key := specStamp(srcs[1:]); key != d.specKey {
 		d.set = spec.Load(srcs)
 		d.specKey = key
 		d.installed = map[string]string{}
 		for _, w := range d.set.Warnings {
 			d.log.Warnf("spec: %s", w)
 		}
+		// Lint findings: the bundled specs have none, so these come from
+		// user specs and overlays (e.g. keys added to a spec that is not
+		// safe to remap).
+		names := make([]string, 0, len(d.set.Specs))
+		for name := range d.set.Specs {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			for _, w := range d.set.Specs[name].Warnings {
+				d.log.Warnf("spec %s: %s", name, w)
+			}
+		}
 		d.log.Infof("loaded %d specs", len(d.set.Specs))
 	}
+}
+
+// specStamp identifies the user spec directories and the files in them
+// (name, size, modification time), so that adding or editing a spec
+// reloads the set at the next idle check without a restart.
+func specStamp(srcs []spec.Source) string {
+	var b strings.Builder
+	for _, src := range srcs {
+		b.WriteString(src.Label + "\x00")
+		for _, sub := range []string{".", "groups"} {
+			entries, _ := fs.ReadDir(src.FS, sub)
+			for _, e := range entries {
+				if info, err := e.Info(); err == nil && !e.IsDir() && strings.HasSuffix(e.Name(), ".toml") {
+					fmt.Fprintf(&b, "%s/%s %d %d\x00", sub, e.Name(), info.Size(), info.ModTime().UnixNano())
+				}
+			}
+		}
+	}
+	return b.String()
 }
 
 // runner returns the cheapest live command channel: any control client,

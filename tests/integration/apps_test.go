@@ -1,6 +1,8 @@
 package integration
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -70,6 +72,38 @@ func TestAppTig(t *testing.T) {
 	h.expectState("main", "tig/insert/typing", "root")
 	h.typeKeys("C-c")
 	h.expectState("main", "tig/normal/commanding", "root")
+}
+
+// An overlay user spec gives the detection-only tig spec keys (D29): the
+// bundled rules still decide the mode, the overlay only adds [keys]. K is
+// tig's "previous line"; remapped to Down it must move the selection down
+// in normal mode and stay a letter in the search prompt. The file is
+// written while the daemon runs: spec files are reloaded when they change.
+func TestAppOverlayAddsKeys(t *testing.T) {
+	dir := t.TempDir()
+	requireRemote(t)
+	h := newHarness(t, opts{w: 120, h: 36, cmd: sshCmd("cd repo && tig"),
+		options: map[string]string{"@modal_idle_interval": "300"}})
+	h.tmuxIn("set-option", "-g", "@modal_spec_paths", specDir+":"+dir)
+	h.startDaemon()
+	h.expectState("main", "tig/normal/commanding", "root")
+	if err := os.WriteFile(filepath.Join(dir, "tig.toml"),
+		[]byte("overlay = true\n[keys]\nK = \"Down\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	h.expectState("main", "tig/normal/commanding", "modal-tig")
+	h.expectScreen("main", "[main] Unstaged changes")
+	h.typeKeys("K") // natively Up: would stay on the first line
+	h.expectScreen("main", "commit 1 of ")
+	h.typeKeys("/")
+	h.expectState("main", "tig/insert/typing", "root")
+	h.typeKeys("K")
+	h.waitFor("K typed into the prompt", 5*time.Second, func() bool {
+		lines := strings.Split(strings.TrimRight(h.screen("main"), "\n"), "\n")
+		return strings.TrimSpace(lines[len(lines)-1]) == "/K"
+	})
+	h.typeKeys("C-c")
+	h.expectState("main", "tig/normal/commanding", "modal-tig")
 }
 
 // btop is the one new spec that remaps: hjkl move the process selection,

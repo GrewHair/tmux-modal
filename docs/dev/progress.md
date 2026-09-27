@@ -64,3 +64,13 @@
   needs GitHub Support (offered, not requested).
 - Owner decision D29: overlay user specs + remap-ready bundled specs,
   first thing in M7.
+- M7 part 1 (D29): `overlay = true` user specs merge onto the bundled
+  spec; `keys = false`; `validate` on an overlay shows the merged spec (and
+  doesn't apply it twice when it sits in a spec path). New unit test holds
+  every bundled spec to the remapping lint as if it had keys: five failed
+  (tig, ranger, lf, nnn, k9s). k9s got a required `Context:` anchor; for
+  the rest the lint was too narrow (weighted clauses the threshold needs,
+  single-row pinned anchors — reasoning in D29). The daemon now logs
+  per-spec lint warnings and reloads spec files when they change. SSH
+  test: an overlay written while tig runs remaps `K` in normal mode and
+  leaves it a letter in the search prompt. Released v0.5.0.

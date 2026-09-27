@@ -1,5 +1,5 @@
 # k9s — Kubernetes TUI. Hooks-only: k9s already moves with j/k (and
-# G / g), so there is nothing to remap.
+# G / g), so there is nothing to remap (an overlay may add keys, D29).
 #
 # Verified against k9s 0.51.0 without a cluster (tests/fixtures/k9s). The
 # header block (Context / Cluster / User / K9s Rev + logo) is the identity
@@ -26,12 +26,14 @@ commanding = ["normal"]
 command             = ["k9s"]
 requires_alt_screen = true
 combine             = "weighted"
-threshold           = 100
+threshold           = 60          # Context, plus any two of the others
 
+  # Required, and pinned to the top row: it proves the rows the prompt
+  # rules read below it are k9s's own (safe to remap from an overlay).
   [[match.clause]]
   regex  = '^Context: +\S'
   row    = 0
-  weight = 40
+  weight = "required"
 
   [[match.clause]]
   regex  = '^Cluster: +\S'
