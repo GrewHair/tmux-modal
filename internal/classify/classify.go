@@ -60,12 +60,7 @@ var Shells = map[string]bool{
 // EvalIdentity evaluates a spec's identity rules.
 func EvalIdentity(sp *spec.Spec, s *screen.Screen) Identity {
 	id := Identity{AltOK: !sp.Identity.RequiresAlt || s.AltScreen}
-	cmd := filepath.Base(s.Command)
-	for _, c := range sp.Identity.Commands {
-		if c == cmd {
-			id.CommandMatch = true
-		}
-	}
+	id.CommandMatch = sp.MatchesCommand(filepath.Base(s.Command))
 	if sp.Identity.Title != nil && s.Title != "" {
 		id.TitleMatch = sp.Identity.Title.MatchString(s.Title)
 	}

@@ -33,6 +33,11 @@ func bundledSet(t *testing.T) *spec.Set {
 //	        or for nested/ fixtures to tmux (a local nested client)
 //	sticky  with the app already identified on an earlier capture
 //	mono    with the colour capture stripped
+//
+// expect_mode_<variant> overrides the expectation for one variant, where
+// the evidence really differs: e.g. mono where a spec needs colour to be
+// sure (it must then fail towards a typing mode or unknown, never
+// commanding), or remote where only the command identifies the app.
 func TestFixtures(t *testing.T) {
 	set := bundledSet(t)
 	n := 0
@@ -53,6 +58,10 @@ func TestFixtures(t *testing.T) {
 		rel, _ := filepath.Rel(fixtureRoot, path)
 		check := func(variant string, s *screen.Screen, sticky string) {
 			res, _ := classify.Pane(set, s, sticky)
+			mode := mode
+			if m := f.Meta["expect_mode_"+variant]; m != "" {
+				mode = m
+			}
 			wantApp := app
 			if mode == spec.ModeNone || (mode == spec.ModeUnknown && sticky == "" && variant != "local") {
 				wantApp = ""
@@ -105,4 +114,23 @@ func orDash(s string) string {
 
 func TestMain(m *testing.M) {
 	os.Exit(m.Run())
+}
+
+// Bundled specs ship lint-clean: a warning is either fixed or explicitly
+// accepted in the spec with lint_ignore and a comment saying why.
+func TestBundledSpecsLintClean(t *testing.T) {
+	set := bundledSet(t)
+	for name, sp := range set.Specs {
+		for _, w := range sp.Warnings {
+			t.Errorf("%s: %s", name, w)
+		}
+	}
+	// Every bundled app is matchable, and a shell never is.
+	for _, sh := range []string{"bash", "zsh", "fish", "sh"} {
+		for _, sp := range set.Order {
+			if sp.MatchesCommand(sh) {
+				t.Errorf("%s claims the shell %s", sp.Name, sh)
+			}
+		}
+	}
 }

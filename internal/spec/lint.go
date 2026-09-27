@@ -71,7 +71,23 @@ func (sp *Spec) lintAbsenceAnchor() {
 	if sp.Group || !sp.HasKeys() || sp.Always != "" || id == nil || sp.Bucket(sp.DefaultMode) != BucketCommanding {
 		return
 	}
-	overlaps := func(a, b, c, d int) bool { return (a < 0) == (c < 0) && a <= d && c <= b }
+	// covers: the identity clause's rows include every row the mode clause
+	// reads. Ranges may mix top- and bottom-relative ends ([0, -2] is all
+	// but the last row), so compare them resolved at several heights.
+	covers := func(id, m *Clause) bool {
+		for _, h := range []int{10, 24, 50, 100} {
+			res := func(r int) int {
+				if r < 0 {
+					return h + r
+				}
+				return min(r, h-1)
+			}
+			if res(m.RowA) < res(id.RowA) || res(m.RowB) > res(id.RowB) {
+				return false
+			}
+		}
+		return true
+	}
 	for _, r := range sp.ModeRules {
 		for _, m := range r.Clauses {
 			if m.Kind != KindRegex || m.Negate {
@@ -80,7 +96,7 @@ func (sp *Spec) lintAbsenceAnchor() {
 			vouched := false
 			for _, c := range id.Clauses {
 				binding := c.WeightKind == WeightRequired || (id.Combine == "all" && c.WeightKind == WeightNumeric)
-				if c.Kind == KindRegex && !c.Negate && binding && overlaps(m.RowA, m.RowB, c.RowA, c.RowB) {
+				if c.Kind == KindRegex && !c.Negate && binding && covers(c, m) {
 					vouched = true
 				}
 			}

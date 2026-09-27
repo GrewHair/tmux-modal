@@ -393,4 +393,67 @@ j = "Down"
 	if warned(`"required"`) {
 		t.Error("a required bottom-bar anchor must satisfy the lint")
 	}
+
+	// Mixed ranges ([0, -2]: all but the last row, as btop's filter rule
+	// reads) are compared by resolving them: the anchor must cover them.
+	mixed := func(idRows string) bool {
+		sp := mustSpec(t, load(t, map[string]string{"m.toml": `name = "m"
+modes = ["normal", "insert"]
+[buckets]
+typing = ["insert"]
+commanding = ["normal"]
+[match]
+  [[match.clause]]
+  regex = 'BOX TITLE ANCHOR TEXT'
+  rows = ` + idRows + `
+  weight = "required"
+[[insert_when]]
+regex = 'BOX TITLE ANCHOR TEXT filter:'
+rows = [0, -2]
+[keys]
+j = "Down"
+`}), "m")
+		return strings.Contains(strings.Join(sp.Warnings, "\n"), "no required identity clause anchors those rows")
+	}
+	if mixed("[0, -2]") {
+		t.Error("an anchor over the same mixed range must satisfy the lint")
+	}
+	if !mixed("[0, 3]") {
+		t.Error("an anchor over only the top rows must not cover [0, -2]")
+	}
+}
+
+func TestCommandGlobAndLintIgnore(t *testing.T) {
+	set := load(t, map[string]string{"py.toml": `
+always = "insert"
+modes = ["insert"]
+lint_ignore = ["under-specified"]
+[buckets]
+typing = ["insert"]
+[match]
+command = ["python3", "python3.*"]
+  [[match.clause]]
+  regex = '^>>>'
+  row = -1
+`})
+	sp := mustSpec(t, set, "py")
+	for cmd, want := range map[string]bool{"python3": true, "python3.12": true, "python": false, "python3x": false} {
+		if got := sp.MatchesCommand(cmd); got != want {
+			t.Errorf("MatchesCommand(%q) = %v, want %v", cmd, got, want)
+		}
+	}
+	if len(sp.Warnings) != 0 {
+		t.Errorf("lint_ignore did not suppress: %v", sp.Warnings)
+	}
+	bad := load(t, map[string]string{"bad.toml": `
+always = "insert"
+modes = ["insert"]
+[buckets]
+typing = ["insert"]
+[match]
+command = ["[python"]
+`})
+	if bad.Specs["bad"] != nil || !strings.Contains(strings.Join(bad.Warnings, "\n"), "match.command") {
+		t.Errorf("a malformed command glob must fail the spec: %v", bad.Warnings)
+	}
 }

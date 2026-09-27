@@ -99,6 +99,17 @@ type Spec struct {
 	Warnings []string
 }
 
+// MatchesCommand reports whether a pane command (its base name) is one of
+// the spec's commands; entries may be shell globs such as "python3.*".
+func (s *Spec) MatchesCommand(cmd string) bool {
+	for _, c := range s.Identity.Commands {
+		if ok, _ := path.Match(c, cmd); ok {
+			return true
+		}
+	}
+	return false
+}
+
 // HasKeys reports whether this spec remaps keys at all.
 func (s *Spec) HasKeys() bool { return len(s.Keys) > 0 }
 
@@ -325,7 +336,7 @@ func resolve(r *rawSpec, all map[string]*rawSpec, stack []string) (map[string]an
 }
 
 // Keys never inherited from a parent.
-var notInherited = map[string]bool{"name": true, "group": true, "extends": true}
+var notInherited = map[string]bool{"name": true, "group": true, "extends": true, "lint_ignore": true}
 
 // merge overlays child on parent: scalars and scalar arrays in the child
 // win, tables merge key by key, arrays of tables concatenate child first.
@@ -373,7 +384,7 @@ var topKeys = map[string]bool{
 	"corroborate": true, "default_mode": true, "buckets": true,
 	"keys": true, "escape": true, "shadowed": true, "hook": true,
 	"poll_interval": true, "experimental": true, "description": true,
-	"translated": true,
+	"translated": true, "lint_ignore": true,
 }
 
 func compile(r *rawSpec, doc map[string]any, chain []string) (*Spec, error) {
@@ -442,6 +453,11 @@ func compile(r *rawSpec, doc map[string]any, chain []string) (*Spec, error) {
 	// Identity.
 	if m, ok := doc["match"].(map[string]any); ok {
 		sp.Identity.Commands = toStrings(m["command"])
+		for _, c := range sp.Identity.Commands {
+			if _, err := path.Match(c, ""); err != nil {
+				return nil, fmt.Errorf("match.command %q: %w", c, err)
+			}
+		}
 		if t, ok := m["title"].(string); ok && t != "" {
 			re, err := regexp.Compile(t)
 			if err != nil {
@@ -595,6 +611,23 @@ func compile(r *rawSpec, doc map[string]any, chain []string) (*Spec, error) {
 
 	sp.computeCapture()
 	sp.lint()
+	// lint_ignore: warnings the spec author has looked at and accepted,
+	// matched by substring (e.g. "under-specified"). Say why in a comment.
+	if ign := toStrings(doc["lint_ignore"]); len(ign) > 0 {
+		kept := sp.Warnings[:0]
+		for _, w := range sp.Warnings {
+			drop := false
+			for _, i := range ign {
+				if strings.Contains(w, i) {
+					drop = true
+				}
+			}
+			if !drop {
+				kept = append(kept, w)
+			}
+		}
+		sp.Warnings = kept
+	}
 	return sp, nil
 }
 

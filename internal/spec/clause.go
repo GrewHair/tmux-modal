@@ -94,6 +94,16 @@ func literalChars(re string) int {
 		switch r.Op {
 		case syntax.OpLiteral:
 			return len(r.Rune)
+		case syntax.OpCharClass:
+			// A small class ([↵↲], [0-9]) pins one character; a wide or
+			// negated one ([^ ]) hardly constrains anything.
+			n := 0
+			for i := 0; i+1 < len(r.Rune); i += 2 {
+				n += int(r.Rune[i+1]-r.Rune[i]) + 1
+			}
+			if n <= 16 {
+				return 1
+			}
 		case syntax.OpConcat:
 			n := 0
 			for _, s := range r.Sub {

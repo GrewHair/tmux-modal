@@ -84,10 +84,24 @@ func Quote(s string) string {
 	if s == "" {
 		return "''"
 	}
-	if !strings.ContainsAny(s, " \t\n'\"\\#;{}$~") {
+	// A bare pane id (%3) parses as is; tmux's parser rejects other words
+	// starting with % (refresh-client -A %3:off is a syntax error).
+	if !strings.ContainsAny(s, " \t\n'\"\\#;{}$~%") || paneID(s) {
 		return s
 	}
 	return "'" + strings.ReplaceAll(s, "'", `'"'"'`) + "'"
+}
+
+func paneID(s string) bool {
+	if len(s) < 2 || s[0] != '%' {
+		return false
+	}
+	for _, c := range s[1:] {
+		if c < '0' || c > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 // Command renders argv as one tmux command line.

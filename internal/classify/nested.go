@@ -47,6 +47,11 @@ var (
 var (
 	vBorder = runeSet("│┃║├┤┼┣┫╋╠╣╬" + "xtun")
 	hBorder = runeSet("─━═┬┴┼┳┻╋╦╩╬" + "qwvn")
+	// tmux draws no border along the window edge, so a border spanning
+	// the window ends in plain lines there, never in a junction. A TUI's
+	// own full-width separator (mc's ├────┤├────┤) does not.
+	vPlain = runeSet("│┃║x")
+	hPlain = runeSet("─━═q")
 )
 
 func runeSet(s string) map[rune]bool {
@@ -97,10 +102,8 @@ func commandClaimed(set *spec.Set, cmd string) bool {
 		return false
 	}
 	for _, sp := range set.Order {
-		for _, c := range sp.Identity.Commands {
-			if c == cmd {
-				return true
-			}
+		if sp.MatchesCommand(cmd) {
+			return true
 		}
 	}
 	return false
@@ -111,6 +114,15 @@ func commandClaimed(set *spec.Set, cmd string) bool {
 // of horizontal ones across the full width. tmux's top-level split always
 // spans the whole window, so any split layout has one. Box-drawing TUIs
 // close their frames with corners, which are not in either set.
+//
+// VT100 line-drawing borders arrive as plain letters, and ordinary text
+// can line letters up too ("Sample text line 1", "Sample text line 2" puts
+// an x and a t in the same columns on every row). A column that contains
+// any such letter must also look like a drawn border: junctions (t, u, n)
+// only where a horizontal border (q) meets them, and blank cells beside
+// it on at least half of the rows, which words never have.
+//
+// Either way the border must end in a plain line at the window edges.
 func hasBorders(s *screen.Screen, statusRow int) bool {
 	if s.Width < 3 || s.Height < 3 {
 		return false
@@ -121,54 +133,74 @@ func hasBorders(s *screen.Screen, statusRow int) bool {
 	} else if statusRow == last {
 		last--
 	}
-	var vcols []bool // columns still made of vertical border characters
-	rows := 0
+	var grid [][]rune // content rows, one rune per column (wide: rune, then 0)
 	for r, line := range s.Lines {
 		if r == statusRow {
 			continue
 		}
-		cols := make([]bool, s.Width)
+		row := make([]rune, s.Width)
 		c, hcount := 0, 0
 		for _, ch := range line {
 			if c >= s.Width {
 				break
 			}
-			if vBorder[ch] {
-				cols[c] = true
-			}
+			row[c] = ch
 			if hBorder[ch] || vBorder[ch] {
 				hcount++
 			}
 			c += screen.RuneWidth(ch)
 		}
-		if r > first && r < last && c == s.Width && hcount == s.Width && hasHorizontal(line) {
+		if r > first && r < last && c == s.Width && hcount == s.Width && hPlain[row[0]] && hPlain[row[s.Width-1]] {
 			return true
 		}
-		if vcols == nil {
-			vcols = cols
-		} else {
-			for i := range vcols {
-				vcols[i] = vcols[i] && cols[i]
-			}
-		}
-		rows++
+		grid = append(grid, row)
 	}
-	if rows < 2 {
+	if len(grid) < 2 {
 		return false
 	}
-	for i := 1; i < len(vcols)-1; i++ {
-		if vcols[i] {
+	for c := 1; c < s.Width-1; c++ {
+		if borderColumn(grid, c) {
 			return true
 		}
 	}
 	return false
 }
 
-func hasHorizontal(line string) bool {
-	for _, ch := range line {
-		if hBorder[ch] && !vBorder[ch] {
-			return true
+// acsLetter reports the VT100 line-drawing letters that double as text.
+func acsLetter(r rune) bool { return r >= 'a' && r <= 'z' }
+
+func borderColumn(grid [][]rune, c int) bool {
+	if !vPlain[grid[0][c]] || !vPlain[grid[len(grid)-1][c]] {
+		return false
+	}
+	letters, blankSide := false, 0
+	for _, row := range grid {
+		ch := row[c]
+		if !vBorder[ch] {
+			return false
+		}
+		left, right := row[c-1], row[c+1]
+		if left == 0 || left == ' ' || right == 0 || right == ' ' {
+			blankSide++
+		}
+		if !acsLetter(ch) {
+			continue
+		}
+		letters = true
+		switch ch {
+		case 't': // ├
+			if right != 'q' {
+				return false
+			}
+		case 'u': // ┤
+			if left != 'q' {
+				return false
+			}
+		case 'n': // ┼
+			if left != 'q' || right != 'q' {
+				return false
+			}
 		}
 	}
-	return false
+	return !letters || 2*blankSide >= len(grid)
 }

@@ -203,6 +203,8 @@ func cmdCapture(args []string) error {
 	app := fs.String("expect-app", "", "expected app, recorded in the fixture header")
 	mode := fs.String("expect-mode", "", "expected mode, recorded in the fixture header")
 	note := fs.String("note", "", "free-text note recorded in the header")
+	var metas multiFlag
+	fs.Var(&metas, "meta", "extra header line key=value (repeatable), e.g. expect_mode_mono=insert")
 	fs.Usage = func() {
 		fmt.Fprintf(os.Stderr, "usage: tmux-modal capture [flags] <pane>\n\nflags:\n")
 		fs.PrintDefaults()
@@ -225,6 +227,13 @@ func cmdCapture(args []string) error {
 	}
 	if *note != "" {
 		extra["note"] = *note
+	}
+	for _, m := range metas {
+		k, v, ok := strings.Cut(m, "=")
+		if !ok {
+			return fmt.Errorf("-meta %q: want key=value", m)
+		}
+		extra[k] = v
 	}
 	return screen.WriteFixture(*out, s, strings.Join(plain, "\n"), strings.Join(ansi, "\n"), extra)
 }

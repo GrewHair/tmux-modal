@@ -65,7 +65,13 @@ func TestNestedSignals(t *testing.T) {
 		{"status line top", mk("ssh", "", "[0] 0:htop*", "", "bottom"), "status-line", false, 0},
 		{"vertical and horizontal borders", mk("ssh", "", split...), "borders", true, -1},
 		{"acs borders", mk("ssh", "", "ab  x cd", "    x", "    x"), "borders", true, -1},
+		{"acs junctions meet a horizontal border", mk("ssh", "", "ab  x cd", "    tqqq", "    x"), "borders", true, -1},
 		{"framed tui is not nested", mk("ssh", "", frame...), "", false, -1},
+		// Aligned text puts letters in one column on every row: an x and
+		// a t under each other are not a border.
+		{"aligned text is not acs borders", mk("ssh", "",
+			"Sample text line 1", "Sample text line 2", "Sample text line 3", "sample.txt"), "", false, -1},
+		{"a junction without a horizontal border is text", mk("ssh", "", "ab  x cd", "    t   ", "    x"), "", false, -1},
 		{"set-titles title", mk("ssh", `main:0:vim - "notes"`, "x"), "title", false, -1},
 		{"primary screen never nested", func() *screen.Screen {
 			s := mk("ssh", "", "[main] 0:vim*")

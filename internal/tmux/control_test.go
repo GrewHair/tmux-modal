@@ -87,6 +87,8 @@ func TestQuote(t *testing.T) {
 		";":          "';'",
 		"C-d":        "C-d",
 		"%3":         "%3",
+		"%3:off":     "'%3:off'",
+		"50%":        "'50%'",
 	}
 	for in, want := range cases {
 		if got := Quote(in); got != want {
