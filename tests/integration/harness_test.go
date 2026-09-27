@@ -21,6 +21,7 @@ import (
 
 var (
 	binPath   string
+	binDir    string
 	specDir   string
 	keyecho   string
 	haveTmux  bool
@@ -37,16 +38,23 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
+	// Readable by the SSH container, which mounts it to run keyecho.
+	os.Chmod(dir, 0o755)
+	binDir = dir
 	binPath = filepath.Join(dir, "tmux-modal")
-	build := exec.Command("go", "build", "-o", binPath, "../../cmd/tmux-modal")
-	build.Stdout, build.Stderr = os.Stdout, os.Stderr
-	if err := build.Run(); err != nil {
-		panic(err)
+	keyecho = filepath.Join(dir, "keyecho")
+	for pkg, out := range map[string]string{"../../cmd/tmux-modal": binPath, "./keyecho": keyecho} {
+		build := exec.Command("go", "build", "-o", out, pkg)
+		build.Env = append(os.Environ(), "CGO_ENABLED=0") // static: also runs in the container
+		build.Stdout, build.Stderr = os.Stdout, os.Stderr
+		if err := build.Run(); err != nil {
+			panic(err)
+		}
 	}
 	wd, _ := os.Getwd()
 	specDir = filepath.Join(wd, "testdata", "specs")
-	keyecho = filepath.Join(wd, "testdata", "keyecho.sh")
 	code := m.Run()
+	stopRemote()
 	os.RemoveAll(dir)
 	os.Exit(code)
 }

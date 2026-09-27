@@ -14,6 +14,12 @@ combine = "all"
   regex = '^KEYECHO TEST APPLICATION v1$'
   row   = 0
 
+  # The last row is the app's own (status bar or prompt), so "normal" is
+  # only concluded when the row the prompt rule reads really is keyecho's.
+  [[match.clause]]
+  regex = '^(keyecho normal mode status bar|PROMPT>( |$))'
+  row   = -1
+
 [[insert_when]]
 name  = "prompt"
 regex = '^PROMPT>( |$)'

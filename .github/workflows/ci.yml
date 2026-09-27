@@ -24,10 +24,12 @@ jobs:
       - name: vet
         run: go vet ./...
       - name: shellcheck
-        run: shellcheck modal.tmux scripts/*.sh scripts/fixtures/*.sh examples/*.sh examples/hooks/*.sh tests/integration/testdata/keyecho.sh
+        run: shellcheck modal.tmux scripts/*.sh scripts/fixtures/*.sh examples/*.sh examples/hooks/*.sh tests/docker/*.sh
       - name: lint bundled specs
         run: go run ./cmd/tmux-modal lint --spec-path /nonexistent
       - name: unit and golden fixture tests
         run: go test ./internal/... -count=1
-      - name: integration tests (real tmux, real htop, real client)
+      - name: integration tests (real tmux, real htop, real client, sshd container)
+        env:
+          TMUX_MODAL_REQUIRE_REMOTE: "1" # the SSH / nested-tmux tier must not skip in CI
         run: go test ./tests/integration/ -count=1 -v

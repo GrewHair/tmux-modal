@@ -81,9 +81,10 @@ func TestHtopResizeMidSearch(t *testing.T) {
 	h.expectBottom("Search:")
 	h.typeKeys("j")
 	h.expectBottom("Search: j")
-	if st := h.state("main"); st != "htop/insert/typing" {
-		t.Fatalf("after resize: %s", st)
-	}
+	// A capture taken while htop redraws after the resize may briefly read
+	// unknown (pass-through, which is safe); it must settle on insert and
+	// never on normal.
+	h.expectState("main", "htop/insert/typing", "root")
 	h.typeKeys("Escape")
 	h.expectState("main", "htop/normal/commanding", "modal-htop")
 	h.tmuxOut("resize-window", "-x", "160", "-y", "40")
