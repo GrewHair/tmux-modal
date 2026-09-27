@@ -37,3 +37,9 @@
 - The brief asked for a stop-and-report after M3; that checkpoint happened
   and the owner approved the design deviations (decisions D1–D3). No further
   mandatory checkpoints, but report at each milestone.
+- **Keep options open.** Even where the default is "don't remap", the
+  owner wants the mechanism to allow it later (D29: overlays, remap-ready
+  specs). Prefer designs that make a future change a config edit.
+- **Privacy slip-ups get fixed at the root.** The owner approved rewriting
+  public history to remove the machine name; check new docs for host data
+  before every push (`grep -rI "$(hostname)"`).

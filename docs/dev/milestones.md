@@ -23,7 +23,7 @@ specs detect only (D23); mc and fzf always insert; `cursor_flag` per app
 (F30); `_` is unbound in btop (the only new remapping spec). Per-submode
 key maps: not needed (btop's options screen is simply insert).
 
-**Next up: M7.**
+**Next up: M7 — start with spec overlays (see below).**
 
 ### Original plan
 
@@ -46,7 +46,39 @@ server CPU via `/proc/<pid>/stat`; document in README. Consider
 `refresh-client -A %N:off` for unfocused chatty panes (D2).
 Wire spec `poll_interval` into the scheduler (or M7).
 
-## M7 — vim-family (hooks-only)
+## M7 — spec overlays, then vim-family (hooks-only)
+
+**Start here (owner's decision after M6, D29).** The owner wants the
+*potential* to remap keys in any app, including the detection-only ones,
+for future cases. The engine is already one tier (a spec remaps iff it has
+`[keys]`); what is missing:
+
+1. **Overlay user specs.** A user file with the same file stem as a
+   bundled spec and `overlay = true` (e.g.
+   `~/.config/tmux-modal/specs/tig.toml` holding only `overlay = true` and a
+   `[keys]` table) is **merged onto** the bundled spec (child wins, `[keys]`
+   key by key, `false` removes, rule lists concatenate child first) instead
+   of replacing it, so bundled fixes keep reaching the user. Without
+   `overlay` a same-named user file still shadows (current behaviour).
+   Implement in `spec.Load` (`raws` keyed by stem: merge instead of replace
+   when the later one is an overlay); `validate` must show the merged
+   result; tests in `spec_test.go`; README "Writing specs" + a short "Add
+   keys to any app" recipe (replaces the btop "copy the file" advice).
+2. **Make every bundled spec remap-ready.** `lintAbsenceAnchor` currently
+   runs only for specs with keys. Detection-only specs that would fail it
+   if keys were added: tig (mode rows -1, identity row -2), ranger, lf, nnn
+   (row -1 status clause not required), k9s (prompt rows [0, 10], weighted
+   header). Tighten them (required anchors over the rows their mode rules
+   read, re-run fixtures, SSH app tier) and add a unit test that holds every
+   bundled spec to the rule as if it had keys (less and lazygit already
+   pass; always-insert specs are exempt). Also: an overlay adding keys to a
+   spec that fails the rule gets the lint warning in the daemon log.
+3. Integration test: an overlay adding `[keys]` to a detection-only spec
+   (e.g. tig or lazygit over SSH) remaps in normal mode and passes keys
+   through in its prompts.
+4. Release (bump `VERSION`).
+
+Then the vim work:
 
 - Group `vim-family`, specs `vim`, `nvim` (and `emacs -nw` experimental).
   Start from brief §6.2 but fix the weights (F19: any two of three anchors

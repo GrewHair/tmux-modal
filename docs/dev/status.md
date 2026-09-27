@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-27, after milestone 6 and release v0.4.0._
+_Last updated: 2026-09-27, after milestone 6, release v0.4.0 and the history rewrite._
 
 ## Milestones (brief §12)
 
@@ -12,7 +12,7 @@ _Last updated: 2026-09-27, after milestone 6 and release v0.4.0._
 | 4 | Status indicator and transition hook | **done** |
 | 5 | SSH integration tests; nested-tmux fallback | **done** — sshd container tier, nested detection (D20), absence-anchor lint (D21) |
 | 6 | Remaining bundled specs, CPU-budget self-throttling, benchmark | **done** — 25 specs (D23–D26), fixtures from three distros, SSH app tier, benchmark + output gating (D28) |
-| 7 | `vim-family` specs, hooks-only path, per-spec `poll_interval` | **next** (hooks-only path and `poll_interval` already implemented and tested) |
+| 7 | Spec overlays (owner's request, D29), then `vim-family` specs | **next** — start with overlays + remap-ready specs ([milestones.md](milestones.md)); hooks-only path and `poll_interval` already implemented and tested |
 | 8 | README, CI, publish | **done early** at the owner's request (repo public, CI green, v0.1.0 released); README must keep growing with each milestone |
 
 ## Where things live
@@ -31,11 +31,17 @@ On the owner's own tmux (WSL2, tmux 3.4, fish shell, TPM):
 - `~/.config` is itself a git repo with the owner's unrelated uncommitted work — **never commit there**.
 - **Never kill or restart the owner's tmux server.** Test on private `-L` sockets; the owner restarts tmux themselves.
 
-Owner feedback so far: "everything seems to work alright".
+Owner feedback so far: "everything seems to work alright". The owner's
+machine is on v0.4.0's binary (plugin clone updated); it takes effect when
+they restart tmux.
+
+**History was rewritten once** (after M6, to remove the machine name):
+anyone with an old clone must `git fetch && git reset --hard origin/main`.
+Don't rewrite again without the owner asking.
 
 ## Known gaps right now
 
-- Only htop and btop remap; the other app specs detect only (D23). vim/nvim are not recognised yet (M7): N/A.
+- Only htop and btop remap; the other app specs detect only (D23). Adding keys to another app today means copying its whole spec; overlays fix that in M7 (D29). vim/nvim are not recognised yet (M7): N/A.
 - less over SSH is recognised only once it shows one of its own prompts (`(END)`, HELP, a message); REPLs only locally (D25, D26).
 - Inner tmux split into several panes: always `unknown` (the outer screen does not say which inner pane is focused). Improvement designed and deferred by the owner: [backlog.md](backlog.md) B1.
 - Remapping through a nested tmux: after the inner prefix key, a remapped key arrives remapped (`prefix l` → `prefix Right`); owner accepted.

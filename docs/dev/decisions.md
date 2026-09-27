@@ -293,3 +293,17 @@ scope; a pane coming into scope is examined at once anyway. Per control
 client state; skipped for good on tmux < 3.2 (logged). This is D2's
 planned mitigation. Test: `TestUnwatchedPaneOutputResumesOnFocus` (fails
 if the focused pane's output stays off).
+
+## D29. Any app may get keys, via overlay user specs — owner, after M6
+
+The owner asked for the *potential* to remap keys in apps that already have
+vim keys ("for future unforeseen cases") and to unify the detect-only and
+remapping "tiers". Finding: the engine already has one tier (`HasKeys()`
+switches key tables, the two-capture confirmation D12, the nested policy
+and the absence-anchor lint); the gaps are usability (adding keys meant
+copying a whole bundled spec, which then goes stale) and that some
+detection-only specs are not strict enough to remap safely (D21). Plan in
+[milestones.md](milestones.md) M7 steps 1–4: `overlay = true` user specs,
+every bundled spec made remap-ready, tested. The bundled specs stay
+detection-only by default (D23 unchanged).
+

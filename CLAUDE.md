@@ -9,5 +9,7 @@ Hard rules:
 - Never commit in `~/.config`.
 - The repo is public: no host data (process lists, paths, host/user names) in fixtures or docs; capture fixtures in the Docker images under `tests/docker/`.
 - Keep the key invariants in `docs/dev/architecture.md` (hooks-only specs never touch `key-table`; `normal` needs identity confirmed on the same capture; every failure is pass-through).
-- Before pushing: `gofmt -l .`, `go vet ./...`, `go test ./... -count=1`, shellcheck; CI must be green. Bump `VERSION` and tag a release when daemon code changes.
+- Before pushing: `gofmt -l .`, `go vet ./...`, `go test ./... -count=1`, shellcheck (also as `koalaman/shellcheck:v0.9.0`, CI's version); `grep -rIl "$(hostname)" . --exclude-dir=.git` must find nothing; CI must be green. Bump `VERSION` and tag a release when daemon code changes.
 - Update `docs/dev/status.md` and `docs/dev/progress.md` at each milestone.
+
+Next: milestone 7, starting with overlay user specs and remap-ready bundled specs (docs/dev/milestones.md, decision D29).

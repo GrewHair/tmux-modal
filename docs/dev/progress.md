@@ -53,3 +53,14 @@
   Wired spec `poll_interval`; CPU benchmark (5/20 panes × profiles ×
   scope) showed the tmux server paying for streaming unwatched panes'
   output → `refresh-client -A '%N:off'` (D28, F34). Released v0.4.0.
+- After M6: found the owner's machine name in `docs/dev/collaboration.md`
+  (committed since the dev-notes commit, in the line saying not to
+  publish it). With the owner's go-ahead, rewrote history with
+  `git filter-branch` (only that file changed; HEAD tree identical),
+  force-pushed `main` and tags v0.2.0–v0.4.0 with the release workflow
+  paused (so no rebuild), releases and assets intact, CI green, fresh
+  clone clean. Re-aligned the owner's plugin clone to the new history.
+  GitHub may still serve the old commits by hash until GC; a full purge
+  needs GitHub Support (offered, not requested).
+- Owner decision D29: overlay user specs + remap-ready bundled specs,
+  first thing in M7.
