@@ -143,7 +143,7 @@ Guarantees:
 | `notify.sh` | desktop notification (`notify-send` / `terminal-notifier`) |
 | `windows-toast.sh` | a Windows toast from WSL (detached, because `powershell.exe` alone takes ~0.5 s to start) |
 | `fifo.sh` + `../listener.sh` | **the low-latency pattern**: the hook writes one line to a FIFO, a long-lived listener reacts |
-| `ahk-http.sh` | calls an **AutoHotkey v2 script serving HTTP on Windows' localhost** from WSL: `…/send/F?OSD;;;;vim/insert/typing` for the focused pane (URL, function name and curl path via `MODAL_AHK_URL`, `MODAL_AHK_FUNC`, `MODAL_AHK_CURL`). Uses Windows `curl.exe` (the Windows localhost is not reachable from WSL's default networking): ~80–130 ms per call, nearly all of it process start |
+| `ahk-http.sh` | calls an **AutoHotkey v2 script serving HTTP on Windows' localhost** from WSL: `…/send/F?OSD;;;;vim/insert/typing/<ms>` for the focused pane (URL, function name and curl path via `MODAL_AHK_URL`, `MODAL_AHK_FUNC`, `MODAL_AHK_CURL`). **Fire and forget**: Windows `curl.exe` (the Windows localhost is not reachable from WSL's default networking) is started detached and the hook returns at once; the request lands ~80–130 ms later, and a stopped or hung server costs nothing. Requests can arrive out of order, so the receiver should drop one older (last field, ms) than the last it acted on |
 
 **Latency advice:** a long-lived listener fed by a one-line hook will always
 beat spawning a heavyweight process per transition. Process start costs tens

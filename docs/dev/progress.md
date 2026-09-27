@@ -98,4 +98,8 @@
   `/send/F?<func>;;;;<arg>`). Added `examples/hooks/ahk-http.sh` (focused
   pane only, payload `app/mode/typing|commanding`); Linux curl cannot reach
   Windows' localhost (NAT), so Windows curl.exe: ~80 ms process start, ~3
-  ms request; verified end to end with vim (hook ok in 77–131 ms).
+  ms request; verified end to end with vim (hook ok in 77–131 ms). Then
+  made fire-and-forget at the owner's request (setsid, stdio to
+  /dev/null, --connect-timeout 1 -m 2): the hook returns in <10 ms with
+  the server up, down, or hung; the output pipe closes at once. Payload
+  gained the transition time (ms) so the receiver can drop late arrivals.
