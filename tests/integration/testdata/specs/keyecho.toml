@@ -1,0 +1,30 @@
+# Test spec: a remapping spec for the keyecho test application.
+name     = "keyecho"
+priority = 90
+modes    = ["normal", "insert"]
+
+[buckets]
+typing     = ["insert"]
+commanding = ["normal"]
+
+[match]
+requires_alt_screen = true
+combine = "all"
+  [[match.clause]]
+  regex = '^KEYECHO TEST APPLICATION v1$'
+  row   = 0
+
+[[insert_when]]
+name  = "prompt"
+regex = '^PROMPT>( |$)'
+rows  = [-1, -1]
+col   = 0
+
+[keys]
+j     = "Down"
+k     = "Up"
+g     = "Home"
+"C-d" = "PageDown"
+
+[escape]
+leader = "_"

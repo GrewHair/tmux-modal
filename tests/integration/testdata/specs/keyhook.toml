@@ -1,0 +1,23 @@
+# Test spec: a hooks-only spec (no [keys]) for keyecho run as KEYHOOK.
+# The daemon must detect and publish its modes but never touch the
+# session key-table.
+name     = "keyhook"
+priority = 90
+modes    = ["normal", "insert"]
+
+[buckets]
+typing     = ["insert"]
+commanding = ["normal"]
+
+[match]
+requires_alt_screen = true
+combine = "all"
+  [[match.clause]]
+  regex = '^KEYHOOK TEST APPLICATION v1$'
+  row   = 0
+
+[[insert_when]]
+name  = "prompt"
+regex = '^PROMPT>( |$)'
+rows  = [-1, -1]
+col   = 0
