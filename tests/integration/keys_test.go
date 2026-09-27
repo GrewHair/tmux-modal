@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -90,6 +91,33 @@ func TestKeyTableFollowsFocus(t *testing.T) {
 	h.expectState("%0", "keyecho/normal/commanding", "modal-keyecho")
 	h.typeKeys("j")
 	h.expectScreen("%0", "last=[Down]")
+}
+
+// Panes outside @modal_scope have their output stream to the daemon
+// turned off; once focused, the stream is back on, so a mode change there
+// is seen from its output at once, not only at the idle re-check (2 s).
+func TestUnwatchedPaneOutputResumesOnFocus(t *testing.T) {
+	h := newHarness(t, opts{cmd: []string{keyecho}})
+	h.tmuxIn("split-window", "-d", "-t", "main", keyecho)
+	h.startDaemon()
+	h.expectState("%0", "keyecho/normal/commanding", "modal-keyecho")
+	h.tmuxIn("select-pane", "-t", "%1")
+	h.expectState("%1", "keyecho/normal/commanding", "modal-keyecho")
+	time.Sleep(300 * time.Millisecond)
+	for i := 0; i < 3; i++ {
+		start := time.Now()
+		h.typeKeys("/")
+		h.expectState("%1", "keyecho/insert/typing", "root")
+		if d := time.Since(start); d > time.Second {
+			t.Fatalf("insert seen after %v: the focused pane's output is not reaching the daemon", d)
+		}
+		h.typeKeys("Escape")
+		h.expectState("%1", "keyecho/normal/commanding", "modal-keyecho")
+	}
+	h.stopDaemon()
+	if b, _ := os.ReadFile(h.logPath); strings.Contains(string(b), "unsupported") {
+		t.Fatalf("refresh-client -A failed:\n%s", b)
+	}
 }
 
 // @modal_enabled off on one pane disables it for that pane only.

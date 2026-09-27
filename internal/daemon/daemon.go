@@ -32,6 +32,10 @@ type Daemon struct {
 
 	ev    *events
 	conns map[string]*tmux.Control // session id -> control client
+	// output: per control client, the panes whose output stream it has
+	// turned off (syncOutput).
+	output            map[string]*paneOutput
+	outputUnsupported bool
 
 	panes     map[string]*paneState
 	sessions  map[string]*sessionState
@@ -133,6 +137,7 @@ func Main(args []string, bundled spec.Source) error {
 		bundled:   bundled,
 		ev:        &events{output: map[string]time.Time{}, wake: make(chan struct{}, 1)},
 		conns:     map[string]*tmux.Control{},
+		output:    map[string]*paneOutput{},
 		panes:     map[string]*paneState{},
 		sessions:  map[string]*sessionState{},
 		installed: map[string]string{},

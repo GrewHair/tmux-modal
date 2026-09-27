@@ -60,6 +60,15 @@ func (d *Daemon) poll() time.Duration {
 	return time.Duration(float64(d.cfg.Poll) * d.throttle)
 }
 
+// pollFor is poll for one pane: a spec's own poll_interval, once the pane
+// is identified as that app, wins over @modal_poll_interval.
+func (d *Daemon) pollFor(st *paneState) time.Duration {
+	if sp := d.set.Specs[st.app]; sp != nil && sp.PollInterval > 0 {
+		return time.Duration(float64(sp.PollInterval) * float64(time.Millisecond) * d.throttle)
+	}
+	return d.poll()
+}
+
 // onOutput schedules an examination once output has settled: a trailing
 // debounce of one burst interval, capped at one poll interval after the
 // burst began so continuous output cannot starve detection. Settling
@@ -70,7 +79,7 @@ func (d *Daemon) onOutput(st *paneState, t time.Time) {
 		st.burstStart = t
 	}
 	due := t.Add(d.burst())
-	if limit := st.burstStart.Add(d.poll()); due.After(limit) {
+	if limit := st.burstStart.Add(d.pollFor(st)); due.After(limit) {
 		due = limit
 	}
 	if floor := st.lastExam.Add(d.burst()); due.Before(floor) {
@@ -195,7 +204,9 @@ func (d *Daemon) cycle() {
 		st.lastExam, st.burstStart = now, time.Time{}
 
 		// Tier-1 gate: a local shell on the primary screen runs no TUI.
-		if p.Dead || (!p.Alt && classify.Shells[filepath.Base(p.Command)] && !d.primaryScreenSpecs()) {
+		// Primary-screen specs (REPLs) are recognised by their own command
+		// name, never a shell's, so this holds even when some are loaded.
+		if p.Dead || (!p.Alt && classify.Shells[filepath.Base(p.Command)]) {
 			st.app, st.identFails = "", 0
 			d.transition(st, modeState{Mode: spec.ModeNone, Bucket: spec.ModeNone, Confidence: classify.High}, "tier-1: shell on primary screen", now)
 			st.due = now.Add(d.cfg.Idle)
@@ -251,6 +262,7 @@ func (d *Daemon) cycle() {
 		}
 	}
 	d.syncKeyTables(r, panes, humans)
+	d.syncOutput(panes, humans)
 	d.sweepFocus(panes, humans)
 	d.refreshStatus(r)
 }
@@ -289,7 +301,7 @@ func (d *Daemon) examine(st *paneState, s *screen.Screen, full bool, now time.Ti
 	case st.pendingN > 0:
 		st.due = now.Add(d.burst())
 	case next.Mode == spec.ModeUnknown || st.identFails > 0:
-		st.due = now.Add(d.poll())
+		st.due = now.Add(d.pollFor(st))
 	default:
 		st.due = now.Add(d.cfg.Idle)
 	}
@@ -460,15 +472,6 @@ func (d *Daemon) hookEvent(event, key string, p *tmux.PaneInfo, from, to modeSta
 		e.Commands = append(e.Commands, sp.Hook)
 	}
 	return e
-}
-
-func (d *Daemon) primaryScreenSpecs() bool {
-	for _, sp := range d.set.Order {
-		if !sp.Identity.RequiresAlt {
-			return true
-		}
-	}
-	return false
 }
 
 func (d *Daemon) anyColour() bool {
