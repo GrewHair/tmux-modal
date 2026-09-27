@@ -255,8 +255,8 @@ func TestGeometry(t *testing.T) {
 		want   bool
 	}{
 		{"regex='Filter:'\nrows=[-1,-1]", true},
-		{"regex='Filter:'\nrows=[-1,-1]\ncol=0", false},           // match starts at col 23
-		{"regex='Filter:'\nrows=[-1,-1]\ncols=[20,30]", true},     // within range
+		{"regex='Filter:'\nrows=[-1,-1]\ncol=0", false},             // match starts at col 23
+		{"regex='Filter:'\nrows=[-1,-1]\ncols=[20,30]", true},       // within range
 		{"regex='Filter: abc'\nrows=[-1,-1]\nanchor=\"end\"", true}, // ends at last non-blank
 		{"regex='Filter:'\nrows=[-1,-1]\nanchor=\"end\"", false},
 		{"regex='Filter:'\nrows=[1,2]\nanchor=\"start\"", false}, // row 2 has it mid-line
@@ -342,5 +342,14 @@ func TestLintUnderSpecified(t *testing.T) {
 	w := strings.Join(sp.Warnings, "\n")
 	if !strings.Contains(w, "no geometry") || !strings.Contains(w, "under-specified") {
 		t.Errorf("expected geometry and under-specification warnings, got:\n%s", w)
+	}
+}
+
+func TestLintTrailingSpace(t *testing.T) {
+	body := "modes=[\"normal\",\"insert\"]\n[buckets]\ntyping=[\"insert\"]\ncommanding=[\"normal\"]\n" +
+		"[match]\ncommand=[\"x\"]\n[[insert_when]]\nregex='^PROMPT NAME HERE> '\nrow=-1\ncol=0\n"
+	sp := mustSpec(t, load(t, map[string]string{"x.toml": body}), "x")
+	if !strings.Contains(strings.Join(sp.Warnings, "\n"), "ends in whitespace") {
+		t.Errorf("expected trailing-whitespace warning, got %v", sp.Warnings)
 	}
 }

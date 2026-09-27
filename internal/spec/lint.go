@@ -21,6 +21,11 @@ func (sp *Spec) lint() {
 			switch c.Kind {
 			case KindRegex:
 				hasRegex = true
+				if src := c.Regex.String(); !c.Negate && (strings.HasSuffix(src, " ") || strings.HasSuffix(src, `\s`)) &&
+					!strings.HasSuffix(src, `\ `) {
+					sp.warnf("%s: %s ends in whitespace, but lines are matched with trailing whitespace stripped; "+
+						"an empty prompt can never match (use '( |$)')", label, c.Label)
+				}
 				geometric := c.RowA != 0 || c.RowB != -1 || c.ColA >= 0 || c.Anchor != AnchorAnywhere
 				if !geometric {
 					sp.warnf("%s: %s has no geometry (rows/col/anchor); unanchored substrings false-positive on any pane showing the text",
