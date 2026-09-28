@@ -121,3 +121,15 @@
   (prefix through the harness tmux, htop dropping typeahead).
 - CHANGELOG.md, release notes from it; checkout/setup-go v7. Released
   v1.0.0.
+
+**2026-09-28 (after 1.0)**
+- Owner showed needrestart's debconf dialog and asked for a fingerprint.
+  Probed whiptail in the images (F42): cursor visible only in a text
+  entry, menus jump by letter, colour differs per distro, VT100 letters
+  without UTF-8, translated backtitle (45 languages, extracted raw).
+  Built the `newt` group and `debconf`/`whiptail` remapping specs (D33);
+  probes in the images (`debconf-probe`, `ucf-probe`, sudo for demo);
+  fixtures from Ubuntu 22.04/24.04 and Debian 12; `TestDebconfTitles`;
+  SSH tests driving ucf's real prompt and a raspi-config-style menu.
+  Released v1.1.0. (The auto-mode permission check failed intermittently
+  during the session; work continued with file edits in between.)

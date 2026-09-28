@@ -1,0 +1,33 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 38,12
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_mode: unknown
+# note: progress gauge: no buttons, not recognised
+# ---
+
+
+
+
+
+
+
+
+
+               ┌────────────────────────────────────────────────┐
+               │ Installing ...                                 │
+               │                                                │
+               │                       40%                      │
+               │                                                │
+               └────────────────────────────────────────────────┘
+
+
+
+
+
+
+
+

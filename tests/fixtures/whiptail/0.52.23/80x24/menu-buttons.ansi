@@ -1,0 +1,23 @@
+[44m
+
+     [30m[47m┌───────────┤ [31mSoftware Configuration Tool (raspi-config)[30m ├───────────┐[39m[44m
+     [30m[47m│ Setup Options                                                      │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m│  1 System Options       Configure system settings                  │[97m[40m [39m[44m
+     [30m[47m│  2 Display Options      Configure display settings                 │[97m[40m [39m[44m
+     [30m[47m│  [37m[44m3 Interface Options    Configure connections to peripherals    [30m[47m   │[97m[40m [39m[44m
+     [30m[47m│  4 Performance Options  Configure performance settings             │[97m[40m [39m[44m
+     [30m[47m│  5 Localisation Options Configure language and regional settings   │[97m[40m [39m[44m
+     [30m[47m│  8 Update               Update this tool to the latest version     │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m│                 <Select>                 [37m[41m<Finish>[30m[47m                  │[97m[40m [39m[44m
+     [30m[47m│                                                                    │[97m[40m [39m[44m
+     [30m[47m└────────────────────────────────────────────────────────────────────┘[97m[40m [39m[44m
+      [97m[40m                                                                      [39m[44m

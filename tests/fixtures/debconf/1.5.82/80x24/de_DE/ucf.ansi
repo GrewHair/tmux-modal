@@ -1,0 +1,23 @@
+[37m[44mPaketkonfiguration[39m
+
+
+  [30m[47m┌────────────────────┤ [31mGeänderte Konfigurationsdatei[30m ├─────────────────────┐[39m[44m
+  [30m[47m│ tmux-modal-probe.conf: Eine neue Version (/tmp/tmp.pOnH95rPfx/v2) der    │[97m[40m [39m[44m
+  [30m[47m│ Konfigurationsdatei /etc/tmux-modal-probe.conf ist verfügbar, aber die   │[97m[40m [39m[44m
+  [30m[47m│ derzeit installierte Version wurde verändert.                            │[97m[40m [39m[44m
+  [30m[47m│                                                                          │[97m[40m [39m[44m
+  [30m[47m│ Wie wollen Sie mit der geänderten Konfigurationsdatei                    │[97m[40m [39m[44m
+  [30m[47m│ tmux-modal-probe.conf verfahren?                                         │[97m[40m [39m[44m
+  [30m[47m│                                                                          │[97m[40m [39m[44m
+  [30m[47m│       Version des Paketbetreuers installieren                            │[97m[40m [39m[44m
+  [30m[47m│       [37m[41maktuell lokal installierte Version beibehalten             [30m[47m        │[97m[40m [39m[44m
+  [30m[47m│       Unterschiede zwischen den Versionen anzeigen                       │[97m[40m [39m[44m
+  [30m[47m│       Unterschiede zwischen den Versionen nebeneinander anzeigen         │[97m[40m [39m[44m
+  [30m[47m│       die Angelegenheit in einer neu gestarteten Shell ...               │[97m[40m [39m[44m
+  [30m[47m│                                                                          │[97m[40m [39m[44m
+  [30m[47m│                                                                          │[97m[40m [39m[44m
+  [30m[47m│                                  <Ok>                                    │[97m[40m [39m[44m
+  [30m[47m│                                                                          │[97m[40m [39m[44m
+  [30m[47m└──────────────────────────────────────────────────────────────────────────┘[97m[40m [39m[44m
+   [97m[40m                                                                            [39m[44m
+

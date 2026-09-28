@@ -1,0 +1,40 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 22,7
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: whiptail
+# expect_mode: normal
+# note: text box with a scroll bar
+# ---
+
+
+
+
+
+                    ┌──────────────────────────────────────────────────────────┐
+                    │                                                          │
+                    │ Sample text line 1
+                    │ Sample text line 2
+                    │ Sample text line 3
+                    │ Sample text line 4
+                    │ Sample text line 5
+                    │ Sample text line 6
+                    │ Sample text line 7
+                    │ Sample text line 8
+                    │ Sample text line 9
+                    │ Sample text line 10
+                    │ Sample text line 11
+                    │ Sample text line 12
+                    │ Sample text line 13
+                    │ Sample text line 14
+                    │
+                    │                          <Ok>
+                    │                                                          │
+                    └──────────────────────────────────────────────────────────┘
+
+
+
+

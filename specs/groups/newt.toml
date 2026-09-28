@@ -1,0 +1,26 @@
+# newt: dialogs drawn by whiptail (the newt library), directly from
+# scripts or through debconf's dialog frontend. Not matchable on its own.
+#
+# whiptail keeps the terminal cursor hidden in every widget except a text
+# entry (inputbox, passwordbox) with focus; Tab to the buttons hides it
+# again. That is the whole mode rule, and it needs no capture. Lists,
+# menus, yes/no, notes and text boxes are normal. Verified with whiptail
+# 0.52 on Ubuntu 22.04/24.04 and Debian bookworm (tests/fixtures/debconf,
+# tests/fixtures/whiptail).
+#
+# No key map here: the specs that extend it declare their own.
+description = "whiptail (newt) dialogs: cursor visible only in a text entry"
+modes = ["normal", "insert"]
+translated = false                # the mode rule reads no text
+
+[buckets]
+typing     = ["insert"]
+commanding = ["normal"]
+
+[match]
+requires_alt_screen = true
+
+[[mode_when]]
+name           = "text-entry"
+mode           = "insert"
+cursor_visible = true

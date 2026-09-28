@@ -405,3 +405,29 @@ panes) and theme, and a wrong pick would remap keys while the user types
 in the other pane. No extra captures or colour for this: nested panes were
 already captured in full. Accepted side effect: vim hides the cursor for a
 moment while redrawing, which reads as unknown for ~100 ms in a split.
+
+## D33. debconf and whiptail get keys — owner, after 1.0
+
+The owner met needrestart's debconf dialog ("Daemons using outdated
+libraries") and asked for a fingerprint: whiptail has no vim keys, like
+htop. Probed first (F42), then two remapping specs over one group:
+
+- `newt` group: insert exactly while the cursor is visible. whiptail hides
+  the cursor in every widget but a focused text entry (verified: lists,
+  menus, yes/no, notes, text boxes, buttons — including Tab from an entry
+  to its buttons). No text is read for the mode, so no translation issue.
+- `debconf` (priority 55): the backtitle `Package configuration` on row 0
+  is **required**, in all 45 debconf-i18n languages (generated, D30's
+  approach); plus two of frame top (40), button row (40), frame bottom
+  (20), threshold 60. Colour (magenta on Ubuntu, blue on Debian) unused.
+- `whiptail` (priority 45): no fixed text exists in a script's dialog, so
+  identity is structural: a row of nothing but `<buttons>` after a left
+  edge (required) plus both frame edges (70); `lint_ignore
+  under-specified` with that reason. A gauge (no buttons) is N/A.
+- Both accept the VT100 letters newt draws without a UTF-8 locale, and a
+  missing right edge on the button row (`--scrolltext` text boxes wipe it).
+- Keys as htop's map. Shadowed: in menus a letter jumps to the item
+  starting with it (ucf's "keep the local version" is `k`) — `_k`.
+
+Left out (owner not asked): `dialog(1)`-based tools and `nmtui` (newt but
+not whiptail's layout), and debconf's `readline`/`gnome` frontends.

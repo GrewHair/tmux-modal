@@ -2,6 +2,17 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.1.0 — 2026-09-28
+
+- **apt's package questions (`debconf`) and whiptail dialogs get vim keys**:
+  needrestart's service list, the "Modified configuration file" prompt
+  during upgrades, `dpkg-reconfigure`, raspi-config and installer scripts.
+  `hjkl`, `g`/`G`, `C-d`/`C-u` move while a list, menu or the buttons
+  have focus; in a text or password field every key is literal (whiptail
+  shows the cursor only there). Recognised from the screen alone, over
+  SSH too, in every language debconf ships; checked on Ubuntu 22.04,
+  24.04 and Debian 12.
+
 ## 1.0.0 — 2026-09-28
 
 - **Split remote tmux:** across an inner window split into several panes,

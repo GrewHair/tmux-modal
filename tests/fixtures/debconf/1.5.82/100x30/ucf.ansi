@@ -1,0 +1,29 @@
+[37m[44mPackage configuration[39m
+
+
+
+
+
+    [30m[47m┌─────────────────────────────┤ [31mModified configuration file[30m ├─────────────────────────────┐[39m[44m
+    [30m[47m│ tmux-modal-probe.conf: A new version (/tmp/tmp.ik0V5IHKEw/v2) of configuration file     │[97m[40m [39m[44m
+    [30m[47m│ /etc/tmux-modal-probe.conf is available, but the version installed currently has been   │[97m[40m [39m[44m
+    [30m[47m│ locally modified.                                                                       │[97m[40m [39m[44m
+    [30m[47m│                                                                                         │[97m[40m [39m[44m
+    [30m[47m│ What do you want to do about modified configuration file tmux-modal-probe.conf?         │[97m[40m [39m[44m
+    [30m[47m│                                                                                         │[97m[40m [39m[44m
+    [30m[47m│                  install the package maintainer's version                               │[97m[40m [39m[44m
+    [30m[47m│                  [37m[41mkeep the local version currently installed          [30m[47m                   │[97m[40m [39m[44m
+    [30m[47m│                  show the differences between the versions                              │[97m[40m [39m[44m
+    [30m[47m│                  show a side-by-side difference between the versions                    │[97m[40m [39m[44m
+    [30m[47m│                  start a new shell to examine the situation                             │[97m[40m [39m[44m
+    [30m[47m│                                                                                         │[97m[40m [39m[44m
+    [30m[47m│                                                                                         │[97m[40m [39m[44m
+    [30m[47m│                                         <Ok>                                            │[97m[40m [39m[44m
+    [30m[47m│                                                                                         │[97m[40m [39m[44m
+    [30m[47m└─────────────────────────────────────────────────────────────────────────────────────────┘[97m[40m [39m[44m
+     [97m[40m                                                                                           [39m[44m
+
+
+
+
+

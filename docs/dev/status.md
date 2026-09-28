@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-28, after M8 (1.0.0: split remote tmux by cursor, benchmark, changelog). All brief milestones done; next: whatever the owner's dogfooding brings up._
+_Last updated: 2026-09-28, 1.1.0 (debconf and whiptail specs, D33, at the owner's request after 1.0). All brief milestones done; next: whatever the owner's dogfooding brings up._
 
 ## Milestones (brief §12)
 

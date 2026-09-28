@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 13,12
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: ucf: modified configuration file
+# ---
+Package configuration
+
+
+   ┌────────────────────┤ Modified configuration file ├────────────────────┐
+   │ tmux-modal-probe.conf: A new version (/tmp/tmp.vAsAcG7wKe/v2) of      │
+   │ configuration file /etc/tmux-modal-probe.conf is available, but the   │
+   │ version installed currently has been locally modified.                │
+   │                                                                       │
+   │ What do you want to do about modified configuration file              │
+   │ tmux-modal-probe.conf?                                                │
+   │                                                                       │
+   │         install the package maintainer's version                      │
+   │         keep the local version currently installed                    │
+   │         show the differences between the versions                     │
+   │         show a side-by-side difference between the versions           │
+   │         start a new shell to examine the situation                    │
+   │                                                                       │
+   │                                                                       │
+   │                                <Ok>                                   │
+   │                                                                       │
+   └───────────────────────────────────────────────────────────────────────┘
+
+

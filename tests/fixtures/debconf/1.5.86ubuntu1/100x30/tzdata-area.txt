@@ -1,0 +1,40 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 44,20
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: dpkg-reconfigure tzdata: geographic area
+# ---
+Package configuration
+
+
+ ┌────────────────────────────────────┤ Configuring tzdata ├─────────────────────────────────────┐
+ │ Please select the geographic area in which you live. Subsequent configuration questions will  │
+ │ narrow this down by presenting a list of cities, representing the time zones in which they    │
+ │ are located.                                                                                  │
+ │                                                                                               │
+ │ Geographic area:                                                                              │
+ │                                                                                               │
+ │                                          Africa                                               │
+ │                                          America                                              │
+ │                                          Antarctica                                           │
+ │                                          Arctic                                               │
+ │                                          Asia                                                 │
+ │                                          Atlantic                                             │
+ │                                          Australia                                            │
+ │                                          Europe                                               │
+ │                                          Indian                                               │
+ │                                          Pacific                                              │
+ │                                          Etc                                                  │
+ │                                          Legacy                                               │
+ │                                                                                               │
+ │                                                                                               │
+ │                          <Ok>                              <Cancel>                           │
+ │                                                                                               │
+ └───────────────────────────────────────────────────────────────────────────────────────────────┘
+
+

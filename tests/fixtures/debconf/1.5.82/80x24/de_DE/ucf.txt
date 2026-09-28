@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 10,12
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: LANG=de_DE.UTF-8
+# ---
+Paketkonfiguration
+
+
+  ┌────────────────────┤ Geänderte Konfigurationsdatei ├─────────────────────┐
+  │ tmux-modal-probe.conf: Eine neue Version (/tmp/tmp.pOnH95rPfx/v2) der    │
+  │ Konfigurationsdatei /etc/tmux-modal-probe.conf ist verfügbar, aber die   │
+  │ derzeit installierte Version wurde verändert.                            │
+  │                                                                          │
+  │ Wie wollen Sie mit der geänderten Konfigurationsdatei                    │
+  │ tmux-modal-probe.conf verfahren?                                         │
+  │                                                                          │
+  │       Version des Paketbetreuers installieren                            │
+  │       aktuell lokal installierte Version beibehalten                     │
+  │       Unterschiede zwischen den Versionen anzeigen                       │
+  │       Unterschiede zwischen den Versionen nebeneinander anzeigen         │
+  │       die Angelegenheit in einer neu gestarteten Shell ...               │
+  │                                                                          │
+  │                                                                          │
+  │                                  <Ok>                                    │
+  │                                                                          │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+

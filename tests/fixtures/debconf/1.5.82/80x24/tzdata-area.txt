@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 29,16
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: dpkg-reconfigure tzdata: geographic area
+# ---
+Package configuration
+
+  ┌─────────────────────────┤ Configuring tzdata ├──────────────────────────┐
+  │ Please select the geographic area in which you live. Subsequent         │
+  │ configuration questions will narrow this down by presenting a list of   │
+  │ cities, representing the time zones in which they are located.          │
+  │                                                                         │
+  │ Geographic area:                                                        │
+  │                                                                         │
+  │                          Asia                  ↑                        │
+  │                          Atlantic Ocean        ▒                        │
+  │                          Australia             ▒                        │
+  │                          Europe                ▒                        │
+  │                          Indian Ocean          ▒                        │
+  │                          Pacific Ocean         ▒                        │
+  │                          US                    ▮                        │
+  │                          None of the above     ↓                        │
+  │                                                                         │
+  │                                                                         │
+  │                   <Ok>                       <Cancel>                   │
+  │                                                                         │
+  └─────────────────────────────────────────────────────────────────────────┘
+

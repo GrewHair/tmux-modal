@@ -1,0 +1,40 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 32,12
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: whiptail
+# expect_mode: normal
+# note: radiolist, no title
+# ---
+
+
+
+
+
+
+
+
+
+                         ┌────────────────────────────────────────────────┐
+                         │ Interface:                                     │
+                         │                                                │
+                         │  (*) eth0   Wired                              │
+                         │  ( ) wlan0  Wireless                           │
+                         │                                                │
+                         │                                                │
+                         │                                                │
+                         │                                                │
+                         │           <Ok>               <Cancel>          │
+                         │                                                │
+                         └────────────────────────────────────────────────┘
+
+
+
+
+
+
+
+

@@ -1,0 +1,40 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 33,14
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: checklist, second item focused
+# ---
+Package configuration
+
+
+
+
+
+
+
+                          ┌────┤ Daemons using outdated libraries ├─────┐
+                          │                                             │
+                          │                                             │
+                          │ Which services should be restarted?         │
+                          │                                             │
+                          │  [*] apache2.service                        │
+                          │  [*] chrony.service                         │
+                          │  [*] cron.service                           │
+                          │  [*] ssh.service                            │
+                          │                                             │
+                          │                                             │
+                          │          <Ok>              <Cancel>         │
+                          │                                             │
+                          └─────────────────────────────────────────────┘
+
+
+
+
+
+
+

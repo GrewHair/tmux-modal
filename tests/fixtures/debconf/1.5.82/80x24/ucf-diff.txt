@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 38,15
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: ucf: the differences, as a note
+# ---
+Package configuration
+
+
+
+
+  ┌─────────────────────┤ Modified configuration file ├──────────────────────┐
+  │                                                                          │
+  │ Line by line differences between versions                                │
+  │                                                                          │
+  │ Old file: /etc/tmux-modal-probe.conf root.root 0644 2026-09-28 15:29:35  │
+  │ New file: /tmp/tmp.vAsAcG7wKe/v2 root.root 0644 2026-09-28 15:29:35      │
+  │                                                                          │
+  │ setting = 1 | setting = 2                                                │
+  │ local = yes <                                                            │
+  │                                                                          │
+  │                                  <Ok>                                    │
+  │                                                                          │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+
+
+
+

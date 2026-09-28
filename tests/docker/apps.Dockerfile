@@ -14,8 +14,10 @@ ARG K9S_VERSION=0.51.0
 ARG NVIM_VERSION=0.12.5
 ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 TERM=xterm-256color
 COPY apps-install.sh /usr/local/sbin/apps-install.sh
+COPY debconf-probe.templates debconf-probe.sh ucf-probe.sh /usr/local/share/tmux-modal/
 RUN LAZYGIT_VERSION=${LAZYGIT_VERSION} K9S_VERSION=${K9S_VERSION} NVIM_VERSION=${NVIM_VERSION} sh /usr/local/sbin/apps-install.sh
-RUN useradd -m -s /bin/bash demo
+# sudo without a password, as for `sudo apt` on a server (debconf prompts).
+RUN useradd -m -s /bin/bash demo && echo 'demo ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/demo
 USER demo
 WORKDIR /home/demo
 COPY --chown=demo:demo apps-home.sh /tmp/apps-home.sh

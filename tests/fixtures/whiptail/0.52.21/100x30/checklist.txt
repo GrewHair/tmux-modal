@@ -1,0 +1,40 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 29,10
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: whiptail
+# expect_mode: normal
+# note: checklist
+# ---
+
+
+
+
+
+
+
+                    ┌────────────────────┤ Pick features ├─────────────────────┐
+                    │ Choose:                                                  │
+                    │                                                          │
+                    │    [*] ssh  OpenSSH server                               │
+                    │    [ ] web  Web server                                   │
+                    │    [ ] db   Database                                     │
+                    │                                                          │
+                    │                                                          │
+                    │                                                          │
+                    │                                                          │
+                    │                                                          │
+                    │                                                          │
+                    │              <Ok>                  <Cancel>              │
+                    │                                                          │
+                    └──────────────────────────────────────────────────────────┘
+
+
+
+
+
+
+

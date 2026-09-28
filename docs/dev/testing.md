@@ -40,6 +40,20 @@ so the SSH tier fails instead of skipping. Keep it green before every push.
   `TestVimCursorShapeVeto`. Real captures: `apps.sh <tag> vim nvim` →
   `tests/fixtures/{vim,nvim}/<version>/<size>/` plus `de_DE`, `ru_RU`,
   `ja_JP` subdirectories (the images generate those locales).
+- debconf/whiptail: `TestDebconfTitles` checks the backtitle clause
+  against every translation in `tests/fixtures/debconf/titles.json`
+  (`scripts/fixtures/debconf-titles.py [tags]` extracts it from the
+  images' debconf-i18n catalogues, reading the .mo files raw because
+  Python's gettext rejects the bs and he headers; `--regex` prints the
+  alternation for `specs/debconf.toml`). Real captures: `apps.sh <tag>
+  debconf whiptail` → `tests/fixtures/{debconf,whiptail}/<version>/`, with
+  `C/` (VT100-letter frames) and `de_DE`/`ru_RU`/`ja_JP` subdirectories.
+  The images carry `debconf-probe` (needrestart/tzdata/postfix-style
+  questions from `tests/docker/debconf-probe.templates`) and `ucf-probe`
+  (ucf's real modified-conffile prompt); `demo` has passwordless sudo, so
+  run them as `sudo debconf-probe [question...]` (run directly as root
+  in the container, the probe exited without asking). SSH tier:
+  `TestAppDebconf`, `TestAppWhiptail`.
 - Capture: `tmux-modal capture -o file.txt -expect-app A -expect-mode M
   [-meta key=value] %N`, or the scripts: `scripts/fixtures/htop.sh LABEL
   docker run --rm -it IMAGE htop`, `scripts/fixtures/apps.sh [image-tag]

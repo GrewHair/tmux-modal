@@ -1,0 +1,40 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 38,16
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: whiptail
+# expect_mode: normal
+# note: yes/no
+# ---
+
+
+
+
+
+
+
+
+
+
+
+                         ┌───────────────────┤ Reboot ├───────────────────┐
+                         │                                                │
+                         │ Would you like to reboot now?                  │
+                         │                                                │
+                         │                                                │
+                         │           <Yes>              <No>              │
+                         │                                                │
+                         └────────────────────────────────────────────────┘
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+[37m[44mPackage configuration[39m
+
+
+
+
+
+
+  [30m[47m┌────────────────────────────┤ [31mDaemons using outdated libraries[30m ├─────────────────────────────┐[39m[44m
+  [30m[47m│                                                                                             │[97m[40m [39m[44m
+  [30m[47m│ Pending kernel upgrade                                                                      │[97m[40m [39m[44m
+  [30m[47m│                                                                                             │[97m[40m [39m[44m
+  [30m[47m│ Newer kernel available                                                                      │[97m[40m [39m[44m
+  [30m[47m│                                                                                             │[97m[40m [39m[44m
+  [30m[47m│ The currently running kernel version is 6.8.0-40-generic which is not the expected kernel   │[97m[40m [39m[44m
+  [30m[47m│ version 6.8.0-45-generic.                                                                   │[97m[40m [39m[44m
+  [30m[47m│                                                                                             │[97m[40m [39m[44m
+  [30m[47m│ Restarting the system to load the new kernel will not be handled automatically, so you      │[97m[40m [39m[44m
+  [30m[47m│ should consider rebooting.                                                                  │[97m[40m [39m[44m
+  [30m[47m│                                                                                             │[97m[40m [39m[44m
+  [30m[47m│                                           [37m[41m<Ok>[30m[47m                                              │[97m[40m [39m[44m
+  [30m[47m│                                                                                             │[97m[40m [39m[44m
+  [30m[47m└─────────────────────────────────────────────────────────────────────────────────────────────┘[97m[40m [39m[44m
+   [97m[40m                                                                                               [39m[44m
+
+
+
+
+
+

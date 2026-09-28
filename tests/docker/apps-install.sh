@@ -9,7 +9,7 @@
 set -eu
 want=${APPS:-"htop less man-db vim-nox neovim tig ncdu btop ranger lf nnn mc fzf git
 python3 sqlite3 gdb postgresql-client mariadb-client nodejs ruby weechat irssi
-ca-certificates curl locales"}
+ca-certificates curl locales whiptail debconf-i18n debconf-utils ucf tzdata sudo"}
 # Minimised images strip man pages; man needs them.
 rm -f /etc/dpkg/dpkg.cfg.d/excludes
 if [ "$(dpkg-divert --truename /usr/bin/man)" = /usr/bin/man.REAL ]; then
@@ -28,6 +28,8 @@ done
 # shellcheck disable=SC2086
 apt-get install -y --no-install-recommends $have
 apt-get install -y --no-install-recommends --reinstall coreutils >/dev/null
+# debconf's own files were installed with the minimised image's excludes.
+apt-get install -y --no-install-recommends --reinstall debconf >/dev/null
 case $(uname -m) in
 x86_64) arch=x86_64 k9arch=amd64 ;;
 aarch64) arch=arm64 k9arch=arm64 ;;
@@ -51,6 +53,12 @@ if command -v localedef >/dev/null; then
 	for l in ${LOCALES:-de_DE ru_RU ja_JP fr_FR}; do
 		localedef -i "$l" -f UTF-8 "$l.UTF-8"
 	done
+fi
+# The whiptail probes (debconf-probe.sh, ucf-probe.sh), when copied in.
+if [ -f /usr/local/share/tmux-modal/debconf-probe.templates ]; then
+	debconf-loadtemplate tmux-modal-probe /usr/local/share/tmux-modal/debconf-probe.templates
+	install -m 755 /usr/local/share/tmux-modal/debconf-probe.sh /usr/local/bin/debconf-probe
+	install -m 755 /usr/local/share/tmux-modal/ucf-probe.sh /usr/local/bin/ucf-probe
 fi
 rm -rf /var/lib/apt/lists/*
 if [ -x /usr/bin/mandb ]; then

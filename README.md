@@ -8,17 +8,19 @@ It reads the rendered screen (the same cells you see) and fingerprints the
 app and its mode from text, geometry, cursor state and, optionally, colour.
 Two independent things can subscribe to that:
 
-1. **Key remapping.** Give vim-style keys to TUIs that lack them. In `htop`
-   and `btop`, `hjkl` move the selection, but the moment you open a search
-   or filter prompt, `hjkl` are ordinary letters again.
+1. **Key remapping.** Give vim-style keys to TUIs that lack them. In `htop`,
+   `btop` and apt's whiptail questions, `hjkl` move the selection, but the
+   moment you open a search prompt or a text field, `hjkl` are ordinary
+   letters again.
 2. **Transition hooks.** Run a command whenever a pane changes mode, so
    something outside tmux (AutoHotkey, kanata, karabiner, a status widget)
    can react — e.g. switch an outer keyboard layer off while vim is in
    normal mode and on while you type.
 
-> **Status: 1.0.** Recognises [vim and neovim](#vim-and-neovim) (for the
-> hook) and, through [bundled specs](#bundled-specs), htop, btop, less,
-> man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and common REPLs,
+> **Status: 1.1.** Recognises [vim and neovim](#vim-and-neovim) (for the
+> hook) and, through [bundled specs](#bundled-specs), htop, btop, apt's
+> package questions (debconf), whiptail dialogs, less, man, tig, lazygit,
+> k9s, ranger, lf, nnn, ncdu, mc, fzf and common REPLs,
 > any of which [can be given keys](#add-keys-to-any-app); locally, over SSH
 > and through a [remote tmux](#ssh-and-nested-tmux) (tested against a real
 > sshd). Any full-screen app no spec recognises shows as **N/A** and is
@@ -163,6 +165,8 @@ vimrc makes Escape itself fast).
 | `vim`, `nvim` | detects (**hook only**, never remaps) | normal, visual; insert, replace, select, command line, terminal (nvim) — [details and limits](#vim-and-neovim) | vim 8.2, 9.0, 9.1; nvim 0.6.1, 0.7.2, 0.9.5, 0.12.5; every language they ship |
 | `htop` | **remaps keys** | normal; insert in `Search:` / `Filter:` | 2.2.0, 3.0.5, 3.2.2, 3.3.0 |
 | `btop` | **remaps keys** | normal; insert while typing the process filter, and on the options screen (it has text fields) | 1.2.3, 1.2.13, 1.3.0 |
+| `debconf` | **remaps keys** | normal in lists, menus, yes/no and notes; insert while a text or password field has focus | debconf 1.5.79, 1.5.82, 1.5.86 (Ubuntu 22.04, Debian 12, Ubuntu 24.04); all 45 languages it ships |
+| `whiptail` | **remaps keys** | the same, for whiptail dialogs from scripts (raspi-config, installers); a progress gauge is N/A | 0.52.21, 0.52.23, 0.52.24 |
 | `less`, `man` | detects | normal; insert in any text prompt (`/` `?` search, `&` filter, `!` shell, `-` option, `:e` …) | less 590; man-db 2.10–2.12 |
 | `tig` | detects | normal; insert in `/` `?` search; command at `:` | 2.5.1, 2.5.5, 2.5.8 |
 | `lazygit` | detects | normal; insert whenever a text field has focus (commit message, filter, shell command, branch name …) | 0.65.1 |
@@ -273,6 +277,22 @@ options screen, nothing is remapped; the main menu, help and the signal
 list (arrows pick a signal) are normal mode. If you prefer btop's own
 `vim_keys = True`, drop the map with an overlay (below) holding
 `overlay = true` and `keys = false`.
+
+apt's configuration questions (`modal-debconf`: needrestart's "Daemons
+using outdated libraries", the "Modified configuration file" prompt during
+upgrades, `dpkg-reconfigure` …) and whiptail dialogs from scripts
+(`modal-whiptail`: raspi-config, installers) get the same map: `jk` move
+through lists and menus, `hl` between the buttons, `g`/`G` and
+`C-d`/`C-u` jump. Space, Tab and Enter are untouched. whiptail shows the
+cursor only while a text or password field has focus, and that is the
+switch: typing a host name or password, every key is literal; Tab to the
+buttons and the map is back. In a menu, whiptail jumps to the item that
+starts with a typed letter; the map shadows that for `h j k l g G` (`_k`
+still jumps to "keep the local version"). The screens are recognised by
+debconf's `Package configuration` title (in every language debconf
+ships) or, for a script's dialog, by its frame and a row of `<buttons>`,
+over SSH too; the magenta (Ubuntu) or blue (Debian) background is not
+needed.
 
 ### Add keys to any app
 
@@ -514,8 +534,9 @@ Groups in [`specs/groups/`](specs/groups/) (`extends`, a list is merged in
 order): `curses-tui` (cursor visible on the bottom rows = a prompt has
 focus), `slash-search` (`/` `?` on the last row with the cursor there),
 `colon-command` (`:` there, mode `command`), `readline-repl` (always
-insert, primary screen), `less-prompts` (less's own prompts). Groups carry
-no key maps.
+insert, primary screen), `less-prompts` (less's own prompts), `newt`
+(whiptail: cursor visible = a text entry has focus). Groups carry no key
+maps.
 
 **Anchor the rows you read.** A remapping spec concludes its commanding
 mode from the *absence* of a prompt. Make sure the rows the mode rules read

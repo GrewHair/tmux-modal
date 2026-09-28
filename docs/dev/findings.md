@@ -314,3 +314,29 @@ for ~100 ms while redrawing (Escape out of visual), so a split reads
 unknown for that moment; htop and btop hide it throughout. vim's
 showmode and showcmd share a 40-column inner pane's last row
 (`-- VISUAL -1` in a narrow pane: the marker is still matched).
+
+
+## whiptail and debconf (after 1.0)
+
+**F42. whiptail (newt 0.52) behaviour**, probed on Ubuntu 22.04/24.04 and
+Debian 12 through debconf's dialog frontend and directly:
+- The terminal cursor is hidden except while a text/password entry has
+  focus; tmux still reports its position, which follows the focus (list
+  item, button). The focused item is shown by colour (the red `*` in a
+  checklist is a colour, not the cursor).
+- Checklists ignore letters (hjkl do nothing); menus jump to the next item
+  starting with a typed letter. Home/End/PageUp/PageDown work in lists;
+  Left/Right move between buttons; Tab cycles list → buttons.
+- debconf draws its backtitle `Package configuration` alone on row 0 and
+  translates it (debconf-i18n, 45 languages; Hebrew and Arabic land on
+  the screen in logical order — newt does no bidi reordering). whiptail's
+  own button labels are never translated (newt ships no catalogues):
+  `<Yes>` `<No>` in German too. Without debconf-i18n (minimal images)
+  everything is English.
+- Background: magenta on Ubuntu (its newt palette), blue on Debian.
+- Without a UTF-8 locale the frame is drawn in the VT100 charset and
+  arrives as the letters `l q k x m j t u`.
+- `--scrolltext` text boxes (and debconf's long notes) erase the dialog's
+  right edge on every row below the top border, the button row included.
+- ucf's modified-conffile prompt is a debconf select (menu) with `<Ok>`
+  only; "show the differences" opens a debconf note.

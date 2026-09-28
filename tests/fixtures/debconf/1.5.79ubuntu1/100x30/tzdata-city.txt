@@ -1,0 +1,40 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 44,22
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: dpkg-reconfigure tzdata: a long scrolling menu
+# ---
+Package configuration
+
+               ┌───────────────────────┤ Configuring tzdata ├───────────────────────┐
+               │ Please select the city or region corresponding to your time zone.  │
+               │                                                                    │
+               │ Time zone:                                                         │
+               │                                                                    │
+               │                            GMT-11        ↑                         │
+               │                            GMT-12        ▒                         │
+               │                            GMT-13        ▒                         │
+               │                            GMT-14        ▒                         │
+               │                            GMT-2         ▒                         │
+               │                            GMT-3         ▒                         │
+               │                            GMT-4         ▒                         │
+               │                            GMT-5         ▒                         │
+               │                            GMT-6         ▒                         │
+               │                            GMT-7         ▒                         │
+               │                            GMT-8         ▒                         │
+               │                            GMT-9         ▒                         │
+               │                            GMT0          ▒                         │
+               │                            Greenwich     ▮                         │
+               │                            UCT           ▒                         │
+               │                            UTC           ↓                         │
+               │                                                                    │
+               │                                                                    │
+               │                 <Ok>                     <Cancel>                  │
+               │                                                                    │
+               └────────────────────────────────────────────────────────────────────┘
+

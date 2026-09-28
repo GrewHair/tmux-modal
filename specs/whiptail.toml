@@ -1,0 +1,74 @@
+# whiptail — dialogs from shell scripts (raspi-config, armbian-config,
+# DietPi, the Pi-hole and PiVPN installers, Proxmox helper scripts, ...).
+# whiptail has no vim keys. debconf's questions are whiptail too, but have
+# their own spec (debconf.toml), which outranks this one.
+#
+# Verified against whiptail 0.52 on Ubuntu 22.04/24.04 and Debian bookworm
+# (tests/fixtures/whiptail): menus with custom buttons as raspi-config uses
+# them, checklists, radiolists, yes/no, message and text boxes, input and
+# password boxes. With no backtitle to anchor on, identity needs the whole
+# dialog: its top edge, a row of nothing but <buttons>, and its bottom
+# edge. A progress gauge has no buttons and is not recognised (N/A).
+#
+# The mode is the newt group's: the cursor is visible only in a text entry.
+name     = "whiptail"
+priority = 45
+extends  = "newt"
+modes    = ["normal", "insert"]
+translated = false                # newt ships no translations; titles are the script's
+# The anchors are structural (both edges of a frame and a row of nothing
+# but <buttons>), not literal text: a script's dialog has no fixed words.
+# All three are needed (threshold), which the lint's letter count can't see.
+lint_ignore = ["under-specified"]
+
+[match]
+command             = ["whiptail", "raspi-config"]
+requires_alt_screen = true
+combine             = "weighted"
+threshold           = 70          # the buttons (required) + both edges
+
+  # The top edge, with or without a title: ┌──┤ title ├──┐ (VT100
+  # letters l q u t k without a UTF-8 locale).
+  [[match.clause]]
+  regex  = '^ *[┌l][─q]+([┤u] .* [├t][─q]+)?[┐k]$'
+  rows   = [0, -2]
+  weight = 40
+
+  # The button row: only buttons after the left edge. The right edge is
+  # optional: a scrolling text box (--scrolltext, and debconf's long
+  # notes) wipes it on every row below the top.
+  [[match.clause]]
+  regex  = '^ *[│x] +<[^<> ][^<>]*>( +<[^<> ][^<>]*>)*( *[│x])?$'
+  rows   = [1, -2]
+  weight = "required"
+
+  # The bottom edge.
+  [[match.clause]]
+  regex  = '^ *[└m][─q]+[┘j]$'
+  rows   = [1, -1]
+  weight = 30
+
+# (inherited from newt: text-entry)
+
+[keys]
+h     = "Left"
+j     = "Down"
+k     = "Up"
+l     = "Right"
+g     = "Home"
+G     = "End"
+"C-d" = "PageDown"
+"C-u" = "PageUp"
+
+[escape]
+leader = "_"
+
+# In a menu a letter jumps to the next item starting with it; the map
+# shadows that for these letters. Documentation only.
+[shadowed]
+h = "jump to an item starting with h"
+j = "jump to an item starting with j"
+k = "jump to an item starting with k"
+l = "jump to an item starting with l"
+g = "jump to an item starting with g"
+G = "jump to an item starting with G"

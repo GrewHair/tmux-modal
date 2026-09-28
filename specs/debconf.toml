@@ -1,0 +1,85 @@
+# debconf — the questions apt and dpkg ask while configuring packages
+# (needrestart's "Daemons using outdated libraries", ucf's "Modified
+# configuration file", tzdata, postfix, dpkg-reconfigure ...), drawn by
+# whiptail through debconf's dialog frontend. whiptail has no vim keys.
+#
+# Verified against debconf 1.5.79 (Ubuntu 22.04), 1.5.82 (Debian bookworm),
+# 1.5.86 (Ubuntu 24.04) with whiptail 0.52 (tests/fixtures/debconf). Every
+# screen has the backtitle on row 0 and one centred dialog:
+#   Package configuration
+#      ┌──────────┤ Modified configuration file ├──────────┐
+#      │ ...                                              │
+#      │                     <Ok>                         │
+#      └──────────────────────────────────────────────────┘
+# Without a UTF-8 locale newt draws the frame with the VT100 line-drawing
+# charset, which arrives as the letters l q k x m j t u. The background is
+# magenta on Ubuntu, blue on Debian (not used). The backtitle is translated
+# (debconf-i18n); whiptail's buttons are not (newt ships no catalogues).
+#
+# The mode is the newt group's: the cursor is visible only in a text entry
+# (string and password questions). Lists, menus, yes/no and notes are
+# normal.
+name     = "debconf"
+priority = 55                     # above the generic whiptail spec
+extends  = "newt"
+modes    = ["normal", "insert"]
+translated = true
+
+[match]
+command             = ["debconf", "dpkg-reconfigure", "debconf-apt-progress"]
+requires_alt_screen = true
+combine             = "weighted"
+threshold           = 60          # the backtitle (required) + two parts of the dialog
+
+  # The backtitle, alone on row 0, in every language debconf ships
+  # (generated from debconf-i18n's catalogues: scripts/fixtures/debconf-titles.py).
+  [[match.clause]]
+  regex  = '^(Avakirina pakêtan|Configuracion de paquet|Configuració del paquet|Configuración de paquetes|Configuración do paquete|Configuración paquete|Configurazione del pacchetto|Configuração de pacotes|Configurația pachetului|Csomag konfiguráció|Cấu hình gói|Konfiguracja pakietu|Konfigurasi paket|Nastavenie balíka|Nastavení balíků|Nastavljanje paketa|Outil de configuration des paquets|Package configuration|Pak\-agordado|Paket yapılandırması|Paketeen konfigurazioa|Paketin asetukset|Paketkonfiguration|Pakkeoppsett|Pakkeopsætning|Pakketconfiguratie|Podešavanje paketa|Ρύθμιση του πακέτου|Налаштування пакунків|Настройка на пакет|Настройка пакета|הגדרת חבילות|تهيئة الحزمة|प्याकेज कन्फिगरेसन|প্যাকেজ কনফিগারেশন|ਪੈਕੇਜ ਸੰਰਚਨਾ|การตั้งค่าแพกเกจ|ཐུམ་སྒྲིལ་རིམ་སྒྲིག|ការ​កំណត់​រចនាសម្ព័ន្ធ​កញ្ចប់|パッケージの設定|套件設定|软件包设置|패키지 설정)$'
+  row    = 0
+  weight = "required"
+
+  # The dialog's top edge, with or without a title: ┌──┤ title ├──┐
+  [[match.clause]]
+  regex  = '^ *[┌l][─q]+([┤u] .* [├t][─q]+)?[┐k]$'
+  rows   = [1, -2]
+  weight = 40
+
+  # The button row: only buttons after the left edge. The right edge is
+  # optional: a scrolling text box (--scrolltext, and debconf's long
+  # notes) wipes it on every row below the top.
+  [[match.clause]]
+  regex  = '^ *[│x] +<[^<> ][^<>]*>( +<[^<> ][^<>]*>)*( *[│x])?$'
+  rows   = [2, -2]
+  weight = 40
+
+  # The bottom edge.
+  [[match.clause]]
+  regex  = '^ *[└m][─q]+[┘j]$'
+  rows   = [2, -1]
+  weight = 20
+
+# (inherited from newt: text-entry)
+
+[keys]
+h     = "Left"
+j     = "Down"
+k     = "Up"
+l     = "Right"
+g     = "Home"
+G     = "End"
+"C-d" = "PageDown"
+"C-u" = "PageUp"
+
+[escape]
+leader = "_"
+
+# In a menu (a select question) a letter jumps to the next item starting
+# with it; the map shadows that for these letters. Checklists and buttons
+# ignore letters. Documentation only.
+[shadowed]
+h = "jump to an item starting with h"
+j = "jump to an item starting with j"
+k = "jump to an item starting with k (ucf: \"keep the local version\")"
+l = "jump to an item starting with l"
+g = "jump to an item starting with g"
+G = "jump to an item starting with G"

@@ -1,0 +1,23 @@
+[37m[44mPaketkonfiguration[39m
+
+
+
+
+
+
+      [30m[47m┌────────────────┤ [31mConfiguring tmux-modal-probe[30m ├─────────────────┐[39m[44m
+      [30m[47m│                                                                 │[97m[40m [39m[44m
+      [30m[47m│ Current iptables rules can be saved to the configuration file.  │[97m[40m [39m[44m
+      [30m[47m│                                                                 │[97m[40m [39m[44m
+      [30m[47m│ Save current IPv4 rules?                                        │[97m[40m [39m[44m
+      [30m[47m│                                                                 │[97m[40m [39m[44m
+      [30m[47m│                 [37m[41m<Ja>[30m[47m                     <Nein>                 │[97m[40m [39m[44m
+      [30m[47m│                                                                 │[97m[40m [39m[44m
+      [30m[47m└─────────────────────────────────────────────────────────────────┘[97m[40m [39m[44m
+       [97m[40m                                                                   [39m[44m
+
+
+
+
+
+

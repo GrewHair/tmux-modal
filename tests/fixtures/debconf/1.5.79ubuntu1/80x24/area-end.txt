@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 34,16
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: menu scrolled to the end
+# ---
+Package configuration
+           ┌───────────┤ Configuring tmux-modal-probe ├────────────┐
+           │ Please select the geographic area in which you live.  │
+           │                                                       │
+           │ Geographic area:                                      │
+           │                                                       │
+           │                      Africa                           │
+           │                      America                          │
+           │                      Antarctica                       │
+           │                      Arctic                           │
+           │                      Asia                             │
+           │                      Atlantic                         │
+           │                      Australia                        │
+           │                      Europe                           │
+           │                      Indian                           │
+           │                      Pacific                          │
+           │                      Etc                              │
+           │                                                       │
+           │                                                       │
+           │             <Ok>                 <Cancel>             │
+           │                                                       │
+           └───────────────────────────────────────────────────────┘
+

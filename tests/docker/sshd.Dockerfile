@@ -7,10 +7,12 @@ FROM ${BASE}
 ARG LAZYGIT_VERSION=0.65.1
 ENV DEBIAN_FRONTEND=noninteractive
 COPY apps-install.sh /usr/local/sbin/apps-install.sh
-RUN APPS="openssh-server htop vim-nox neovim less man-db tmux locales tig btop ncdu ranger lf nnn mc fzf git ca-certificates curl" \
+COPY debconf-probe.templates debconf-probe.sh ucf-probe.sh /usr/local/share/tmux-modal/
+RUN APPS="openssh-server htop vim-nox neovim less man-db tmux locales tig btop ncdu ranger lf nnn mc fzf git ca-certificates curl whiptail debconf-i18n debconf-utils ucf sudo" \
       LAZYGIT_VERSION=${LAZYGIT_VERSION} sh /usr/local/sbin/apps-install.sh \
     && mkdir -p /run/sshd \
     && useradd -m -s /bin/bash demo \
+    && echo 'demo ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/demo \
     && mkdir -p /home/demo/.ssh && chmod 700 /home/demo/.ssh \
     && chown -R demo:demo /home/demo/.ssh \
     && sed -i -e 's/^#\?PasswordAuthentication .*/PasswordAuthentication no/' \

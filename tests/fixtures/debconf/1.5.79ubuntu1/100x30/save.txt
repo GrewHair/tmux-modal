@@ -1,0 +1,40 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 35,16
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: boolean question: <Yes> <No>
+# ---
+Package configuration
+
+
+
+
+
+
+
+
+
+                ┌────────────────┤ Configuring tmux-modal-probe ├─────────────────┐
+                │                                                                 │
+                │ Current iptables rules can be saved to the configuration file.  │
+                │                                                                 │
+                │ Save current IPv4 rules?                                        │
+                │                                                                 │
+                │                 <Yes>                    <No>                   │
+                │                                                                 │
+                └─────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+
+
+
+
+

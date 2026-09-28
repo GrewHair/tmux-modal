@@ -18,7 +18,7 @@ tag=${1:-ubuntu-24.04}
 shift || true
 IMG=tmux-modal-fx:$tag
 apps=("$@")
-[ ${#apps[@]} -gt 0 ] || apps=(less man tig ncdu btop k9s lazygit ranger lf nnn mc fzf vim nvim)
+[ ${#apps[@]} -gt 0 ] || apps=(less man tig ncdu btop k9s lazygit ranger lf nnn mc fzf vim nvim debconf whiptail)
 trap stop EXIT
 
 # ncurses waits ESCDELAY (1 s) after Escape to tell it from a sequence.
@@ -523,6 +523,135 @@ cap_nvim() {
 	if [ -n "$up" ]; then
 		cap_editor nvim nvim-upstream "$up"
 	fi
+}
+
+# debconf's questions through its whiptail frontend: the probe questions
+# (tests/docker/debconf-probe.sh), ucf's real modified-conffile prompt and
+# dpkg-reconfigure tzdata. The cursor shows only in a text entry.
+cap_debconf() {
+	local out
+	out=$ROOT/tests/fixtures/debconf/$(version "dpkg-query -W -f='\${Version}\n' debconf" 1)
+	for size in 100x30 80x24; do
+		local d=$out/$size
+		app "${size%x*}" "${size#*x}" /home/demo sudo debconf-probe
+		snap "$d/restart.txt" debconf normal "needrestart-style checklist with a title"
+		keys Down; settle
+		snap "$d/restart-moved.txt" debconf normal "checklist, second item focused"
+		keys Tab; settle
+		snap "$d/restart-buttons.txt" debconf normal "checklist, focus on <Ok>"
+		keys Enter; settle
+		snap "$d/kernel.txt" debconf normal "note: pending kernel upgrade"
+		keys Enter; settle
+		snap "$d/area.txt" debconf normal "select question: a menu (letters jump to items)"
+		keys End; settle
+		snap "$d/area-end.txt" debconf normal "menu scrolled to the end"
+		keys Enter; settle
+		snap "$d/mailname.txt" debconf insert "string question: the cursor is in the text entry"
+		keys End; keys -l .net; settle
+		snap "$d/mailname-typed.txt" debconf insert "typing in the text entry"
+		keys Tab; settle
+		snap "$d/mailname-buttons.txt" debconf normal "string question, focus on <Ok>: the cursor is hidden"
+		keys Enter; settle
+		snap "$d/password.txt" debconf insert "password question"
+		keys -l secret; settle
+		snap "$d/password-typed.txt" debconf insert "typing a password"
+		keys Enter; settle
+		snap "$d/save.txt" debconf normal "boolean question: <Yes> <No>"
+		keys Enter; settle
+		stop
+		app "${size%x*}" "${size#*x}" /home/demo sudo ucf-probe
+		snap "$d/ucf.txt" debconf normal "ucf: modified configuration file"
+		keys Down Down Enter; settle
+		snap "$d/ucf-diff.txt" debconf normal "ucf: the differences, as a note"
+		keys Enter; settle
+		keys Enter; settle
+		stop
+		BOOT=3 app "${size%x*}" "${size#*x}" /home/demo sudo dpkg-reconfigure tzdata
+		snap "$d/tzdata-area.txt" debconf normal "dpkg-reconfigure tzdata: geographic area"
+		keys Enter; settle
+		snap "$d/tzdata-city.txt" debconf normal "dpkg-reconfigure tzdata: a long scrolling menu"
+		stop
+	done
+	# No UTF-8 locale: the frame in VT100 line-drawing letters.
+	local d=$out/80x24/C
+	app 80 24 /home/demo sudo env LANG=C debconf-probe restart mailname
+	snap "$d/restart.txt" debconf normal "LANG=C: frame in VT100 letters"
+	keys Enter; settle
+	snap "$d/mailname.txt" debconf insert "LANG=C: text entry"
+	stop
+	# The backtitle is translated (the full list is checked by TestDebconfTitles).
+	for lang in de_DE ru_RU ja_JP; do
+		d=$out/80x24/$lang
+		app 80 24 /home/demo sudo env LANG=$lang.UTF-8 ucf-probe
+		snap "$d/ucf.txt" debconf normal "LANG=$lang.UTF-8"
+		stop
+		app 80 24 /home/demo sudo env LANG=$lang.UTF-8 debconf-probe mailname save
+		snap "$d/mailname.txt" debconf insert "LANG=$lang.UTF-8"
+		keys Enter; settle
+		snap "$d/save.txt" debconf normal "LANG=$lang.UTF-8"
+		stop
+	done
+}
+
+# whiptail from scripts, the way raspi-config and installers use it.
+WT_MENU=(whiptail --title "Software Configuration Tool (raspi-config)" --menu "Setup Options" 20 70 8
+	--cancel-button Finish --ok-button Select
+	"1 System Options" "Configure system settings"
+	"2 Display Options" "Configure display settings"
+	"3 Interface Options" "Configure connections to peripherals"
+	"4 Performance Options" "Configure performance settings"
+	"5 Localisation Options" "Configure language and regional settings"
+	"8 Update" "Update this tool to the latest version")
+cap_whiptail() {
+	local out
+	out=$ROOT/tests/fixtures/whiptail/$(version "dpkg-query -W -f='\${Version}\n' whiptail" 1 | cut -d- -f1)
+	for size in 100x30 80x24; do
+		local d=$out/$size w=${size%x*} h=${size#*x}
+		app "$w" "$h" /home/demo "${WT_MENU[@]}"
+		snap "$d/menu.txt" whiptail normal "raspi-config style menu, <Select> <Finish>"
+		keys Down Down; settle
+		snap "$d/menu-moved.txt" whiptail normal "menu, third item"
+		keys Tab Tab; settle
+		snap "$d/menu-buttons.txt" whiptail normal "menu, focus on <Finish>"
+		stop
+		app "$w" "$h" /home/demo whiptail --title "Pick features" --checklist "Choose:" 15 60 4 \
+			ssh "OpenSSH server" ON web "Web server" OFF db "Database" OFF
+		snap "$d/checklist.txt" whiptail normal "checklist"
+		stop
+		app "$w" "$h" /home/demo whiptail --radiolist "Interface:" 12 50 3 \
+			eth0 "Wired" ON wlan0 "Wireless" OFF
+		snap "$d/radiolist.txt" whiptail normal "radiolist, no title"
+		stop
+		app "$w" "$h" /home/demo whiptail --title "Reboot" --yesno "Would you like to reboot now?" 8 50
+		snap "$d/yesno.txt" whiptail normal "yes/no"
+		stop
+		app "$w" "$h" /home/demo whiptail --msgbox "The setup is complete." 8 40
+		snap "$d/msgbox.txt" whiptail normal "message box, <Ok> only"
+		stop
+		app "$w" "$h" /home/demo whiptail --scrolltext --textbox /home/demo/sample.txt 20 60
+		snap "$d/textbox.txt" whiptail normal "text box with a scroll bar"
+		stop
+		app "$w" "$h" /home/demo whiptail --title "Hostname" --inputbox "Please enter a hostname" 10 60 raspberrypi
+		snap "$d/inputbox.txt" whiptail insert "input box: the cursor is in the entry"
+		keys -l .lan; settle
+		snap "$d/inputbox-typed.txt" whiptail insert "typing in the input box"
+		keys Tab; settle
+		snap "$d/inputbox-buttons.txt" whiptail normal "input box, focus on <Ok>"
+		stop
+		app "$w" "$h" /home/demo whiptail --passwordbox "Enter a new password" 8 50
+		snap "$d/passwordbox.txt" whiptail insert "password box"
+		stop
+		app "$w" "$h" /home/demo bash -c 'sleep 600 | whiptail --gauge "Installing ..." 6 50 40'
+		snap "$d/gauge.txt" "" unknown "progress gauge: no buttons, not recognised"
+		stop
+	done
+	local d=$out/80x24/C
+	app 80 24 /home/demo env LANG=C "${WT_MENU[@]}"
+	snap "$d/menu.txt" whiptail normal "LANG=C: frame in VT100 letters"
+	stop
+	app 80 24 /home/demo env LANG=C whiptail --inputbox "Please enter a hostname" 10 60
+	snap "$d/inputbox.txt" whiptail insert "LANG=C: input box"
+	stop
 }
 
 for a in "${apps[@]}"; do

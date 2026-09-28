@@ -1,0 +1,23 @@
+[37m[45mPackage configuration[39m
+
+  [30m[47m┌─────────────────────────┤ [31mConfiguring tzdata[30m ├──────────────────────────┐[39m[45m
+  [30m[47m│ Please select the geographic area in which you live. Subsequent         │[97m[40m [39m[45m
+  [30m[47m│ configuration questions will narrow this down by presenting a list of   │[97m[40m [39m[45m
+  [30m[47m│ cities, representing the time zones in which they are located.          │[97m[40m [39m[45m
+  [30m[47m│                                                                         │[97m[40m [39m[45m
+  [30m[47m│ Geographic area:                                                        │[97m[40m [39m[45m
+  [30m[47m│                                                                         │[97m[40m [39m[45m
+  [30m[47m│                              Arctic         ↑                           │[97m[40m [39m[45m
+  [30m[47m│                              Asia           ▒                           │[97m[40m [39m[45m
+  [30m[47m│                              Atlantic       ▒                           │[97m[40m [39m[45m
+  [30m[47m│                              Europe         ▒                           │[97m[40m [39m[45m
+  [30m[47m│                              Indian         ▒                           │[97m[40m [39m[45m
+  [30m[47m│                              Pacific        ▮                           │[97m[40m [39m[45m
+  [30m[47m│                              US             ▒                           │[97m[40m [39m[45m
+  [30m[47m│                              [37m[41mEtc          [30m[47m  ↓                           │[97m[40m [39m[45m
+  [30m[47m│                                                                         │[97m[40m [39m[45m
+  [30m[47m│                                                                         │[97m[40m [39m[45m
+  [30m[47m│                   <Ok>                       <Cancel>                   │[97m[40m [39m[45m
+  [30m[47m│                                                                         │[97m[40m [39m[45m
+  [30m[47m└─────────────────────────────────────────────────────────────────────────┘[97m[40m [39m[45m
+   [97m[40m                                                                           [39m[45m

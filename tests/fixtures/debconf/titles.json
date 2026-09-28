@@ -1,0 +1,226 @@
+{
+ "ar": {
+  "debian-bookworm": "تهيئة الحزمة",
+  "ubuntu-22.04": "تهيئة الحزمة",
+  "ubuntu-24.04": "تهيئة الحزمة"
+ },
+ "ast": {
+  "debian-bookworm": "Configuración paquete",
+  "ubuntu-22.04": "Configuración paquete",
+  "ubuntu-24.04": "Configuración paquete"
+ },
+ "bg": {
+  "debian-bookworm": "Настройка на пакет",
+  "ubuntu-22.04": "Настройка на пакет",
+  "ubuntu-24.04": "Настройка на пакет"
+ },
+ "bn": {
+  "debian-bookworm": "প্যাকেজ কনফিগারেশন",
+  "ubuntu-22.04": "প্যাকেজ কনফিগারেশন",
+  "ubuntu-24.04": "প্যাকেজ কনফিগারেশন"
+ },
+ "bs": {
+  "debian-bookworm": "Podešavanje paketa",
+  "ubuntu-22.04": "Podešavanje paketa",
+  "ubuntu-24.04": "Podešavanje paketa"
+ },
+ "ca": {
+  "debian-bookworm": "Configuració del paquet",
+  "ubuntu-22.04": "Configuració del paquet",
+  "ubuntu-24.04": "Configuració del paquet"
+ },
+ "cs": {
+  "debian-bookworm": "Nastavení balíků",
+  "ubuntu-22.04": "Nastavení balíků",
+  "ubuntu-24.04": "Nastavení balíků"
+ },
+ "da": {
+  "debian-bookworm": "Pakkeopsætning",
+  "ubuntu-22.04": "Pakkeopsætning",
+  "ubuntu-24.04": "Pakkeopsætning"
+ },
+ "de": {
+  "debian-bookworm": "Paketkonfiguration",
+  "ubuntu-22.04": "Paketkonfiguration",
+  "ubuntu-24.04": "Paketkonfiguration"
+ },
+ "dz": {
+  "debian-bookworm": "ཐུམ་སྒྲིལ་རིམ་སྒྲིག",
+  "ubuntu-22.04": "ཐུམ་སྒྲིལ་རིམ་སྒྲིག",
+  "ubuntu-24.04": "ཐུམ་སྒྲིལ་རིམ་སྒྲིག"
+ },
+ "el": {
+  "debian-bookworm": "Ρύθμιση του πακέτου",
+  "ubuntu-22.04": "Ρύθμιση του πακέτου",
+  "ubuntu-24.04": "Ρύθμιση του πακέτου"
+ },
+ "eo": {
+  "debian-bookworm": "Pak-agordado",
+  "ubuntu-22.04": "Pak-agordado",
+  "ubuntu-24.04": "Pak-agordado"
+ },
+ "es": {
+  "debian-bookworm": "Configuración de paquetes",
+  "ubuntu-22.04": "Configuración de paquetes",
+  "ubuntu-24.04": "Configuración de paquetes"
+ },
+ "eu": {
+  "debian-bookworm": "Paketeen konfigurazioa",
+  "ubuntu-22.04": "Paketeen konfigurazioa",
+  "ubuntu-24.04": "Paketeen konfigurazioa"
+ },
+ "fi": {
+  "debian-bookworm": "Paketin asetukset",
+  "ubuntu-22.04": "Paketin asetukset",
+  "ubuntu-24.04": "Paketin asetukset"
+ },
+ "fr": {
+  "debian-bookworm": "Outil de configuration des paquets",
+  "ubuntu-22.04": "Outil de configuration des paquets",
+  "ubuntu-24.04": "Outil de configuration des paquets"
+ },
+ "gl": {
+  "debian-bookworm": "Configuración do paquete",
+  "ubuntu-22.04": "Configuración do paquete",
+  "ubuntu-24.04": "Configuración do paquete"
+ },
+ "he": {
+  "debian-bookworm": "הגדרת חבילות",
+  "ubuntu-22.04": "הגדרת חבילות",
+  "ubuntu-24.04": "הגדרת חבילות"
+ },
+ "hu": {
+  "debian-bookworm": "Csomag konfiguráció",
+  "ubuntu-22.04": "Csomag konfiguráció",
+  "ubuntu-24.04": "Csomag konfiguráció"
+ },
+ "id": {
+  "debian-bookworm": "Konfigurasi paket",
+  "ubuntu-22.04": "Konfigurasi paket",
+  "ubuntu-24.04": "Konfigurasi paket"
+ },
+ "it": {
+  "debian-bookworm": "Configurazione del pacchetto",
+  "ubuntu-22.04": "Configurazione del pacchetto",
+  "ubuntu-24.04": "Configurazione del pacchetto"
+ },
+ "ja": {
+  "debian-bookworm": "パッケージの設定",
+  "ubuntu-22.04": "パッケージの設定",
+  "ubuntu-24.04": "パッケージの設定"
+ },
+ "km": {
+  "debian-bookworm": "ការ​កំណត់​រចនាសម្ព័ន្ធ​កញ្ចប់",
+  "ubuntu-22.04": "ការ​កំណត់​រចនាសម្ព័ន្ធ​កញ្ចប់",
+  "ubuntu-24.04": "ការ​កំណត់​រចនាសម្ព័ន្ធ​កញ្ចប់"
+ },
+ "ko": {
+  "debian-bookworm": "패키지 설정",
+  "ubuntu-22.04": "패키지 설정",
+  "ubuntu-24.04": "패키지 설정"
+ },
+ "ku": {
+  "debian-bookworm": "Avakirina pakêtan",
+  "ubuntu-22.04": "Avakirina pakêtan",
+  "ubuntu-24.04": "Avakirina pakêtan"
+ },
+ "nb": {
+  "debian-bookworm": "Pakkeoppsett",
+  "ubuntu-22.04": "Pakkeoppsett",
+  "ubuntu-24.04": "Pakkeoppsett"
+ },
+ "ne": {
+  "debian-bookworm": "प्याकेज कन्फिगरेसन",
+  "ubuntu-22.04": "प्याकेज कन्फिगरेसन",
+  "ubuntu-24.04": "प्याकेज कन्फिगरेसन"
+ },
+ "nl": {
+  "debian-bookworm": "Pakketconfiguratie",
+  "ubuntu-22.04": "Pakketconfiguratie",
+  "ubuntu-24.04": "Pakketconfiguratie"
+ },
+ "oc": {
+  "debian-bookworm": "Configuracion de paquet",
+  "ubuntu-22.04": "Configuracion de paquet",
+  "ubuntu-24.04": "Configuracion de paquet"
+ },
+ "pa": {
+  "debian-bookworm": "ਪੈਕੇਜ ਸੰਰਚਨਾ",
+  "ubuntu-22.04": "ਪੈਕੇਜ ਸੰਰਚਨਾ",
+  "ubuntu-24.04": "ਪੈਕੇਜ ਸੰਰਚਨਾ"
+ },
+ "pl": {
+  "debian-bookworm": "Konfiguracja pakietu",
+  "ubuntu-22.04": "Konfiguracja pakietu",
+  "ubuntu-24.04": "Konfiguracja pakietu"
+ },
+ "pt": {
+  "debian-bookworm": "Configuração de pacotes",
+  "ubuntu-22.04": "Configuração de pacotes",
+  "ubuntu-24.04": "Configuração de pacotes"
+ },
+ "pt_BR": {
+  "debian-bookworm": "Configuração de pacotes",
+  "ubuntu-22.04": "Configuração de pacotes",
+  "ubuntu-24.04": "Configuração de pacotes"
+ },
+ "ro": {
+  "debian-bookworm": "Configurația pachetului",
+  "ubuntu-22.04": "Configurația pachetului",
+  "ubuntu-24.04": "Configurația pachetului"
+ },
+ "ru": {
+  "debian-bookworm": "Настройка пакета",
+  "ubuntu-22.04": "Настройка пакета",
+  "ubuntu-24.04": "Настройка пакета"
+ },
+ "ru_UA": {
+  "debian-bookworm": "Настройка пакета",
+  "ubuntu-24.04": "Настройка пакета"
+ },
+ "sk": {
+  "debian-bookworm": "Nastavenie balíka",
+  "ubuntu-22.04": "Nastavenie balíka",
+  "ubuntu-24.04": "Nastavenie balíka"
+ },
+ "sl": {
+  "debian-bookworm": "Nastavljanje paketa",
+  "ubuntu-22.04": "Nastavljanje paketa",
+  "ubuntu-24.04": "Nastavljanje paketa"
+ },
+ "sv": {
+  "debian-bookworm": "Paketkonfiguration",
+  "ubuntu-22.04": "Paketkonfiguration",
+  "ubuntu-24.04": "Paketkonfiguration"
+ },
+ "th": {
+  "debian-bookworm": "การตั้งค่าแพกเกจ",
+  "ubuntu-22.04": "การตั้งค่าแพกเกจ",
+  "ubuntu-24.04": "การตั้งค่าแพกเกจ"
+ },
+ "tr": {
+  "debian-bookworm": "Paket yapılandırması",
+  "ubuntu-22.04": "Paket yapılandırması",
+  "ubuntu-24.04": "Paket yapılandırması"
+ },
+ "uk": {
+  "debian-bookworm": "Налаштування пакунків",
+  "ubuntu-22.04": "Налаштування пакунків",
+  "ubuntu-24.04": "Налаштування пакунків"
+ },
+ "vi": {
+  "debian-bookworm": "Cấu hình gói",
+  "ubuntu-22.04": "Cấu hình gói",
+  "ubuntu-24.04": "Cấu hình gói"
+ },
+ "zh_CN": {
+  "debian-bookworm": "软件包设置",
+  "ubuntu-22.04": "软件包设置",
+  "ubuntu-24.04": "软件包设置"
+ },
+ "zh_TW": {
+  "debian-bookworm": "套件設定",
+  "ubuntu-22.04": "套件設定",
+  "ubuntu-24.04": "套件設定"
+ }
+}

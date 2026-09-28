@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 18,12
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: insert
+# note: LANG=de_DE.UTF-8
+# ---
+Paketkonfiguration
+
+
+
+
+
+     ┌─────────────────┤ Configuring tmux-modal-probe ├──────────────────┐
+     │ The "mail name" is the domain name used to "qualify" _ALL_ mail   │
+     │ addresses without a domain name.                                  │
+     │                                                                   │
+     │ System mail name:                                                 │
+     │                                                                   │
+     │ example.org______________________________________________________ │
+     │                                                                   │
+     │                 <Ok>                     <Abbrechen>              │
+     │                                                                   │
+     └───────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+

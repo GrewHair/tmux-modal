@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 8,5
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: whiptail
+# expect_mode: normal
+# note: LANG=C: frame in VT100 letters
+# ---
+
+
+     lqqqqqqqqqqqu Software Configuration Tool (raspi-config) tqqqqqqqqqqqk
+     x Setup Options                                                      x
+     x                                                                    x
+     x  1 System Options       Configure system settings                  x
+     x  2 Display Options      Configure display settings                 x
+     x  3 Interface Options    Configure connections to peripherals       x
+     x  4 Performance Options  Configure performance settings             x
+     x  5 Localisation Options Configure language and regional settings   x
+     x  8 Update               Update this tool to the latest version     x
+     x                                                                    x
+     x                                                                    x
+     x                                                                    x
+     x                                                                    x
+     x                                                                    x
+     x                                                                    x
+     x                                                                    x
+     x                                                                    x
+     x                 <Select>                 <Finish>                  x
+     x                                                                    x
+     mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj
+

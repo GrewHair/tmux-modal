@@ -1,0 +1,40 @@
+# tmux-modal fixture v1
+# size: 100x30
+# cursor: 44,22
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: dpkg-reconfigure tzdata: a long scrolling menu
+# ---
+Package configuration
+
+  ┌────────────────────────────────────┤ Configuring tzdata ├────────────────────────────────────┐
+  │ Please select your time zone. Contrary to modern conventions, these POSIX-compatible zones   │
+  │ use positive values to refer to zones west of Greenwich and negative values for those east   │
+  │ of Greenwich (e.g., 'Etc/GMT+6' refers to 6 hours west of Greenwich, commonly called         │
+  │ 'UTC-6').                                                                                    │
+  │                                                                                              │
+  │ Time zone:                                                                                   │
+  │                                                                                              │
+  │                                         GMT-5         ↑                                      │
+  │                                         GMT-6         ▒                                      │
+  │                                         GMT-7         ▒                                      │
+  │                                         GMT-8         ▒                                      │
+  │                                         GMT-9         ▒                                      │
+  │                                         GMT-10        ▒                                      │
+  │                                         GMT-11        ▒                                      │
+  │                                         GMT-12        ▒                                      │
+  │                                         GMT-13        ▒                                      │
+  │                                         GMT-14        ▒                                      │
+  │                                         Greenwich     ▮                                      │
+  │                                         UCT           ▒                                      │
+  │                                         UTC           ↓                                      │
+  │                                                                                              │
+  │                                                                                              │
+  │                          <Ok>                              <Cancel>                          │
+  │                                                                                              │
+  └──────────────────────────────────────────────────────────────────────────────────────────────┘
+

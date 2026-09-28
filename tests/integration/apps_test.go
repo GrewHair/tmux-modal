@@ -181,3 +181,56 @@ func TestAppNcduMcFzf(t *testing.T) {
 		})
 	}
 }
+
+// debconf's questions over SSH, as `sudo apt` shows them (whiptail through
+// debconf's dialog frontend): ucf's real modified-conffile prompt, then a
+// text question. hjkl move while a list or the buttons have focus; in a
+// text entry they are letters, and Tab to the buttons remaps again.
+func TestAppDebconf(t *testing.T) {
+	h := remoteApp(t, 100, 30, "sudo ucf-probe && echo ucf done && cat /etc/tmux-modal-probe.conf; sleep 60")
+	h.expectState("main", "debconf/normal/commanding", "modal-debconf")
+	// j j: the third choice, "show the differences".
+	h.typeSlowly("j", "j", "Enter")
+	h.expectScreen("main", "Line by line differences")
+	h.expectState("main", "debconf/normal/commanding", "modal-debconf")
+	h.typeSlowly("Enter")
+	h.expectScreen("main", "What do you want to do")
+	// k k: back to the first, "install the package maintainer's version".
+	h.typeSlowly("k", "k", "Enter")
+	h.expectScreen("main", "ucf done")
+	h.expectState("main", "/none/none", "root")
+	if out := h.screen("main"); !strings.Contains(out, "setting = 2") || strings.Contains(out, "local = yes") {
+		t.Errorf("the maintainer's version was not installed:\n%s", out)
+	}
+
+	h = remoteApp(t, 100, 30, "sudo debconf-probe mailname save; cat /etc/mailname 2>/dev/null; sudo debconf-show tmux-modal-probe | grep mailname; sleep 60")
+	h.expectState("main", "debconf/insert/typing", "root")
+	h.typeSlowly("j", "k")
+	h.expectScreen("main", "example.orgjk")
+	h.typeSlowly("Tab")
+	h.expectState("main", "debconf/normal/commanding", "modal-debconf")
+	// l: Right, to <Cancel>; h: back to <Ok>.
+	h.typeSlowly("l", "h", "Enter")
+	h.expectScreen("main", "Save current IPv4 rules?")
+	h.expectState("main", "debconf/normal/commanding", "modal-debconf")
+	h.typeSlowly("Enter")
+	h.expectScreen("main", "mailname: example.orgjk")
+}
+
+// whiptail from a script over SSH (raspi-config's menu shape): j j picks
+// the third entry; an input box takes hjkl as letters.
+func TestAppWhiptail(t *testing.T) {
+	h := remoteApp(t, 100, 30, `whiptail --title "Configuration Tool" --menu "Setup Options" 20 70 6 `+
+		`--ok-button Select --cancel-button Finish "1 System" "a" "2 Display" "b" "3 Interface" "c" 2>/tmp/choice; `+
+		`echo "picked $(cat /tmp/choice)"; `+
+		`whiptail --inputbox "Hostname" 10 50 2>/tmp/host; echo "host $(cat /tmp/host)"; sleep 60`)
+	h.expectState("main", "whiptail/normal/commanding", "modal-whiptail")
+	h.typeSlowly("j", "j", "Enter")
+	// The input box covers the menu's output until it closes.
+	h.expectState("main", "whiptail/insert/typing", "root")
+	h.typeSlowly("h", "j", "k", "l")
+	h.expectScreen("main", "hjkl")
+	h.typeSlowly("Enter")
+	h.expectScreen("main", "host hjkl")
+	h.expectScreen("main", "picked 3 Interface")
+}

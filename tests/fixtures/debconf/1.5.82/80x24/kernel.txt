@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 37,16
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: note: pending kernel upgrade
+# ---
+Package configuration
+
+
+
+  ┌──────────────────┤ Daemons using outdated libraries ├───────────────────┐
+  │                                                                         │
+  │ Pending kernel upgrade                                                  │
+  │                                                                         │
+  │ Newer kernel available                                                  │
+  │                                                                         │
+  │ The currently running kernel version is 6.8.0-40-generic which is not   │
+  │ the expected kernel version 6.8.0-45-generic.                           │
+  │                                                                         │
+  │ Restarting the system to load the new kernel will not be handled        │
+  │ automatically, so you should consider rebooting.                        │
+  │                                                                         │
+  │                                 <Ok>                                    │
+  │                                                                         │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+
+
+

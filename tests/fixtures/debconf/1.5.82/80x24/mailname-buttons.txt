@@ -1,0 +1,34 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 24,14
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: debconf
+# expect_mode: normal
+# note: string question, focus on <Ok>: the cursor is hidden
+# ---
+Package configuration
+
+
+
+
+
+     ┌─────────────────┤ Configuring tmux-modal-probe ├──────────────────┐
+     │ The "mail name" is the domain name used to "qualify" _ALL_ mail   │
+     │ addresses without a domain name.                                  │
+     │                                                                   │
+     │ System mail name:                                                 │
+     │                                                                   │
+     │ example.org.net__________________________________________________ │
+     │                                                                   │
+     │                 <Ok>                     <Cancel>                 │
+     │                                                                   │
+     └───────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+

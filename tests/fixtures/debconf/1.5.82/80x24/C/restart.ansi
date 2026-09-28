@@ -1,0 +1,23 @@
+[37m[44mPackage configuration[39m
+
+
+
+
+                [30m[47mlqqqqu [31mDaemons using outdated libraries[30m tqqqqqk[39m[44m
+                [30m[47mx                                             x[97m[40m [39m[44m
+                [30m[47mx                                             x[97m[40m [39m[44m
+                [30m[47mx Which services should be restarted?         x[97m[40m [39m[44m
+                [30m[47mx                                             x[97m[40m [39m[44m
+                [30m[47mx  [37m[44m[[41m*[44m] apache2.service  [30m[47m                      x[97m[40m [39m[44m
+                [30m[47mx  [37m[44m[*] chrony.service   [30m[47m                      x[97m[40m [39m[44m
+                [30m[47mx  [37m[44m[*] cron.service     [30m[47m                      x[97m[40m [39m[44m
+                [30m[47mx  [37m[44m[*] ssh.service      [30m[47m                      x[97m[40m [39m[44m
+                [30m[47mx                                             x[97m[40m [39m[44m
+                [30m[47mx                                             x[97m[40m [39m[44m
+                [30m[47mx          <Ok>              <Cancel>         x[97m[40m [39m[44m
+                [30m[47mx                                             x[97m[40m [39m[44m
+                [30m[47mmqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj[97m[40m [39m[44m
+                 [97m[40m                                               [39m[44m
+
+
+
