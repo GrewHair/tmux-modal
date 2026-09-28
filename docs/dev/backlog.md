@@ -13,6 +13,17 @@ it stays unknown; the active-border colour below (step 2, second bullet)
 would cover that. Build it only if the owner asks: it depends on the inner
 tmux's version and theme, and a wrong pick remaps keys while typing.
 
+**Also left: vim flickers to unknown in a split.** vim hides the cursor
+for ~100 ms while it redraws (Escape out of visual, say), so for that
+moment no inner pane is focused and the pane reads `unknown`
+(`MODAL_TYPING=1`): a hook subscriber sees commanding → typing →
+commanding. Seen in `TestNestedTmuxVim/split`'s daemon log (F41).
+Cheap fix to try: when the cursor disappears, keep classifying the inner
+pane that had it for a short grace period (~200 ms, per pane, reset on
+any border/layout change) instead of dropping to unknown at once. Safe
+for remapping because a hidden cursor never means a text entry in the
+bundled specs; still, test with htop beside vim before shipping.
+
 The original design notes, kept for that:
 
 **Today:** when the tmux running inside a pane (usually on a remote host)

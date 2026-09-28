@@ -68,7 +68,9 @@ Don't rewrite again without the owner asking.
   (`(END)`, HELP, a message); REPLs only locally (D25, D26).
 - Inner tmux split into several panes: the inner pane with the visible
   cursor is read (D32); with the cursor hidden (htop, btop) `unknown`. The
-  border-colour signal for that is in [backlog.md](backlog.md) B1.
+  border-colour signal for that is in [backlog.md](backlog.md) B1. vim in
+  such a split flickers to `unknown` for ~100 ms while it redraws (it
+  hides the cursor); a grace-period fix is sketched in B1.
 - Remapping through a nested tmux: after the inner prefix key, a remapped
   key arrives remapped (`prefix l` → `prefix Right`); owner accepted.
 - Inside a remote tmux, Escape reaches the app after the inner tmux's
