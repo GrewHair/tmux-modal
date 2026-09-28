@@ -12,4 +12,4 @@ Hard rules:
 - Before pushing: `gofmt -l .`, `go vet ./...`, `go test ./... -count=1`, shellcheck (also as `koalaman/shellcheck:v0.9.0`, CI's version); `grep -rIl "$(hostname)" . --exclude-dir=.git` must find nothing; CI must be green. Bump `VERSION` and tag a release when daemon code changes.
 - Update `docs/dev/status.md` and `docs/dev/progress.md` at each milestone.
 
-All brief milestones are done (v1.0.0, see CHANGELOG.md); next is whatever the owner's dogfooding brings up (backlog: docs/dev/backlog.md). Split remote tmux read by the cursor: D32.
+All brief milestones are done (v1.0.0); since then owner requests, one minor release each (v1.1.0: debconf/whiptail remapping, D33). See CHANGELOG.md; next is whatever the owner's dogfooding brings up (docs/dev/milestones.md "After 1.0", backlog: docs/dev/backlog.md).

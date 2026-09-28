@@ -18,7 +18,7 @@ _Last updated: 2026-09-28, 1.1.0 (debconf and whiptail specs, D33, at the owner'
 ## Where things live
 
 - Repo: https://github.com/GrewHair/tmux-modal (public). CI: `.github/workflows/ci.yml`; release on `v*` tags: `release.yml` (static binaries for linux/darwin/freebsd, amd64/arm64 + linux/arm, SHA256SUMS).
-- Current release: **v0.6.0** (M7 part 2: vim and neovim specs for the hook, every language they ship; hook calls fire on the leading edge). v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 (bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
+- Current release: **v1.1.0** (debconf and whiptail dialogs remap, D33). v1.0.0 was M8 (split remote tmux read by the cursor, D32; README/benchmark/CHANGELOG). Each release's notes are its `CHANGELOG.md` section (`release.yml` fails without one). v0.6.0 was vim and neovim for the hook; v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 (bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
 
 ## The owner is dogfooding it
 
@@ -40,8 +40,10 @@ On the owner's own tmux (WSL2, tmux 3.4, fish shell, TPM):
   hosts (see collaboration.md).
 
 Owner feedback so far: "everything seems to work alright", "everything
-looks good" (after M7). The plugin clone is on v0.6.0's binary plus the
-later example commits; it takes effect when they restart tmux.
+looks good" (after M7); the ~80–130 ms AHK delay "doesn't bother me, it's
+good for now" (B7 stays parked). The plugin clone is on v1.1.0 (pulled,
+binary fetched); it takes effect when they restart tmux. The owner hit
+needrestart's debconf dialog on a server — that is what 1.1.0 is for.
 
 **History was rewritten once** (after M6, to remove the machine name):
 anyone with an old clone must `git fetch && git reset --hard origin/main`.
@@ -49,8 +51,12 @@ Don't rewrite again without the owner asking.
 
 ## Known gaps right now
 
-- Only htop and btop remap by default; every other app can be given keys
-  with an overlay file (D29). vim/nvim never remap (D30).
+- htop, btop, debconf and whiptail remap by default; every other app can
+  be given keys with an overlay file (D29). vim/nvim never remap (D30).
+- debconf/whiptail (D33): in a menu a letter jumps to an item; the map
+  shadows that for h j k l g G (`_k` for ucf's "keep"). A whiptail gauge
+  (no buttons) is N/A. `dialog(1)` tools and `nmtui` are not covered
+  (backlog B8).
 - vim/nvim (D30, README "vim and neovim"): target default configs only
   (owner). showmode off with the ruler on reads normal; lualine/airline
   (no ruler) read unknown; a vimrc without `set ruler` reads unknown in

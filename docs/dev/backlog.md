@@ -138,3 +138,15 @@ from outside. Only revisit if the owner complains.
   captured (the full catalogue is covered by `TestVimMarkers`); upstream
   nvim (`nvim-upstream`) exists only in the ubuntu-24.04 image.
 - `emacs -nw` (listed as experimental in the M7 plan) was not started.
+
+## B8. Left over from the debconf/whiptail specs (1.1.0, D33)
+
+- `dialog(1)`-based tools (some installers, `menuconfig`'s lxdialog) and
+  `nmtui` (newt, but its own layout) are not recognised; add specs only
+  when the owner meets one. Probe first as for whiptail: does the cursor
+  still mark text entries, which keys do letters trigger?
+- `whiptail --gauge` has no buttons, so it is N/A (it takes no keys).
+- debconf's other frontends (readline, noninteractive) draw no dialog:
+  nothing to do.
+- Titles are generated from debconf-i18n; if a new debconf adds a
+  language, rerun `scripts/fixtures/debconf-titles.py` and paste `--regex`.

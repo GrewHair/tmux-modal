@@ -146,3 +146,14 @@ from §6.2), release, CI green, report URL + CI status. Concretely:
 4. Decide with the owner which backlog items (B1 split inner tmux, B7
    warm Windows bridge) go into a v1.0, or ship 1.0 without them.
 5. Final release, CI green, report URL + CI status (brief).
+
+## After 1.0 — owner requests
+
+No milestones left. Work now comes from the owner's dogfooding, one
+request at a time, each released as a minor version:
+- 1.1.0: debconf and whiptail (D33, F42, backlog B8).
+
+The pattern that worked for a new app: probe it in the images first
+(scratch script on a private `-L` socket; what the cursor does, which
+keys letters trigger, colours per distro, locale variants), report the
+facts, then spec + captures from three distros + an SSH test.

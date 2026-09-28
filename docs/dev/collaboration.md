@@ -64,3 +64,11 @@
 - **Privacy slip-ups get fixed at the root.** The owner approved rewriting
   public history to remove the machine name; check new docs for host data
   before every push (`grep -rI "$(hostname)"`).
+- **"Thoughts?" means probe, then propose.** When the owner shows a
+  new app (the debconf screenshot), verify the claims in a container
+  before recommending, list the concrete open questions, and propose
+  the spec shape; they then say "go ahead". They like hearing about
+  related tools that could be covered too (whiptail from scripts).
+- **Auto mode's permission check can fail transiently** (no verdict,
+  command blocked). It is not a permission the owner must grant; carry on
+  with Write/Edit work and retry the shell command later.
