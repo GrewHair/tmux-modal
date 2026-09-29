@@ -2,6 +2,16 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.1.1 — 2026-09-29
+
+- **Fix: the tmux server could crash** (tmux 3.2 to 3.6) while tmux-modal
+  ran. Stopping the output of a pane that left the daemon's view used
+  `refresh-client -A '%N:off'`, which in those tmux versions crashes the
+  server when output is still queued for the daemon (tmux issue 5054,
+  fixed in tmux 3.7) — likely during heavy output in several panes. The
+  daemon now pauses and resumes the stream instead, which is safe on every
+  version and saves the same CPU. Upgrading is strongly recommended.
+
 ## 1.1.0 — 2026-09-28
 
 - **apt's package questions (`debconf`) and whiptail dialogs get vim keys**:

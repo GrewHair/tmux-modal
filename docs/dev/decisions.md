@@ -294,6 +294,17 @@ client state; skipped for good on tmux < 3.2 (logged). This is D2's
 planned mitigation. Test: `TestUnwatchedPaneOutputResumesOnFocus` (fails
 if the focused pane's output stays off).
 
+**Amended in 1.1.1 (F43): pause/continue, not off/on.** `off` crashed the
+owner's tmux 3.4 server: tmux before 3.7 keeps the output already queued
+for the client when a pane is turned off, lets the pane buffer behind it be
+freed, and reads freed memory when the client catches up (tmux issue
+5054). It needs the daemon to be behind on reading while a busy pane leaves
+scope, so it looked random. `pause` discards the queue first and otherwise
+stops the stream the same way (same benchmark numbers); `%pause`/`%continue`
+notifications are ignored. `tmux.OutputGate` builds the argument.
+`no-output` (the whole client) was not an option: the daemon wakes on the
+focused pane's `%output`. Test: `TestOutputGateSlowReader`.
+
 ## D29. Any app may get keys, via overlay user specs — owner, after M6
 
 The owner asked for the *potential* to remap keys in apps that already have

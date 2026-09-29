@@ -152,6 +152,7 @@ from §6.2), release, CI green, report URL + CI status. Concretely:
 No milestones left. Work now comes from the owner's dogfooding, one
 request at a time, each released as a minor version:
 - 1.1.0: debconf and whiptail (D33, F42, backlog B8).
+- 1.1.1: fix, output gating crashed tmux 3.2–3.6 (F43, D28 amended).
 
 The pattern that worked for a new app: probe it in the images first
 (scratch script on a private `-L` socket; what the cursor does, which

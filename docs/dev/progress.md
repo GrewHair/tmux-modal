@@ -133,3 +133,12 @@
   SSH tests driving ucf's real prompt and a raspi-config-style menu.
   Released v1.1.0. (The auto-mode permission check failed intermittently
   during the session; work continued with file edits in between.)
+
+**2026-09-29 (1.1.1)**
+- Owner reported their tmux 3.4 server crashing at random; another
+  session traced it to control mode. Root cause: our output gating's
+  `refresh-client -A '%N:off'` hits tmux issue 5054 when the daemon lags
+  (F43). Reproduced in Docker on 3.2a–3.6b, fixed by using pause/continue
+  (D28 amended), `TestOutputGateSlowReader`. Released v1.1.1. (B1's colour
+  work had just started: tmux-src images for 3.0a–3.7c built, nothing
+  else yet.)

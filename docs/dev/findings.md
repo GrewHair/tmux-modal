@@ -225,7 +225,8 @@ keeps reading the pane for human clients (the pane went on updating while
 visible and while in a hidden window; the manual's "stops reading when all
 clients have turned it off" did not apply with a human attached). Unquoted,
 `refresh-client -A %0:off` is a parse error (a word starting with `%` other
-than a bare pane id), so `tmux.Quote` quotes such words.
+than a bare pane id), so `tmux.Quote` quotes such words. **But `off` is
+not safe before tmux 3.7 with output queued: F43.**
 
 ## vim and neovim (M7; vim 8.2/9.0/9.1, nvim 0.6.1/0.7.2/0.9.5 from the distros, nvim 0.12.5 release build)
 
@@ -340,3 +341,23 @@ Debian 12 through debconf's dialog frontend and directly:
   right edge on every row below the top border, the button row included.
 - ucf's modified-conffile prompt is a debconf select (menu) with `<Ok>`
   only; "show the differences" opens a debconf note.
+
+**F43. `refresh-client -A '%N:off'` crashes tmux 3.2–3.6 when the client
+lags.** The owner's tmux 3.4 server died "at random" (another session
+traced the crash to `control_write_callback`). tmux 3.4's
+`control_set_pane_off` sets the flag but leaves the pane's queued output
+blocks (sizes only; the bytes stay in the pane buffer at the client's
+offset). With the pane off, `control_pane_offset` returns NULL, so
+`server_client_check_pane_buffer` drains the buffer as far as the human's
+client has read, and new output moves the client's offset to the end. When
+the client's stdout drains, `control_write_pending` sends the old blocks
+from a bad offset: out-of-bounds read, crash (or `fatalx("not enough
+data")`). Fixed upstream in 3.7 (commit cae229cadc, issue 5054: discard
+and reset on off). `pause` (`control_pause_pane`) has always discarded the
+queue. Reproduced in Docker with a pane printing `seq` in a loop, a fast
+control client (the "human"), and a second one that stops reading for
+60 ms, toggles the pane, reads 20 ms, toggles back: `off` killed 3.2a,
+3.3a, 3.4, 3.5a and 3.6b within 20 toggles, 3.7c survived; `pause` survived
+400+ toggles on all of them. Benchmark with pause, 20 htop panes, scope
+active: daemon 0.20 / 0.20 / 0.45 %, server +0.15 / +0.60 / −0.05 %
+(frugal / balanced / snappy; noise level, as with off).

@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-28, 1.1.0 (debconf and whiptail specs, D33, at the owner's request after 1.0). All brief milestones done; next: whatever the owner's dogfooding brings up._
+_Last updated: 2026-09-29, 1.1.1 (fix: tmux server crash from output gating on tmux < 3.7, F43). All brief milestones done; next: B1 colour (owner request, in progress)._
 
 ## Milestones (brief §12)
 
@@ -18,7 +18,7 @@ _Last updated: 2026-09-28, 1.1.0 (debconf and whiptail specs, D33, at the owner'
 ## Where things live
 
 - Repo: https://github.com/GrewHair/tmux-modal (public). CI: `.github/workflows/ci.yml`; release on `v*` tags: `release.yml` (static binaries for linux/darwin/freebsd, amd64/arm64 + linux/arm, SHA256SUMS).
-- Current release: **v1.1.0** (debconf and whiptail dialogs remap, D33). v1.0.0 was M8 (split remote tmux read by the cursor, D32; README/benchmark/CHANGELOG). Each release's notes are its `CHANGELOG.md` section (`release.yml` fails without one). v0.6.0 was vim and neovim for the hook; v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 (bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
+- Current release: **v1.1.1** (fix: pause, not off, for unwatched panes — the off action crashed tmux 3.2–3.6, F43). v1.1.0 was debconf and whiptail dialogs remap (D33). v1.0.0 was M8 (split remote tmux read by the cursor, D32; README/benchmark/CHANGELOG). Each release's notes are its `CHANGELOG.md` section (`release.yml` fails without one). v0.6.0 was vim and neovim for the hook; v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 (bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
 
 ## The owner is dogfooding it
 

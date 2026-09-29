@@ -74,6 +74,17 @@ func Attach(s Server, session string, notify func(Notification)) (*Control, erro
 	return c, nil
 }
 
+// OutputGate is the `refresh-client -A` argument that pauses (watched
+// false) or resumes a pane's output stream to a control client. It is
+// pause/continue, never off/on: `off` crashes tmux before 3.7 when output
+// is still queued for the client (see daemon.syncOutput).
+func OutputGate(pane string, watched bool) string {
+	if watched {
+		return pane + ":continue"
+	}
+	return pane + ":pause"
+}
+
 // Pid is the control client's process id (its #{client_pid}).
 func (c *Control) Pid() int { return c.cmd.Process.Pid }
 

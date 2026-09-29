@@ -74,7 +74,7 @@ func (e *events) onNote(n tmux.Notification) {
 		if len(n.Args) > 0 {
 			e.output[n.Args[0]] = time.Now()
 		}
-	case "begin", "end", "error":
+	case "begin", "end", "error", "pause", "continue":
 	default:
 		if len(e.notes) < 256 {
 			e.notes = append(e.notes, n)
