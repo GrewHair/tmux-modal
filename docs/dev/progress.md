@@ -194,3 +194,5 @@
   flag, off (D39). Tests: `focus_test.go` (replay, two terminals, typed
   into, session switch/reattach, blur, unknown focus) and
   `TestHookFollowsTerminalFocus` (two real clients, focus bytes).
+- 1.7.1: owner confirmed 1.7.0 works ("it works!"); asked for the why
+  words inside the mode badge, like the app badge: merged (D37 amended).

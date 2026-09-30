@@ -2,6 +2,15 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.7.1 — 2026-09-30
+
+- The `why` badge is now part of the `mode` badge, which reads as one
+  piece: `NORMAL absence hi`, `INSERT fp:insert hi`, `? mem lo` (a low
+  confidence in red). Templates: `mode_*` gain `{ basis}{:rule}{ conf}`,
+  and `mode_commanding_low`, `mode_typing_low`, `mode_unknown_low` are
+  used when the confidence is low; `@modal_badge_why_format` and
+  `why_low` are gone, as is `@modal_badge_why`.
+
 ## 1.7.0 — 2026-09-30
 
 - **The hook follows the terminal you type into.** With tmux's

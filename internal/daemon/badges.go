@@ -17,7 +17,7 @@ import (
 // joined by spaces as @modal_badges. A badge whose template is "off" is
 // never shown. The order reads as a path: over ssh, into a tmux, its
 // split, the app there, its mode, the keys, the cursor.
-var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "why", "map", "cursor", "hook"}
+var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "map", "cursor", "hook"}
 
 // Default badge templates. Placeholders: {app} {APP} {mode} {MODE}
 // {evidence} {score} {via} {kind} {panes} {focus} {basis} {rule}
@@ -25,18 +25,20 @@ var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "why", "
 // "{:name}" are a space or a colon and the value, or nothing when the
 // value is empty.
 var defaultBadges = map[string]string{
-	"alt":             "#[fg=black,bg=colour244] ALT #[default]",
-	"app":             "#[fg=colour255,bg=colour238] {app} {evidence}{ score} #[default]",
-	"app_unknown":     "#[fg=colour255,bg=colour238] ? #[default]",
-	"mode_commanding": "#[fg=black,bg=green,bold] {MODE} #[default]",
-	"mode_typing":     "#[fg=black,bg=yellow,bold] {MODE} #[default]",
-	"mode_unknown":    "#[fg=black,bg=colour244] ? #[default]",
-	"via":             "#[fg=black,bg=colour180] VIA {via} #[default]",
-	// How the mode was decided, and the confidence in it; low in red.
-	"why":     "#[fg=colour255,bg=colour238] {basis}{:rule} {conf} #[default]",
-	"why_low": "#[fg=colour255,bg=colour124,bold] {basis}{:rule} {conf} #[default]",
-	"nest":    "#[fg=black,bg=colour110] NEST {kind} #[default]",
-	"split":   "#[fg=black,bg=colour110] SPLIT {panes} {focus} #[default]",
+	"alt":         "#[fg=black,bg=colour244] ALT #[default]",
+	"app":         "#[fg=colour255,bg=colour238] {app} {evidence}{ score} #[default]",
+	"app_unknown": "#[fg=colour255,bg=colour238] ? #[default]",
+	// The mode, then how it was decided and the confidence in it (D37);
+	// the _low variants put a low confidence in red.
+	"mode_commanding":     "#[fg=black,bg=green,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
+	"mode_typing":         "#[fg=black,bg=yellow,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
+	"mode_unknown":        "#[fg=black,bg=colour244] ?{ basis}{:rule}{ conf} #[default]",
+	"mode_commanding_low": "#[fg=black,bg=green,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
+	"mode_typing_low":     "#[fg=black,bg=yellow,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
+	"mode_unknown_low":    "#[fg=black,bg=colour244] ?{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
+	"via":                 "#[fg=black,bg=colour180] VIA {via} #[default]",
+	"nest":                "#[fg=black,bg=colour110] NEST {kind} #[default]",
+	"split":               "#[fg=black,bg=colour110] SPLIT {panes} {focus} #[default]",
 	// Seen on screen but not acted on: no transport in the pane (D36).
 	"nest_off":  "#[fg=colour244,strikethrough] NEST {kind} #[default]",
 	"split_off": "#[fg=colour244,strikethrough] SPLIT {panes} {focus} #[default]",
@@ -200,13 +202,13 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		case "mode":
 			show = m.App != "" && m.Bucket != spec.ModeNone
 			key = "mode_" + m.Bucket
+			if det.ModeBasis == "" {
+				vals["conf"] = "" // the confidence goes with its basis
+			} else if _, ok := tpl[key+"_low"]; ok && m.Confidence == "low" {
+				key += "_low"
+			}
 		case "via":
 			show = det.Via != ""
-		case "why":
-			show = m.App != "" && det.ModeBasis != ""
-			if m.Confidence == "low" {
-				key = "why_low"
-			}
 		case "nest":
 			show = det.NestedKind != ""
 			if det.NestedOff != "" {

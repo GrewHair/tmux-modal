@@ -59,8 +59,8 @@ func TestBadges(t *testing.T) {
 
 	low := renderBadges(tpl, modeState{App: "nvim", Mode: "insert", Bucket: "typing", Confidence: "low"},
 		detail{Alt: true, Evidence: "cmd", ModeBasis: "veto"}, "_")
-	if !strings.Contains(low[6], "bg=colour124") {
-		t.Errorf("a low confidence why badge is not red: %q", low[6])
+	if !strings.Contains(low[5], "bg=colour124") || plain(low[5]) != "INSERT veto lo" {
+		t.Errorf("a low confidence is not red, in the mode badge: %q", low[5])
 	}
 
 	// Seen but not in effect (no transport): the same text, struck through.

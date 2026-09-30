@@ -160,6 +160,7 @@ request at a time, each released as a minor version:
 - 1.4.0: nesting needs a transport, VIA badge, seen-but-off badges (D36).
 - 1.5.0: the why badge, how the mode was decided (D37); 1.5.1–1.5.2 wording.
 - 1.6.0: the hook badge, a flash per hook call (D38).
+- 1.7.1: why merged into the mode badge (`NORMAL absence hi`, D37 amended).
 - 1.7.0: the hook follows the terminal typed into: replay on focus-in, other terminals not active, per-client stream, optional blur (D39, F48).
 
 The pattern that worked for a new app: probe it in the images first

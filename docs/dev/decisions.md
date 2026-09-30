@@ -485,6 +485,11 @@ call.
 
 ## D37. The why badge: how the mode was decided — owner, after 1.4.0
 
+_Amended in 1.7.1 (owner): the basis and confidence belong to the mode,
+so they are part of the `mode` badge, one piece like the app badge
+(`NORMAL absence hi`); a low confidence is a red tail of it
+(`mode_<bucket>_low` templates). There is no separate `why` badge._
+
 The owner asked whether modes have a confidence like the identity score.
 They have a qualitative one (high/low) from the decision path in
 `Classify`; mode rules are mostly single checks, so a score would read

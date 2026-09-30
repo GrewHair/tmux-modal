@@ -64,7 +64,7 @@ you can see at a glance what it concluded and why. They read as a path,
 left to right:
 
 ```
-ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  absence lo  MAP
+ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL absence lo  MAP
 ```
 
 | Badge | Shown when | Default text |
@@ -72,10 +72,9 @@ ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  absence lo  MAP
 | `alt` | the pane is on the alternate screen (a full-screen app runs) | `ALT` |
 | `via` | the pane's command is a remote transport (below) | `VIA ssh`, `VIA docker` |
 | `app` | an app is recognised: its name, how, and the fingerprint score; `?` for a full-screen app nothing recognised (left alone) | `htop cmd+fp 110/40`, `?` |
-| `mode` | an app is recognised: its mode; `?` when this capture does not show it | `NORMAL` (green), `INSERT` (yellow), `?` |
+| `mode` | an app is recognised: its mode (`?` when this capture does not show it), then how it was decided and the confidence in it (`hi`/`lo`, `lo` in red): `fp:<rule>` a mode rule's fingerprint matched (the rule's name, or its mode when it has none: `fp:search`, `fp:insert`), `absence` no mode fingerprint matched on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `mem` no mode fingerprint and the app only remembered from an earlier capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always `lo` | `NORMAL absence hi` (green), `INSERT fp:insert hi` (yellow), `? mem lo` |
 | `nest` | the pane shows another multiplexer, and which one; grey and struck through when seen on screen but not in effect (no transport, below) | `NEST tmux` |
 | `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none); struck through like `nest` | `SPLIT 3 border` |
-| `why` | how the mode was decided, and the confidence in it (`hi`/`lo`, red when `lo`): `fp:<rule>` a mode rule's fingerprint matched (the rule's name, or its mode when it has none: `fp:search`, `fp:insert`), `absence` no mode fingerprint matched on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `mem` no mode fingerprint and the app only remembered from an earlier capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always `lo` | `absence hi`, `fp:search hi`, `mem lo` |
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
 | `hook` | the transition hook just ran for this pane: `HOOK …` while it runs, then `HOOK ✓ insert` (exit 0, and the mode it was told), `HOOK ✗ 1` (exit status) or `HOOK ⏱` (killed at `@modal_hook_timeout`); `×3` when three transitions were merged into one call. Gone `@modal_hook_flash` (1.5 s) after the call started, whatever it shows | `HOOK ✓ insert` |
 | `cursor` | the app set a cursor shape (tmux ≥ 3.5): the cursor drawn as set, block, underline or bar | `█` `▁` `▏` |
@@ -111,7 +110,8 @@ Each badge is also published on its own (`@modal_badge_alt`,
 `@modal_badge_app`, … `@modal_badge_cursor`) to place anywhere, and each
 has a template option, `@modal_badge_<key>_format`: keys `alt`, `via`,
 `app`, `app_unknown`, `mode_commanding`, `mode_typing`, `mode_unknown`,
-`why`, `why_low`, `nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`,
+`mode_commanding_low`, `mode_typing_low`, `mode_unknown_low` (low
+confidence), `nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`,
 `hook_fired`, `hook_ok`, `hook_fail`, `hook_timeout`. `off` hides a
 badge. Placeholders: `{app}`
 `{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{basis}` `{rule}`

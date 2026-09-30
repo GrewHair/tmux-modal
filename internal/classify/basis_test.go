@@ -7,7 +7,7 @@ import (
 	"github.com/GrewHair/tmux-modal/internal/screen"
 )
 
-// How a mode was decided, as the why badge shows it.
+// How a mode was decided, as the mode badge shows it after the mode.
 func TestModeBasis(t *testing.T) {
 	set := bundledSet(t)
 	load := func(path string) *screen.Screen {
