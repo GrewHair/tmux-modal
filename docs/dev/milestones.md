@@ -158,7 +158,8 @@ request at a time, each released as a minor version:
 - 1.3.0: badges, one fact each (D35), and `tmux-modal explain`.
 - 1.3.1 cursor glyphs; 1.3.2 grey rule is no border (F46).
 - 1.4.0: nesting needs a transport, VIA badge, seen-but-off badges (D36).
-- 1.5.0: the why badge, how the mode was decided (D37).
+- 1.5.0: the why badge, how the mode was decided (D37); 1.5.1–1.5.2 wording.
+- 1.6.0: the hook badge, a flash per hook call (D38).
 
 The pattern that worked for a new app: probe it in the images first
 (scratch script on a private `-L` socket; what the cursor does, which

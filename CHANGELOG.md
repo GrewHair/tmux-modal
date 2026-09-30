@@ -2,6 +2,14 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.6.0 — 2026-09-30
+
+- **Hook badge:** when the transition hook runs for a pane, a badge
+  flashes at the end of its row: `HOOK …` while it runs, then
+  `HOOK ✓ insert`, `HOOK ✗ 1` or `HOOK ⏱`, `×3` when transitions were
+  merged. It is gone 1.5 s after the call started (`@modal_hook_flash`;
+  `0` turns it off).
+
 ## 1.5.2 — 2026-09-30
 
 - The why badge's words: `fp:<rule>` (was `marker`: a mode rule's

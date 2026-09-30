@@ -439,6 +439,21 @@ while the cursor is hidden). Fixtures: new htop-focused layouts in
 from `tmux-src.Dockerfile`). `TestNestedFocusColour` covers a themed
 colour, cursor/colour disagreement and an all-green border.
 
+## D38. The hook badge: a short flash per call — owner, after 1.5.2
+
+The owner wanted to see that the hook fired, next to the other badges.
+Pane options already redraw borders, so it is a badge that comes and goes:
+the runner reports each call through a non-blocking `observe` callback
+("fired" at start, then ok / fail+code / timeout; superseded calls report
+no end; "stop" events never), the daemon queues the notes like tmux
+notifications, `publishBadges` applies them per pane (`hookFlash`) and
+expires them; `nextWake` wakes for the expiry. Owner's rule: nothing may
+linger — the badge goes `@modal_hook_flash` (1.5 s) after the call
+started whatever it shows, a result arriving later is dropped, and no
+duration is shown. `×N` when N transitions were merged into one call.
+Last in the row, so nothing shifts. Cost: two or three set-options per
+call.
+
 ## D37. The why badge: how the mode was decided — owner, after 1.4.0
 
 The owner asked whether modes have a confidence like the identity score.

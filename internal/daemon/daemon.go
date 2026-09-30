@@ -63,6 +63,7 @@ type events struct {
 	mu       sync.Mutex
 	output   map[string]time.Time
 	notes    []tmux.Notification
+	hooks    []hookNote
 	overflow bool
 	wake     chan struct{}
 }
@@ -87,6 +88,27 @@ func (e *events) onNote(n tmux.Notification) {
 	case e.wake <- struct{}{}:
 	default:
 	}
+}
+
+// onHook queues a hook call's note for the hook badge and wakes the loop.
+func (e *events) onHook(n hookNote) {
+	e.mu.Lock()
+	if len(e.hooks) < 256 {
+		e.hooks = append(e.hooks, n)
+	}
+	e.mu.Unlock()
+	select {
+	case e.wake <- struct{}{}:
+	default:
+	}
+}
+
+func (e *events) takeHooks() []hookNote {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	h := e.hooks
+	e.hooks = nil
+	return h
 }
 
 func (e *events) take() (map[string]time.Time, []tmux.Notification, bool) {
@@ -148,6 +170,7 @@ func Main(args []string, bundled spec.Source) error {
 		focusEmitted: map[string]focusState{},
 	}
 	d.hooks = newHookRunner(d.log)
+	d.hooks.observe = d.ev.onHook
 	return d.loop()
 }
 

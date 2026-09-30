@@ -3,6 +3,7 @@ package daemon
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/GrewHair/tmux-modal/internal/classify"
 	"github.com/GrewHair/tmux-modal/internal/screen"
@@ -16,7 +17,7 @@ import (
 // joined by spaces as @modal_badges. A badge whose template is "off" is
 // never shown. The order reads as a path: over ssh, into a tmux, its
 // split, the app there, its mode, the keys, the cursor.
-var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "why", "map", "cursor"}
+var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "why", "map", "cursor", "hook"}
 
 // Default badge templates. Placeholders: {app} {APP} {mode} {MODE}
 // {evidence} {score} {via} {kind} {panes} {focus} {basis} {rule}
@@ -44,6 +45,12 @@ var defaultBadges = map[string]string{
 	"map": "#[fg=black,bg=cyan,bold] #{?#{m:modal-literal-*,#{client_key_table}},MAP {leader},MAP} #[default]",
 	// The cursor drawn as the app set it: show, don't tell.
 	"cursor": "#[fg=colour255,bg=colour238] {glyph} #[default]",
+	// The transition hook just ran for this pane: shown for
+	// @modal_hook_flash from the moment it fired, then gone.
+	"hook_fired":   "#[fg=black,bg=colour183] HOOK … #[default]",
+	"hook_ok":      "#[fg=black,bg=colour183] HOOK ✓{ mode}{ merged} #[default]",
+	"hook_fail":    "#[fg=colour255,bg=colour124,bold] HOOK ✗ {code}{ merged} #[default]",
+	"hook_timeout": "#[fg=colour255,bg=colour124,bold] HOOK ⏱{ merged} #[default]",
 }
 
 // badgeOptions are the template options, by badge template key.
@@ -58,6 +65,7 @@ type detail struct {
 	NestedOff  string // inner multiplexer seen but not in effect: the evidence
 	ModeBasis  string
 	ModeRule   string
+	Hook       hookFlash // set by publishBadges while it shows
 	Evidence   string
 	Score      string
 	NestedKind string
@@ -66,6 +74,40 @@ type detail struct {
 	Shape      string
 	Reason     string
 	Remap      bool
+}
+
+// hookFlash is the hook badge of a pane: the latest call's phase, until
+// it expires.
+type hookFlash struct {
+	id     uint64
+	phase  string // fired, ok, fail, timeout; "" when not showing
+	mode   string
+	code   int
+	merged int
+	until  time.Time
+}
+
+// noteHook applies a hook note to a pane's flash: a call starting replaces
+// whatever showed and starts the clock; its result replaces "fired" if it
+// arrives while the badge still shows.
+func (f *hookFlash) note(n hookNote, flash time.Duration) {
+	if n.Phase == "fired" {
+		if flash <= 0 {
+			*f = hookFlash{}
+			return
+		}
+		*f = hookFlash{id: n.ID, phase: "fired", mode: n.Mode, merged: n.Merged, until: n.At.Add(flash)}
+		return
+	}
+	if n.ID == f.id && f.phase != "" && n.At.Before(f.until) {
+		f.phase, f.code = n.Phase, n.Code
+	}
+}
+
+func (f *hookFlash) expire(now time.Time) {
+	if f.phase != "" && !now.Before(f.until) {
+		*f = hookFlash{}
+	}
 }
 
 func detailOf(res classify.Result, s *screen.Screen) detail {
@@ -134,10 +176,14 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		"basis": det.ModeBasis, "rule": det.ModeRule, "confidence": m.Confidence,
 		"conf": map[string]string{"high": "hi", "low": "lo"}[m.Confidence],
 		"via":  det.Via, "kind": det.NestedKind, "panes": "", "focus": focusWord(det),
+		"code": strconv.Itoa(det.Hook.code), "merged": "",
 		"shape": det.Shape, "glyph": cursorGlyphs[det.Shape], "leader": formatEscape(leader),
 	}
 	if det.InnerPanes > 0 {
 		vals["panes"] = strconv.Itoa(det.InnerPanes)
+	}
+	if det.Hook.merged > 1 {
+		vals["merged"] = "×" + strconv.Itoa(det.Hook.merged)
 	}
 	out := make([]string, len(badgeNames))
 	for i, name := range badgeNames {
@@ -175,6 +221,12 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 			show = det.Remap
 		case "cursor":
 			show = det.Shape != ""
+		case "hook":
+			show = det.Hook.phase != ""
+			key = "hook_" + det.Hook.phase
+			if det.Hook.phase != "" {
+				vals["mode"] = det.Hook.mode // what the hook was told
+			}
 		}
 		t, ok := tpl[key]
 		if !show || !ok || t == "" {
@@ -262,6 +314,12 @@ func badgePaneOptions() []string {
 // key table the daemon switched to that pane's app.
 func (d *Daemon) publishBadges(panes []tmux.PaneInfo, humans map[string]bool) {
 	names := badgePaneOptions()
+	now := time.Now()
+	for _, n := range d.ev.takeHooks() {
+		if st, ok := d.panes[n.Pane]; ok {
+			st.hook.note(n, d.cfg.HookFlash)
+		}
+	}
 	var cmds []string
 	for i := range panes {
 		p := &panes[i]
@@ -269,7 +327,9 @@ func (d *Daemon) publishBadges(panes []tmux.PaneInfo, humans map[string]bool) {
 		if !ok {
 			continue
 		}
+		st.hook.expire(now)
 		det := st.det
+		det.Hook = st.hook
 		det.Remap = false
 		if ss := d.sessions[p.SessionID]; ss != nil && ss.own != "" && p.Focused() && humans[p.SessionID] &&
 			st.cur.App != "" && ss.own == TableName(st.cur.App) {

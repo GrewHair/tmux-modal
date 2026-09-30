@@ -183,3 +183,7 @@
   search" read as "searched for a marker").
 - 1.5.2: owner's picks from the wording round: `fp:<rule>` (was marker),
   `mem` (was unconfirmed); declined the other abbreviations (D37).
+- 1.6.0: owner asked for a notification when the hook fires; agreed on a
+  two-phase badge that is gone 1–2 s after firing (D38). Tests: runner
+  notes (true / exit 3 / timeout, no flash for stop), flash state (late
+  and stale results, expiry, off), integration on a real border.

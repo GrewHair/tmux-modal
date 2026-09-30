@@ -32,6 +32,7 @@ type paneState struct {
 	indicator string
 	det       detail   // badge facts from the latest capture
 	badgeVals []string // badge and detail options as last published
+	hook      hookFlash
 	pending   modeState
 	pendingN  int
 
@@ -500,6 +501,9 @@ func (d *Daemon) nextWake(lastReconcile time.Time) time.Duration {
 	for _, st := range d.panes {
 		if st.inScope && st.due.Before(next) {
 			next = st.due
+		}
+		if !st.hook.until.IsZero() && st.hook.until.Before(next) {
+			next = st.hook.until // the hook badge goes away
 		}
 	}
 	return next.Sub(now)

@@ -30,6 +30,20 @@ type HookEvent struct {
 	Window     string
 	Active     bool
 	Commands   []string // global hook, then the spec's own
+	Merged     int      // transitions this call stands for (coalesced)
+}
+
+// hookNote tells the daemon's loop about one hook call, for the hook badge:
+// Phase "fired" when it starts, then "ok", "fail" (Code: exit status) or
+// "timeout" when it ends. A call superseded by a newer one reports no end.
+type hookNote struct {
+	ID     uint64
+	Pane   string
+	Phase  string
+	Mode   string
+	Code   int
+	Merged int
+	At     time.Time
 }
 
 // Typing is the value of MODAL_TYPING: 0 only when the pane is confidently
@@ -75,6 +89,9 @@ func (e *HookEvent) env(now time.Time) []string {
 // one still running, because a stale transition is worse than a missed one.
 type hookRunner struct {
 	log *Logger
+	// observe, when set, is told about every call (never "stop" events).
+	// It is called with h.mu held and must not block.
+	observe func(hookNote)
 
 	mu       sync.Mutex
 	timeout  time.Duration
@@ -112,10 +129,12 @@ func (h *hookRunner) Emit(e *HookEvent) {
 	}
 	h.mu.Lock()
 	defer h.mu.Unlock()
+	e.Merged = 1
 	if prev, ok := h.pending[e.Key]; ok {
 		// Coalesce: the subscriber never saw prev, so the transition it
 		// needs is from what it last saw to the newest state.
 		e.ModeFrom, e.AppFrom = prev.ModeFrom, prev.AppFrom
+		e.Merged = prev.Merged + 1
 	}
 	h.pending[e.Key] = e
 	if _, ok := h.timers[e.Key]; ok {
@@ -152,6 +171,12 @@ func (h *hookRunner) start(key string) {
 	id := h.gen
 	h.running[key] = runningHook{id: id, cancel: cancel}
 	timeout := h.timeout
+	note := func(phase string, code int) {
+		if h.observe != nil && e.Event != "stop" {
+			h.observe(hookNote{ID: id, Pane: e.Pane, Phase: phase, Mode: e.ModeTo, Code: code, Merged: e.Merged, At: time.Now()})
+		}
+	}
+	note("fired", 0)
 	h.wg.Add(1)
 
 	go func() {
@@ -165,16 +190,28 @@ func (h *hookRunner) start(key string) {
 			cancel()
 		}()
 		env := e.env(time.Now())
+		phase, code := "ok", 0
 		for _, cmd := range e.Commands {
 			if ctx.Err() != nil {
 				return
 			}
-			h.runOne(ctx, cmd, env, timeout)
+			p, c := h.runOne(ctx, cmd, env, timeout)
+			if p == "cancelled" {
+				return // superseded: the newer call reports
+			}
+			if phase == "ok" && p != "ok" {
+				phase, code = p, c
+			}
 		}
+		h.mu.Lock()
+		note(phase, code)
+		h.mu.Unlock()
 	}()
 }
 
-func (h *hookRunner) runOne(ctx context.Context, command string, env []string, timeout time.Duration) {
+// runOne runs one hook command: "ok", "fail" with its exit status,
+// "timeout", or "cancelled" (superseded by a newer call).
+func (h *hookRunner) runOne(ctx context.Context, command string, env []string, timeout time.Duration) (string, int) {
 	cctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	cmd := exec.Command("/bin/sh", "-c", command)
@@ -185,7 +222,7 @@ func (h *hookRunner) runOne(ctx context.Context, command string, env []string, t
 	start := time.Now()
 	if err := cmd.Start(); err != nil {
 		h.log.Warnf("hook: %v", err)
-		return
+		return "fail", -1
 	}
 	done := make(chan error, 1)
 	go func() { done <- cmd.Wait() }()
@@ -193,9 +230,14 @@ func (h *hookRunner) runOne(ctx context.Context, command string, env []string, t
 	case err := <-done:
 		if err != nil {
 			h.log.Warnf("hook failed (%v) after %v: %s: %.300s", err, time.Since(start).Round(time.Millisecond), command, out.String())
-		} else {
-			h.log.Debugf("hook ok in %v", time.Since(start).Round(time.Millisecond))
+			code := -1
+			if ee, ok := err.(*exec.ExitError); ok {
+				code = ee.ExitCode()
+			}
+			return "fail", code
 		}
+		h.log.Debugf("hook ok in %v", time.Since(start).Round(time.Millisecond))
+		return "ok", 0
 	case <-cctx.Done():
 		// Kill the whole process group: the hook may have spawned
 		// children that would otherwise outlive it.
@@ -203,9 +245,10 @@ func (h *hookRunner) runOne(ctx context.Context, command string, env []string, t
 		<-done
 		if ctx.Err() == context.Canceled {
 			h.log.Debugf("hook superseded by a newer transition: %s", command)
-		} else {
-			h.log.Warnf("hook timed out after %v: %s", timeout, command)
+			return "cancelled", 0
 		}
+		h.log.Warnf("hook timed out after %v: %s", timeout, command)
+		return "timeout", 0
 	}
 }
 

@@ -77,6 +77,7 @@ ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  absence lo  MAP
 | `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none); struck through like `nest` | `SPLIT 3 border` |
 | `why` | how the mode was decided, and the confidence in it (`hi`/`lo`, red when `lo`): `fp:<rule>` a mode rule's fingerprint matched (the rule's name, or its mode when it has none: `fp:search`, `fp:insert`), `absence` no mode fingerprint matched on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `mem` no mode fingerprint and the app only remembered from an earlier capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always `lo` | `absence hi`, `fp:search hi`, `mem lo` |
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
+| `hook` | the transition hook just ran for this pane: `HOOK …` while it runs, then `HOOK ✓ insert` (exit 0, and the mode it was told), `HOOK ✗ 1` (exit status) or `HOOK ⏱` (killed at `@modal_hook_timeout`); `×3` when three transitions were merged into one call. Gone `@modal_hook_flash` (1.5 s) after the call started, whatever it shows | `HOOK ✓ insert` |
 | `cursor` | the app set a cursor shape (tmux ≥ 3.5): the cursor drawn as set, block, underline or bar | `█` `▁` `▏` |
 
 How the app was recognised (`app` badge, `@modal_evidence`): `cmd` the
@@ -110,10 +111,11 @@ Each badge is also published on its own (`@modal_badge_alt`,
 `@modal_badge_app`, … `@modal_badge_cursor`) to place anywhere, and each
 has a template option, `@modal_badge_<key>_format`: keys `alt`, `via`,
 `app`, `app_unknown`, `mode_commanding`, `mode_typing`, `mode_unknown`,
-`why`, `why_low`, `nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`. `off` hides a
+`why`, `why_low`, `nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`,
+`hook_fired`, `hook_ok`, `hook_fail`, `hook_timeout`. `off` hides a
 badge. Placeholders: `{app}`
 `{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{basis}` `{rule}`
-`{confidence}` `{conf}` (`hi`/`lo`) `{via}` `{kind}` `{panes}`
+`{confidence}` `{conf}` (`hi`/`lo`) `{code}` `{merged}` `{via}` `{kind}` `{panes}`
 `{focus}` `{shape}` (the word: `block`, `underline`, `bar`) `{glyph}` `{leader}`; `{ name}` / `{:name}` are a space / a colon and the value, or
 nothing when it is empty. Templates may use tmux formats and styles.
 
@@ -434,6 +436,7 @@ Details that make this safe:
 | `@modal_color_matching` | `on` | `off` never captures colour |
 | `@modal_transition_hook` | *(none)* | see above |
 | `@modal_hook_timeout` | 500 | ms |
+| `@modal_hook_flash` | 1500 | ms the `hook` badge shows after each hook call; `0` never shows it |
 | `@modal_hook_debounce` | 30 | ms |
 | `@modal_confirm_captures` | 2 | captures that must agree before remapping resumes |
 | `@modal_transports` | *(none)* | extra commands that count as a remote transport (space-separated), next to the built-in list (see [Badges](#badges)) |

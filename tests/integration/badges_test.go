@@ -46,3 +46,23 @@ func TestBadgesHtop(t *testing.T) {
 		}
 	}
 }
+
+// The hook badge: a transition runs the hook, the badge appears on the
+// border with the result, and it is gone again after @modal_hook_flash.
+func TestHookBadgeFlash(t *testing.T) {
+	h := newHarness(t, opts{cmd: []string{keyecho}, options: map[string]string{
+		"@modal_transition_hook": "true", "@modal_hook_flash": "1000",
+		"pane-border-status": "top", "pane-border-format": "<#{E:@modal_badges}>",
+	}})
+	h.startDaemon()
+	h.expectState("main", "keyecho/normal/commanding", "modal-keyecho")
+	border := func() string { return strings.SplitN(h.tmuxOut("capture-pane", "-p"), "\n", 2)[0] }
+	h.waitFor("the startup flash to pass", 3*time.Second, func() bool { return !strings.Contains(border(), "HOOK") })
+	h.typeKeys("/")
+	start := time.Now()
+	h.waitFor("HOOK ✓ insert on the border", 2*time.Second, func() bool { return strings.Contains(border(), "HOOK ✓ insert") })
+	h.waitFor("the hook badge gone", 3*time.Second, func() bool { return !strings.Contains(border(), "HOOK") })
+	if d := time.Since(start); d < 800*time.Millisecond || d > 2500*time.Millisecond {
+		t.Errorf("the badge showed for about %v, want about 1 s", d)
+	}
+}
