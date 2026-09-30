@@ -32,7 +32,7 @@ var defaultBadges = map[string]string{
 	"split":           "#[fg=black,bg=colour110] SPLIT {panes} {focus} #[default]",
 	// The escape leader switches the client to a one-shot table; the
 	// daemon never sees that, tmux does when it draws the border.
-	"map":    "#[fg=black,bg=cyan,bold] #{?#{m:modal-literal-*,#{client_key_table}},MAP {leader},MAP} #[default]",
+	"map": "#[fg=black,bg=cyan,bold] #{?#{m:modal-literal-*,#{client_key_table}},MAP {leader},MAP} #[default]",
 	// The cursor drawn as the app set it: show, don't tell.
 	"cursor": "#[fg=colour255,bg=colour238] {glyph} #[default]",
 }
