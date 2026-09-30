@@ -181,3 +181,5 @@
   (D37), tests on htop/fzf/nested fixtures and the vim veto.
 - 1.5.1: `hi`/`lo`, `marker:search` (owner: space matters; "marker
   search" read as "searched for a marker").
+- 1.5.2: owner's picks from the wording round: `fp:<rule>` (was marker),
+  `mem` (was unconfirmed); declined the other abbreviations (D37).

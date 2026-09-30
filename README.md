@@ -75,7 +75,7 @@ ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  absence lo  MAP
 | `mode` | an app is recognised: its mode; `?` when this capture does not show it | `NORMAL` (green), `INSERT` (yellow), `?` |
 | `nest` | the pane shows another multiplexer, and which one; grey and struck through when seen on screen but not in effect (no transport, below) | `NEST tmux` |
 | `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none); struck through like `nest` | `SPLIT 3 border` |
-| `why` | how the mode was decided, and the confidence in it (red when low): `marker` a mode rule matched (its name follows when it has its own, e.g. `marker:search`), `absence` no marker on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `unconfirmed` no marker and the app not confirmed on this capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always low | `absence hi`, `marker:search hi`, `unconfirmed lo` |
+| `why` | how the mode was decided, and the confidence in it (`hi`/`lo`, red when `lo`): `fp:<rule>` a mode rule's fingerprint matched (the rule's name, or its mode when it has none: `fp:search`, `fp:insert`), `absence` no mode fingerprint matched on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `mem` no mode fingerprint and the app only remembered from an earlier capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always `lo` | `absence hi`, `fp:search hi`, `mem lo` |
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
 | `cursor` | the app set a cursor shape (tmux ≥ 3.5): the cursor drawn as set, block, underline or bar | `█` `▁` `▏` |
 
@@ -135,8 +135,8 @@ For every pane the daemon publishes these options (empty ones are unset):
 | `@modal_mode` | `normal`, `insert`, …, `unknown` (a full-screen app no spec knows, or its mode not readable), `none` (no full-screen app) |
 | `@modal_bucket` | `commanding`, `typing`, `unknown`, `none` |
 | `@modal_confidence` | `high` or `low` |
-| `@modal_mode_basis` | how the mode was decided: `marker`, `absence`, `veto`, `unconfirmed`, `always`, `policy` (see the `why` badge) |
-| `@modal_mode_rule` | the mode rule that matched, when it has a name of its own (`search`, `filter`, …) |
+| `@modal_mode_basis` | how the mode was decided: `fp`, `absence`, `veto`, `mem`, `always`, `policy` (see the `why` badge) |
+| `@modal_mode_rule` | the mode rule whose fingerprint matched: its name, or its mode when it has none (`search`, `filter`, `insert`, …) |
 | `@modal_alt` | `on` on the alternate screen |
 | `@modal_evidence` | `cmd`, `title`, `fp` (joined with `+`), or `mem` |
 | `@modal_score` | the fingerprint's score against its threshold, e.g. `110/40` |

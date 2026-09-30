@@ -45,9 +45,9 @@ func TestBadges(t *testing.T) {
 		{"block cursor", modeState{App: "nvim", Mode: "normal", Bucket: "commanding"},
 			detail{Alt: true, Evidence: "cmd", Shape: "block"}, "ALT nvim cmd NORMAL █"},
 		{"how the mode was decided", modeState{App: "htop", Mode: "insert", Bucket: "typing", Confidence: "high"},
-			detail{Alt: true, Evidence: "cmd", ModeBasis: "marker", ModeRule: "search"}, "ALT htop cmd INSERT marker:search hi"},
+			detail{Alt: true, Evidence: "cmd", ModeBasis: "fp", ModeRule: "search"}, "ALT htop cmd INSERT fp:search hi"},
 		{"a low-confidence mode", modeState{App: "vim", Mode: "unknown", Bucket: "unknown", Confidence: "low"},
-			detail{Alt: true, Evidence: "mem", ModeBasis: "unconfirmed"}, "ALT vim mem ? unconfirmed lo"},
+			detail{Alt: true, Evidence: "mem", ModeBasis: "mem"}, "ALT vim mem ? mem lo"},
 		{"underline cursor", modeState{App: "nvim", Mode: "replace", Bucket: "typing"},
 			detail{Alt: true, Evidence: "cmd", Shape: "underline"}, "ALT nvim cmd REPLACE ▁"},
 	}

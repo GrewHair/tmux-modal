@@ -2,6 +2,13 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.5.2 — 2026-09-30
+
+- The why badge's words: `fp:<rule>` (was `marker`: a mode rule's
+  fingerprint matched, e.g. `fp:search`, `fp:insert` — the rule is now
+  always named) and `mem` (was `unconfirmed`), the same terms the app
+  badge uses. `@modal_mode_basis` changes the same way.
+
 ## 1.5.1 — 2026-09-30
 
 - The why badge is shorter: `hi`/`lo` for the confidence, and the rule

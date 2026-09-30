@@ -21,9 +21,11 @@ func TestModeBasis(t *testing.T) {
 		path, sticky, mode, basis, rule, conf string
 	}{
 		{"/htop/3.2.2/80x24/normal.txt", "", "normal", "absence", "", "high"},
-		{"/htop/3.2.2/80x24/search-typed.txt", "", "insert", "marker", "search", "high"},
-		{"/htop/3.2.2/80x24/filter-typed.txt", "", "insert", "marker", "filter", "high"},
+		{"/htop/3.2.2/80x24/search-typed.txt", "", "insert", "fp", "search", "high"},
+		{"/htop/3.2.2/80x24/filter-typed.txt", "", "insert", "fp", "filter", "high"},
 		{"/fzf/0.44.1/80x24/typed.txt", "", "insert", "always", "", "high"},
+		// A rule with no name of its own is labelled with its mode.
+		{"/vim/9.1/80x24/insert.txt", "vim", "insert", "fp", "insert", "high"},
 		{"/nested/120x36-utf8/status-bottom-normal.txt", "", "normal", "absence", "", "low"},
 	}
 	for _, c := range cases {
@@ -36,7 +38,7 @@ func TestModeBasis(t *testing.T) {
 	// Remembered only: the screen does not show htop any more.
 	s := screen.FromText("nothing of htop's", 80, 24)
 	s.AltScreen, s.Command = true, "ssh"
-	if res, _ := classify.Pane(set, s, "htop"); res.ModeBasis != "unconfirmed" || res.Confidence != "low" {
+	if res, _ := classify.Pane(set, s, "htop"); res.ModeBasis != "mem" || res.Confidence != "low" {
 		t.Errorf("remembered htop: %s by %q (%s)", res.Mode, res.ModeBasis, res.Confidence)
 	}
 }

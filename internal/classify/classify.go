@@ -54,10 +54,11 @@ type Result struct {
 	// not acted on because there is no transport (Nested.Off); Nested is
 	// then "".
 	Via, NestedOff string
-	// ModeBasis is how the mode was decided: "marker" (a mode rule fired;
-	// ModeRule names it when it has a name of its own), "absence" (no
+	// ModeBasis is how the mode was decided: "fp" (a mode rule's
+	// fingerprint matched; ModeRule names the rule, or its mode when it has
+	// no name of its own), "absence" (no
 	// marker on a confirmed screen: the default mode), "veto" (a
-	// corroboration overruled that default), "unconfirmed" (no marker and
+	// corroboration overruled that default), "mem" (no marker and
 	// identity not confirmed on this capture), "always" (the spec has one
 	// mode), or "policy" (the nested policy made it unknown).
 	ModeBasis, ModeRule string
@@ -134,7 +135,7 @@ func Classify(sp *spec.Spec, s *screen.Screen, sticky bool) Trace {
 
 	if sp.Always != "" {
 		if !id.Identified {
-			res.Mode, res.Confidence, res.ModeBasis = spec.ModeUnknown, Low, "unconfirmed"
+			res.Mode, res.Confidence, res.ModeBasis = spec.ModeUnknown, Low, "mem"
 			res.Reason = "always-mode spec, but identity not seen on this capture"
 		} else {
 			res.Mode, res.Confidence, res.ModeBasis = sp.Always, High, "always"
@@ -148,10 +149,7 @@ func Classify(sp *spec.Spec, s *screen.Screen, sticky bool) Trace {
 		rr := r.Eval(s)
 		t.ModeRules = append(t.ModeRules, rr)
 		if rr.Fired {
-			res.Mode, res.Confidence, res.ModeBasis = r.Mode, High, "marker"
-			if r.Name != "" && r.Name != r.Mode {
-				res.ModeRule = r.Name
-			}
+			res.Mode, res.Confidence, res.ModeBasis, res.ModeRule = r.Mode, High, "fp", ruleLabel(r)
 			res.Reason = "mode rule fired: " + ruleLabel(r)
 			res.Bucket = sp.Bucket(res.Mode)
 			return t
@@ -161,7 +159,7 @@ func Classify(sp *spec.Spec, s *screen.Screen, sticky bool) Trace {
 	// No positive marker. Concluding anything from absence requires the
 	// identity to be confirmed on this very capture (§4.4).
 	if !id.Confirmed {
-		res.Mode, res.Confidence, res.ModeBasis = sp.OtherwiseMode, Low, "unconfirmed"
+		res.Mode, res.Confidence, res.ModeBasis = sp.OtherwiseMode, Low, "mem"
 		res.Reason = "no mode marker, and identity not confirmed on this capture"
 		res.Bucket = sp.Bucket(res.Mode)
 		return t

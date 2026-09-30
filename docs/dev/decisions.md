@@ -450,6 +450,11 @@ unconfirmed, always, policy (nested policy → unknown). Badge `why` after
 `mode`: `{basis}{ rule} {confidence}`, red (`why_low`) when low; raw
 `@modal_mode_basis`, `@modal_mode_rule`. Low through a nested tmux keeps
 its basis (e.g. `absence low`), the NEST badge says why.
+Owner's wording (1.5.1–1.5.2): `hi`/`lo` in the badge, `fp:<rule>` for a
+matched mode rule (the same mechanism as the identity fingerprint; the
+rule is always named, falling back to its mode, so it never reads as the
+app badge's bare `fp`), `mem` for unconfirmed. Declined: dflt, ttl, pol,
+merged path badges.
 
 ## D36. Nesting needs a transport; VIA badge; "seen but off" — owner, after 1.3.2
 
