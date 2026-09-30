@@ -393,3 +393,39 @@ multiplexer command, no tmux status line) their cells must be in those
 colours (`tmuxBorderColour`); with a status line or the command, any
 colour still counts, so a themed remote tmux keeps its safe split
 handling. Without a colour capture nothing changes.
+
+## Harness and tooling pitfalls after 1.0
+
+**F47.** Found while building 1.1.1–1.6.0:
+- **The daemon publishes nothing without a human client.** Scope
+  `active`/`visible` need an attached non-control client, and even
+  `@modal_scope all` only covers sessions with one. Probes on a private
+  socket need an outer server whose pane runs `tmux -L <inner> attach`.
+- **Remote tmux arrow repeat.** tmux binds prefix arrows with `-r`: an
+  arrow (e.g. `k` remapped to Up) within `repeat-time` (500 ms) of
+  `prefix Left` selects a pane. Tests sleep 700 ms after switching inner
+  panes; the README mentions it.
+- **The pane border redraws when the client's key table changes**
+  (verified on 3.4), so `#{client_key_table}` inside a badge template
+  (the `MAP _` state) needs no refresh-client.
+- **Option values with formats need `#{E:@opt}`** in a border format;
+  plain `#{@opt}` inserts the text unexpanded.
+- **The config reader cannot tell an unset option from an empty one**
+  (one display-message of `#{@opt}`s), hence `off` to hide a badge.
+- **Go package vars are initialised before `init()`**: `configFormat` is
+  built from `optionNames`, so badge template options must be in
+  `optionNames`' initialiser, not appended in `init()`.
+- **A REPL spec claims `node`**, so nested probes never run for it:
+  synthetic nested tests use `ssh` as the command.
+- **Chained release commands:** `gofmt -l .; …` does not stop the chain;
+  use `test -z "$(gofmt -l .)" && …` (1.3.1 went to CI unformatted once).
+- **Release binary download** (`scripts/binary.sh`) gives curl 30 s; on
+  a slow network it times out and the plugin falls back to a local Go
+  build of the same commit — equivalent, but not the release file.
+- **Docker:** building five tmux-src images in parallel got the shell
+  killed (exit 137); build two or three at a time. A container reading
+  the scratchpad mount needs `-u root`.
+- **Reproducing F43** needs a *second, fast* control client (standing in
+  for the human's terminal, which keeps tmux reading the pane) and a
+  gated reader (a blocking `Read` on a paused pane hangs the harness);
+  `'%0:off'` must be quoted (F34).

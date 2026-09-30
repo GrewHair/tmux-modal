@@ -130,8 +130,19 @@ status-off single-pane (documented limitation: remaps), local tmux-in-tmux
 - **What did tmux really do with a key?** Start the inner server with
   `-vv` (writes `tmux-server-PID.log` in the cwd): look for
   `complete key`, `key table …`, `writing key 0x.. (x) to %N`.
-- A second tmux version: `docker build --build-arg TMUX_VERSION=3.7c -t tmux-modal-tmuxsrc:3.7c -f tests/docker/tmux-src.Dockerfile tests/docker`
-  (image has neovim, vim-nox, htop).
+- Other tmux versions: `docker build --build-arg TMUX_VERSION=3.7c -t tmux-modal-tmuxsrc:3.7c -f tests/docker/tmux-src.Dockerfile tests/docker`
+  (image has neovim, vim-nox, htop). Built locally so far: 3.0a, 3.2a,
+  3.3a, 3.4, 3.5a, 3.6b, 3.7c. `scripts/fixtures/nested.sh colour IMAGE...`
+  captures `tests/fixtures/nested/tmux-<v>/` (border-colour focus, D34).
+- **Why does a pane read the way it does?** `tmux-modal explain %N`
+  (against any server via `TMUX=<socket>,0,0`): published options and a
+  fresh classification with the score sheet. Read-only; safe on the
+  owner's server.
+- `scripts/probes/cursor-shape.sh`: the cursor badge / shape veto with
+  the real daemon and nvim on a tmux ≥ 3.5 image (F45; not in CI).
+- `TMUX_MODAL_TEST_GATE_OFF=1 go test ./tests/integration -run
+  TestOutputGateSlowReader` switches the test back to `off`/`on` to show
+  it catches F43 (fails on tmux < 3.7).
 - To test the owner's real config without touching their server:
   `tmux -L modal-sandbox -f ~/.config/tmux/tmux.conf new-session -d …` with
   `XDG_STATE_HOME` pointed at a scratch dir, attach from an outer `-L`
@@ -139,9 +150,18 @@ status-off single-pane (documented limitation: remaps), local tmux-in-tmux
 
 ## Still missing (planned)
 
-- A real tmux ≥ 3.6 run of the cursor-shape veto with neovim (the unit
-  test sets the shape on a captured screen; F11 saw nvim report `bar` on
-  3.7c).
+- The cursor-shape veto and cursor badge on tmux ≥ 3.5 run only by hand
+  (F45); CI's tmux is 3.4.
+
+## Badge tests
+
+`internal/daemon/badges_test.go` (rendering of every badge and state,
+templates, `off`, placeholders), `hookflash_test.go` (runner notes,
+flash expiry), `internal/classify/{nested,basis}_test.go` (the facts:
+kind, split, focus, evidence, score, transport gate, mode basis),
+`tests/integration/badges_test.go` (the border on a real tmux: MAP →
+MAP _ → MAP, explain, the hook flash) and `TestNestedTmuxSplit` (VIA ssh,
+path order).
 
 ## CPU benchmark
 

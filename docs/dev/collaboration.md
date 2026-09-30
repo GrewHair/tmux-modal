@@ -72,3 +72,29 @@
 - **Auto mode's permission check can fail transiently** (no verdict,
   command blocked). It is not a permission the owner must grant; carry on
   with Write/Edit work and retry the shell command later.
+- **Show the engine's conclusions plainly** (since 1.3.0): one fact per
+  badge, exact terms (ALT = alternate screen, name the multiplexer:
+  `NEST tmux`), short texts; findings that are not acted on are shown
+  struck through, not hidden — absent only when never probed. Only start
+  trading off when ~10 badges would show at once (D35, D36).
+- **Wording is the owner's call, and they value space but dislike cryptic
+  abbreviations.** Accepted: `NEST`, `MAP`, `VIA`, `fp`, `mem`, `hi`/`lo`,
+  `fp:<rule>`, cursor glyphs █ ▁ ▏ ("show, don't tell"). Declined: `dflt`,
+  `ttl`, `pol`, `bdr`/`cur`, merged path badges. "screen" reads as GNU
+  screen — avoid it as a word. Offer shortenings as a table and let them
+  pick; apply exactly the picks.
+- **Bigger features go through plan mode**, which the owner switches on
+  themselves: explore, ask 2–3 AskUserQuestion questions with a
+  recommended option, write the plan file, ExitPlanMode. They answer with
+  refinements in the rejection text (e.g. "NEST instead of NESTED") —
+  fold those in and exit again. Smaller ideas: they ask "let's discuss" /
+  "plan it out" — answer in chat with a recommendation and wait for "go".
+- **"Please be brief"** means a few sentences, no headings, no tool work
+  unless a fact must be checked.
+- **Every behaviour change ships as a release** the same day (patch for
+  fixes and wording, minor for features), plugin clone updated; the owner
+  restarts tmux when it suits them.
+- **When they report something odd on their own screen, investigate their
+  live pane read-only** (`tmux-modal explain %N`, `capture-pane -e`) —
+  never saving that capture in the repo — then reproduce it synthetically
+  for the test (F46: Claude Code's grey rule).

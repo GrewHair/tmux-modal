@@ -30,9 +30,13 @@ On the owner's own tmux (WSL2, tmux 3.4, fish shell, TPM):
 - Hook options in that file, one to be uncommented at a time: `log.sh`,
   `windows-toast.sh`, `ahk-http.sh` (option 4, the owner's AutoHotkey v2
   HTTP endpoint on Windows' localhost:42800, `/send/F?OSD;;;;<payload>`;
-  fire and forget). As of 2026-09-28 **all are commented out** (no hook
-  active); the owner decides when to switch one on. Log:
-  `~/.local/state/tmux-modal/transitions.log`.
+  fire and forget). As of 2026-09-30 **`ahk-http.sh` is active**; the AHK
+  side is still a mock the owner will hook up later. The hook badge
+  (1.6.0) shows each call. Log: `~/.local/state/tmux-modal/transitions.log`.
+- The modal options file also documents every badge in comments and has
+  a commented-out `bind M display-popup … tmux-modal explain` line.
+- The owner's fish has `ssh2` (fzf-tmux --reverse over `~/.ssh/config`
+  hosts) — the reason for 1.2.1.
 - `~/.config` is itself a git repo with the owner's unrelated uncommitted work — **never commit there** (editing the modal options file is fine; it was written for them).
 - **Never kill or restart the owner's tmux server.** Test on private `-L` sockets; the owner restarts tmux themselves.
 - The owner's own nvim is LazyVim (lualine, noshowmode): locally it reads
@@ -41,9 +45,16 @@ On the owner's own tmux (WSL2, tmux 3.4, fish shell, TPM):
 
 Owner feedback so far: "everything seems to work alright", "everything
 looks good" (after M7); the ~80–130 ms AHK delay "doesn't bother me, it's
-good for now" (B7 stays parked). The plugin clone is on v1.1.0 (pulled,
-binary fetched); it takes effect when they restart tmux. The owner hit
-needrestart's debconf dialog on a server — that is what 1.1.0 is for.
+good for now" (B7 stays parked). The owner hit needrestart's debconf
+dialog on a server — that is what 1.1.0 is for. Their tmux 3.4 crashed
+"at random" in 1.1.0 days: our output gating (F43), fixed in 1.1.1.
+
+**Plugin clone: v1.6.0** (pulled, release binary fetched). As of
+2026-09-30 the owner had reloaded once on 1.3.x (saw the badges, found
+F46 on this very Claude Code pane) and said they would restart tmux and
+test 1.4–1.6 later. Expect feedback on: the badges' look and wording, the
+struck-through NEST/SPLIT, the why badge, the hook flash with their AHK
+hook, and whether their Claude Code pane now shows just `ALT ?`.
 
 **History was rewritten once** (after M6, to remove the machine name):
 anyone with an old clone must `git fetch && git reset --hard origin/main`.

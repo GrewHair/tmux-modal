@@ -112,3 +112,16 @@ from outside. Only revisit if the owner complains.
   nothing to do.
 - Titles are generated from debconf-i18n; if a new debconf adds a
   language, rerun `scripts/fixtures/debconf-titles.py` and paste `--regex`.
+
+## B9. Badges and debugging follow-ups (after 1.6.0)
+
+- `tmux-modal explain` prints every rule's score sheet; if it is too long
+  in the popup, add a short mode (published options + the final line).
+- A remote tmux reached through a wrapper with its own name reads as one
+  screen until the name is added to `@modal_transports` (D36); consider
+  also checking the pane's child processes for ssh if the owner hits it.
+- Screen, zellij, byobu over a transport are detected only by their
+  local command today (status line/border fingerprints are tmux's); add
+  fingerprints when the owner meets one (the `NEST <kind>` badge is ready).
+- Confidence is high/low only; a numeric mode confidence was considered
+  and dropped (mode rules score 1/1, D37).
