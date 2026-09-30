@@ -2,6 +2,12 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.5.1 — 2026-09-30
+
+- The why badge is shorter: `hi`/`lo` for the confidence, and the rule
+  joined to its kind, `marker:search` (`@modal_confidence` keeps
+  `high`/`low`). Templates get `{conf}` and `{:name}`.
+
 ## 1.5.0 — 2026-09-30
 
 - **`why` badge:** how the mode was decided and how sure: `absence high`

@@ -64,7 +64,7 @@ you can see at a glance what it concluded and why. They read as a path,
 left to right:
 
 ```
-ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  absence low  MAP
+ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  absence lo  MAP
 ```
 
 | Badge | Shown when | Default text |
@@ -75,7 +75,7 @@ ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  absence low  MA
 | `mode` | an app is recognised: its mode; `?` when this capture does not show it | `NORMAL` (green), `INSERT` (yellow), `?` |
 | `nest` | the pane shows another multiplexer, and which one; grey and struck through when seen on screen but not in effect (no transport, below) | `NEST tmux` |
 | `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none); struck through like `nest` | `SPLIT 3 border` |
-| `why` | how the mode was decided, and the confidence in it (red when low): `marker` a mode rule matched (its name follows when it has its own, e.g. `marker search`), `absence` no marker on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `unconfirmed` no marker and the app not confirmed on this capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always low | `absence high`, `marker search high`, `unconfirmed low` |
+| `why` | how the mode was decided, and the confidence in it (red when low): `marker` a mode rule matched (its name follows when it has its own, e.g. `marker:search`), `absence` no marker on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `unconfirmed` no marker and the app not confirmed on this capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always low | `absence hi`, `marker:search hi`, `unconfirmed lo` |
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
 | `cursor` | the app set a cursor shape (tmux ≥ 3.5): the cursor drawn as set, block, underline or bar | `█` `▁` `▏` |
 
@@ -113,8 +113,8 @@ has a template option, `@modal_badge_<key>_format`: keys `alt`, `via`,
 `why`, `why_low`, `nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`. `off` hides a
 badge. Placeholders: `{app}`
 `{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{basis}` `{rule}`
-`{confidence}` `{via}` `{kind}` `{panes}`
-`{focus}` `{shape}` (the word: `block`, `underline`, `bar`) `{glyph}` `{leader}`; `{ name}` is a space and the value, or
+`{confidence}` `{conf}` (`hi`/`lo`) `{via}` `{kind}` `{panes}`
+`{focus}` `{shape}` (the word: `block`, `underline`, `bar`) `{glyph}` `{leader}`; `{ name}` / `{:name}` are a space / a colon and the value, or
 nothing when it is empty. Templates may use tmux formats and styles.
 
 **Why a pane looks the way it does:** `tmux-modal explain [pane]` prints

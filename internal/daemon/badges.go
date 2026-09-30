@@ -20,9 +20,9 @@ var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "why", "
 
 // Default badge templates. Placeholders: {app} {APP} {mode} {MODE}
 // {evidence} {score} {via} {kind} {panes} {focus} {basis} {rule}
-// {confidence} {shape} {glyph} {leader};
-// "{ name}"
-// is a space and the value, or nothing when the value is empty.
+// {confidence} {conf} (hi/lo) {shape} {glyph} {leader}; "{ name}" and
+// "{:name}" are a space or a colon and the value, or nothing when the
+// value is empty.
 var defaultBadges = map[string]string{
 	"alt":             "#[fg=black,bg=colour244] ALT #[default]",
 	"app":             "#[fg=colour255,bg=colour238] {app} {evidence}{ score} #[default]",
@@ -32,8 +32,8 @@ var defaultBadges = map[string]string{
 	"mode_unknown":    "#[fg=black,bg=colour244] ? #[default]",
 	"via":             "#[fg=black,bg=colour180] VIA {via} #[default]",
 	// How the mode was decided, and the confidence in it; low in red.
-	"why":     "#[fg=colour255,bg=colour238] {basis}{ rule} {confidence} #[default]",
-	"why_low": "#[fg=colour255,bg=colour124,bold] {basis}{ rule} {confidence} #[default]",
+	"why":     "#[fg=colour255,bg=colour238] {basis}{:rule} {conf} #[default]",
+	"why_low": "#[fg=colour255,bg=colour124,bold] {basis}{:rule} {conf} #[default]",
 	"nest":    "#[fg=black,bg=colour110] NEST {kind} #[default]",
 	"split":   "#[fg=black,bg=colour110] SPLIT {panes} {focus} #[default]",
 	// Seen on screen but not acted on: no transport in the pane (D36).
@@ -132,7 +132,8 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		"mode": m.Mode, "MODE": strings.ToUpper(m.Mode),
 		"evidence": det.Evidence, "score": det.Score,
 		"basis": det.ModeBasis, "rule": det.ModeRule, "confidence": m.Confidence,
-		"via": det.Via, "kind": det.NestedKind, "panes": "", "focus": focusWord(det),
+		"conf": map[string]string{"high": "hi", "low": "lo"}[m.Confidence],
+		"via":  det.Via, "kind": det.NestedKind, "panes": "", "focus": focusWord(det),
 		"shape": det.Shape, "glyph": cursorGlyphs[det.Shape], "leader": formatEscape(leader),
 	}
 	if det.InnerPanes > 0 {
@@ -187,7 +188,7 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 // cursorGlyphs draw the DECSCUSR shapes tmux reports (#{cursor_shape}).
 var cursorGlyphs = map[string]string{"block": "█", "underline": "▁", "bar": "▏"}
 
-// expand substitutes {name} and "{ name}" placeholders.
+// expand substitutes {name}, "{ name}" and "{:name}" placeholders.
 func expand(t string, vals map[string]string) string {
 	var b strings.Builder
 	for {
@@ -208,16 +209,18 @@ func expand(t string, vals map[string]string) string {
 			t = t[i+1+k:]
 			continue
 		}
-		space := strings.HasPrefix(name, " ")
-		v, ok := vals[strings.TrimPrefix(name, " ")]
+		// "{ name}" and "{:name}": the separator and the value, or nothing.
+		sep := ""
+		if strings.HasPrefix(name, " ") || strings.HasPrefix(name, ":") {
+			sep, name = name[:1], name[1:]
+		}
+		v, ok := vals[name]
 		b.WriteString(t[:i])
 		switch {
 		case !ok: // not ours (a tmux format's braces): keep as is
 			b.WriteString(t[i : i+j+1])
-		case space && v != "":
-			b.WriteString(" " + v)
-		case !space:
-			b.WriteString(v)
+		case v != "":
+			b.WriteString(sep + v)
 		}
 		t = t[i+j+1:]
 	}

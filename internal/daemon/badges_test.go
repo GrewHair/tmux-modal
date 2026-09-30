@@ -45,9 +45,9 @@ func TestBadges(t *testing.T) {
 		{"block cursor", modeState{App: "nvim", Mode: "normal", Bucket: "commanding"},
 			detail{Alt: true, Evidence: "cmd", Shape: "block"}, "ALT nvim cmd NORMAL █"},
 		{"how the mode was decided", modeState{App: "htop", Mode: "insert", Bucket: "typing", Confidence: "high"},
-			detail{Alt: true, Evidence: "cmd", ModeBasis: "marker", ModeRule: "search"}, "ALT htop cmd INSERT marker search high"},
+			detail{Alt: true, Evidence: "cmd", ModeBasis: "marker", ModeRule: "search"}, "ALT htop cmd INSERT marker:search hi"},
 		{"a low-confidence mode", modeState{App: "vim", Mode: "unknown", Bucket: "unknown", Confidence: "low"},
-			detail{Alt: true, Evidence: "mem", ModeBasis: "unconfirmed"}, "ALT vim mem ? unconfirmed low"},
+			detail{Alt: true, Evidence: "mem", ModeBasis: "unconfirmed"}, "ALT vim mem ? unconfirmed lo"},
 		{"underline cursor", modeState{App: "nvim", Mode: "replace", Bucket: "typing"},
 			detail{Alt: true, Evidence: "cmd", Shape: "underline"}, "ALT nvim cmd REPLACE ▁"},
 	}
@@ -88,6 +88,7 @@ func TestBadgeExpand(t *testing.T) {
 	vals := map[string]string{"a": "x", "e": ""}
 	for in, want := range map[string]string{
 		"{a}{ a}{ e}|":        "x x|",
+		"{a}{:a}{:e}|":        "x:x|",
 		"#{?#{m:x,{a}},y,z}":  "#{?#{m:x,x},y,z}",
 		"{unknown} {a":        "{unknown} {a",
 		"#{client_key_table}": "#{client_key_table}",
