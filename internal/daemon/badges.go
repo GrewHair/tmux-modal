@@ -18,7 +18,8 @@ import (
 var badgeNames = []string{"alt", "app", "mode", "nest", "split", "map", "cursor"}
 
 // Default badge templates. Placeholders: {app} {APP} {mode} {MODE}
-// {evidence} {score} {kind} {panes} {focus} {shape} {leader}; "{ name}"
+// {evidence} {score} {kind} {panes} {focus} {shape} {glyph} {leader};
+// "{ name}"
 // is a space and the value, or nothing when the value is empty.
 var defaultBadges = map[string]string{
 	"alt":             "#[fg=black,bg=colour244] ALT #[default]",
@@ -32,7 +33,8 @@ var defaultBadges = map[string]string{
 	// The escape leader switches the client to a one-shot table; the
 	// daemon never sees that, tmux does when it draws the border.
 	"map":    "#[fg=black,bg=cyan,bold] #{?#{m:modal-literal-*,#{client_key_table}},MAP {leader},MAP} #[default]",
-	"cursor": "#[fg=colour255,bg=colour238] {shape} #[default]",
+	// The cursor drawn as the app set it: show, don't tell.
+	"cursor": "#[fg=colour255,bg=colour238] {glyph} #[default]",
 }
 
 // badgeOptions are the template options, by badge template key.
@@ -112,7 +114,7 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		"mode": m.Mode, "MODE": strings.ToUpper(m.Mode),
 		"evidence": det.Evidence, "score": det.Score,
 		"kind": det.NestedKind, "panes": "", "focus": focusWord(det),
-		"shape": det.Shape, "leader": formatEscape(leader),
+		"shape": det.Shape, "glyph": cursorGlyphs[det.Shape], "leader": formatEscape(leader),
 	}
 	if det.InnerPanes > 0 {
 		vals["panes"] = strconv.Itoa(det.InnerPanes)
@@ -149,6 +151,9 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 	}
 	return out
 }
+
+// cursorGlyphs draw the DECSCUSR shapes tmux reports (#{cursor_shape}).
+var cursorGlyphs = map[string]string{"block": "█", "underline": "▁", "bar": "▏"}
 
 // expand substitutes {name} and "{ name}" placeholders.
 func expand(t string, vals map[string]string) string {

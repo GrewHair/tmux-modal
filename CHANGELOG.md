@@ -2,6 +2,11 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.3.1 — 2026-09-30
+
+- The cursor badge draws the cursor shape the app set (`█` `▁` `▏`)
+  instead of naming it; `{shape}` in a template still gives the word.
+
 ## 1.3.0 — 2026-09-30
 
 - **Badges:** a row of small tags per pane, one fact each, instead of a

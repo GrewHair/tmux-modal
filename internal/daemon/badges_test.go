@@ -39,7 +39,11 @@ func TestBadges(t *testing.T) {
 			detail{Alt: true, Unknown: true, NestedKind: "screen"}, "ALT ? NEST screen"},
 		{"cursor shape reported", modeState{App: "nvim", Mode: "insert", Bucket: "typing"},
 			detail{Alt: true, Evidence: "cmd+fp", Score: "100/100", Shape: "bar"},
-			"ALT nvim cmd+fp 100/100 INSERT bar"},
+			"ALT nvim cmd+fp 100/100 INSERT ▏"},
+		{"block cursor", modeState{App: "nvim", Mode: "normal", Bucket: "commanding"},
+			detail{Alt: true, Evidence: "cmd", Shape: "block"}, "ALT nvim cmd NORMAL █"},
+		{"underline cursor", modeState{App: "nvim", Mode: "replace", Bucket: "typing"},
+			detail{Alt: true, Evidence: "cmd", Shape: "underline"}, "ALT nvim cmd REPLACE ▁"},
 	}
 	for _, c := range cases {
 		if got := plain(joinBadges(renderBadges(tpl, c.m, c.det, "_"))); got != c.want {

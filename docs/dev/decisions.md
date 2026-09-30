@@ -457,7 +457,7 @@ reads as GNU screen), `mode` (`?` when unreadable), `nest` (kind), `split`
 pane's app's; the escape leader's one-shot table is shown as `MAP _` by a
 tmux format in the template — the daemon never sees it; the border
 redraws on key-table changes, verified on 3.4), `cursor` (shape, tmux ≥
-3.5). Confidence stays high/low in `@modal_confidence` (owner's choice);
+3.5; drawn as █ ▁ ▏ since 1.3.1 — the words were confusing without context). Confidence stays high/low in `@modal_confidence` (owner's choice);
 the numeric fact is the score.
 
 Mechanics: `Result` carries Evidence/Score/NestedKind/InnerPanes/FocusBy;

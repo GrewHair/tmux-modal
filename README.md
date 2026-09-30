@@ -74,7 +74,7 @@ ALT  htop cmd+fp 110/40  NORMAL  NEST tmux  SPLIT 3 border  MAP
 | `nest` | the pane shows another multiplexer, and which one | `NEST tmux` |
 | `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none) | `SPLIT 3 border` |
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
-| `cursor` | the app set a cursor shape (tmux ≥ 3.5) | `bar` |
+| `cursor` | the app set a cursor shape (tmux ≥ 3.5): the cursor drawn as set, block, underline or bar | `█` `▁` `▏` |
 
 How the app was recognised (`app` badge, `@modal_evidence`): `cmd` the
 pane's command, `title` its title, `fp` the screen fingerprint (its score
@@ -96,7 +96,7 @@ has a template option, `@modal_badge_<key>_format`: keys `alt`, `app`,
 `app_unknown`, `mode_commanding`, `mode_typing`, `mode_unknown`, `nest`,
 `split`, `map`, `cursor`. `off` hides a badge. Placeholders: `{app}`
 `{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{kind}` `{panes}`
-`{focus}` `{shape}` `{leader}`; `{ name}` is a space and the value, or
+`{focus}` `{shape}` (the word: `block`, `underline`, `bar`) `{glyph}` `{leader}`; `{ name}` is a space and the value, or
 nothing when it is empty. Templates may use tmux formats and styles.
 
 **Why a pane looks the way it does:** `tmux-modal explain [pane]` prints
