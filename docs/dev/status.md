@@ -49,7 +49,7 @@ good for now" (B7 stays parked). The owner hit needrestart's debconf
 dialog on a server — that is what 1.1.0 is for. Their tmux 3.4 crashed
 "at random" in 1.1.0 days: our output gating (F43), fixed in 1.1.1.
 
-**Plugin clone: v1.6.0** (pulled, release binary fetched). As of
+**Plugin clone: v1.7.0** (pulled, release binary fetched). As of
 2026-09-30 the owner had reloaded once on 1.3.x (saw the badges, found
 F46 on this very Claude Code pane) and said they would restart tmux and
 test 1.4–1.6 later. Expect feedback on: the badges' look and wording, the
