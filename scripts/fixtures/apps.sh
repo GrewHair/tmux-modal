@@ -403,6 +403,12 @@ cap_fzf() {
 		keys -l 12; settle
 		snap "$d/typed.txt" fzf insert "typing a query"
 		stop
+		# --reverse (as fzf-tmux users often pass it): the query on top.
+		app "${size%x*}" "${size#*x}" /home/demo bash -c 'seq 1000 | fzf --reverse'
+		snap "$d/reverse-empty.txt" fzf insert "--reverse, empty query"
+		keys -l 12; settle
+		snap "$d/reverse-typed.txt" fzf insert "--reverse, typing a query"
+		stop
 	done
 }
 

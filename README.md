@@ -174,7 +174,7 @@ vimrc makes Escape itself fast).
 | `ranger`, `lf`, `nnn` | detect | normal; insert / command in their prompts (search, rename, console …) | ranger 1.9.3; lf r28, r31; nnn 4.3–4.9 |
 | `ncdu` | detects | always normal (it has no text prompts) | 1.15.1, 1.18, 1.19 |
 | `mc` | always insert | its shell command line is always live: letters typed in the panels go there | 4.8.27–4.8.30 |
-| `fzf` | always insert | every letter goes to the query | 0.29, 0.38, 0.44 |
+| `fzf` | always insert | every letter goes to the query; the default and `--reverse` layouts are recognised from the screen too (over SSH, fzf-tmux) | 0.29, 0.38, 0.44 |
 | `python` (IPython, bpython, ptpython), `node`, `irb`/`pry`, `psql`/`pgcli`, `mysql`/`mariadb`/`mycli`, `sqlite3`/`litecli`, `gdb`, `lldb`, `weechat`, `irssi` | always insert | line-reading REPLs and chat clients | by command name |
 
 **Why most specs only detect.** less, tig, lazygit, k9s, the file managers

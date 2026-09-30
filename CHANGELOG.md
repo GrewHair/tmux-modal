@@ -2,6 +2,13 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.2.1 — 2026-09-30
+
+- **fzf `--reverse`** (the query on top, as `fzf-tmux --reverse` shows it)
+  is recognised from the screen, not only by its command: over SSH, and
+  in panes whose command tmux reports as a wrapper. It used to show N/A
+  there. Checked on fzf 0.29, 0.38, 0.44 and 0.70.
+
 ## 1.2.0 — 2026-09-30
 
 - **Split remote tmux, any app:** the focused inner pane is now also found

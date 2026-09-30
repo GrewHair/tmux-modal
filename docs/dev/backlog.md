@@ -58,8 +58,8 @@ from outside. Only revisit if the owner complains.
   specific; would need a second anchor.
 - k9s with its header hidden (`ctrl-e`): identify from the crumbs row and
   table frame.
-- fzf `--reverse` / `--layout=reverse-list`: the counter and query are on
-  the top rows; only the default layout is recognised over SSH.
+- (Done in 1.2.1: fzf `--reverse` is recognised from the screen too;
+  `--layout=reverse-list` has the default's bottom rows.)
 - REPLs over SSH: a cursor-row-relative clause (`row = "cursor"`) would let
   a spec say "the prompt `>>> ` is on the cursor's row", which is specific
   enough to identify Python remotely.

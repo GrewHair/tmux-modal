@@ -1,9 +1,12 @@
 # fzf — fuzzy finder (also skim, sk).
 #
 # Always insert: every letter typed goes to the query. Recognised by its
-# command, and over SSH by the match counter next to the query line in the
-# default and --reverse layouts (fzf 0.44). --height runs inline on the
-# primary screen, where only the command can tell.
+# command, and from the screen alone (over SSH, or when the pane's command
+# is a wrapper such as fzf-tmux's) in two layouts: the default one (query
+# on the last row, the match counter above it) and --reverse (query on the
+# top row, the counter below it). --layout=reverse-list keeps the query at
+# the bottom, like the default. --height runs inline on the primary screen,
+# where only the command can tell. Checked against fzf 0.29, 0.38, 0.44.
 name     = "fzf"
 priority = 30
 always   = "insert"
@@ -15,17 +18,36 @@ typing = ["insert"]
 [match]
 command             = ["fzf", "sk"]
 requires_alt_screen = false
-combine             = "all"
+combine             = "weighted"
+# One layout's three clauses reach it; the cursor (the heaviest) is on one
+# of the two rows only, so clauses of both layouts cannot add up to it.
+threshold           = 100
 
-  # "  12/1000 ─────" (or "  12/1000 (3)" with selections); default layout
-  # just above the query row, --reverse just below it.
+  # Default layout. "  12/1000 ─────" (or "  12/1000 (3)" with selections)
+  # just above the query row.
   [[match.clause]]
-  regex = '^  [0-9]+/[0-9]+( \([0-9]+\))?( [─-]{8,})?$'
-  rows  = [-2, -2]
-
+  regex  = '^  [0-9]+/[0-9]+( \([0-9]+\))?( [─-]{8,})?$'
+  rows   = [-2, -2]
+  weight = 30
   [[match.clause]]
-  regex = '^>( |$)'
-  row   = -1
+  regex  = '^>( |$)'
+  row    = -1
+  weight = 30
   [[match.clause]]
   cursor_rows    = [-1, -1]
   cursor_visible = true
+  weight         = 40
+
+  # --reverse: the query on the top row, the counter just below it.
+  [[match.clause]]
+  regex  = '^  [0-9]+/[0-9]+( \([0-9]+\))?( [─-]{8,})?$'
+  rows   = [1, 1]
+  weight = 30
+  [[match.clause]]
+  regex  = '^>( |$)'
+  row    = 0
+  weight = 30
+  [[match.clause]]
+  cursor_rows    = [0, 0]
+  cursor_visible = true
+  weight         = 40

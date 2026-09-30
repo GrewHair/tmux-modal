@@ -150,3 +150,10 @@
   colour; fixtures for tmux 3.4 (both border alphabets) and six more
   versions; `TestNestedFocusColour`; the split integration tests now
   expect htop/keyecho read and remapped in a split. Released v1.2.0.
+- Owner: `fzf-tmux --reverse` from a fish function showed N/A. Their
+  daemon log: the split was on the alternate screen but tmux never
+  reported `fzf` as its command, and the screen fallback knew only the
+  default layout. fzf spec now weighted, one set of three clauses per
+  layout (threshold 100; the cursor clause, the heaviest, can hold for one
+  layout only); `--reverse` fixtures from the three images; scored 100 on
+  a live fzf 0.70. Released v1.2.1.
