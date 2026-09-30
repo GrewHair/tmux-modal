@@ -439,6 +439,18 @@ while the cursor is hidden). Fixtures: new htop-focused layouts in
 from `tmux-src.Dockerfile`). `TestNestedFocusColour` covers a themed
 colour, cursor/colour disagreement and an all-green border.
 
+## D37. The why badge: how the mode was decided — owner, after 1.4.0
+
+The owner asked whether modes have a confidence like the identity score.
+They have a qualitative one (high/low) from the decision path in
+`Classify`; mode rules are mostly single checks, so a score would read
+1/1 and say nothing. `Result.ModeBasis` names the path: marker (+
+`ModeRule` when the rule has a name other than its mode), absence, veto,
+unconfirmed, always, policy (nested policy → unknown). Badge `why` after
+`mode`: `{basis}{ rule} {confidence}`, red (`why_low`) when low; raw
+`@modal_mode_basis`, `@modal_mode_rule`. Low through a nested tmux keeps
+its basis (e.g. `absence low`), the NEST badge says why.
+
 ## D36. Nesting needs a transport; VIA badge; "seen but off" — owner, after 1.3.2
 
 After F46 the owner proposed a guard independent of colour: an inner

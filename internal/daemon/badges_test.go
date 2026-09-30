@@ -44,6 +44,10 @@ func TestBadges(t *testing.T) {
 			"ALT nvim cmd+fp 100/100 INSERT ▏"},
 		{"block cursor", modeState{App: "nvim", Mode: "normal", Bucket: "commanding"},
 			detail{Alt: true, Evidence: "cmd", Shape: "block"}, "ALT nvim cmd NORMAL █"},
+		{"how the mode was decided", modeState{App: "htop", Mode: "insert", Bucket: "typing", Confidence: "high"},
+			detail{Alt: true, Evidence: "cmd", ModeBasis: "marker", ModeRule: "search"}, "ALT htop cmd INSERT marker search high"},
+		{"a low-confidence mode", modeState{App: "vim", Mode: "unknown", Bucket: "unknown", Confidence: "low"},
+			detail{Alt: true, Evidence: "mem", ModeBasis: "unconfirmed"}, "ALT vim mem ? unconfirmed low"},
 		{"underline cursor", modeState{App: "nvim", Mode: "replace", Bucket: "typing"},
 			detail{Alt: true, Evidence: "cmd", Shape: "underline"}, "ALT nvim cmd REPLACE ▁"},
 	}
@@ -51,6 +55,12 @@ func TestBadges(t *testing.T) {
 		if got := plain(joinBadges(renderBadges(tpl, c.m, c.det, "_"))); got != c.want {
 			t.Errorf("%s:\n got %q\nwant %q", c.name, got, c.want)
 		}
+	}
+
+	low := renderBadges(tpl, modeState{App: "nvim", Mode: "insert", Bucket: "typing", Confidence: "low"},
+		detail{Alt: true, Evidence: "cmd", ModeBasis: "veto"}, "_")
+	if !strings.Contains(low[6], "bg=colour124") {
+		t.Errorf("a low confidence why badge is not red: %q", low[6])
 	}
 
 	// Seen but not in effect (no transport): the same text, struck through.

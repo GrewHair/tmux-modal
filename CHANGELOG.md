@@ -2,6 +2,15 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.5.0 — 2026-09-30
+
+- **`why` badge:** how the mode was decided and how sure: `absence high`
+  (no marker on a screen confirmed to be the app's), `marker search high`
+  (htop's search prompt matched), `veto low` (vim's cursor shape overruled
+  normal), `unconfirmed low` (app only remembered), `always`, `policy`.
+  Red when low. Also `@modal_mode_basis`, `@modal_mode_rule`, and in
+  `tmux-modal explain`.
+
 ## 1.4.0 — 2026-09-30
 
 - **A nested multiplexer needs a transport:** a remote tmux seen on screen

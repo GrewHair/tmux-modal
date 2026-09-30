@@ -64,7 +64,7 @@ you can see at a glance what it concluded and why. They read as a path,
 left to right:
 
 ```
-ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  MAP
+ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  absence low  MAP
 ```
 
 | Badge | Shown when | Default text |
@@ -75,6 +75,7 @@ ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  MAP
 | `mode` | an app is recognised: its mode; `?` when this capture does not show it | `NORMAL` (green), `INSERT` (yellow), `?` |
 | `nest` | the pane shows another multiplexer, and which one; grey and struck through when seen on screen but not in effect (no transport, below) | `NEST tmux` |
 | `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none); struck through like `nest` | `SPLIT 3 border` |
+| `why` | how the mode was decided, and the confidence in it (red when low): `marker` a mode rule matched (its name follows when it has its own, e.g. `marker search`), `absence` no marker on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `unconfirmed` no marker and the app not confirmed on this capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always low | `absence high`, `marker search high`, `unconfirmed low` |
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
 | `cursor` | the app set a cursor shape (tmux ≥ 3.5): the cursor drawn as set, block, underline or bar | `█` `▁` `▏` |
 
@@ -109,9 +110,10 @@ Each badge is also published on its own (`@modal_badge_alt`,
 `@modal_badge_app`, … `@modal_badge_cursor`) to place anywhere, and each
 has a template option, `@modal_badge_<key>_format`: keys `alt`, `via`,
 `app`, `app_unknown`, `mode_commanding`, `mode_typing`, `mode_unknown`,
-`nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`. `off` hides a
+`why`, `why_low`, `nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`. `off` hides a
 badge. Placeholders: `{app}`
-`{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{via}` `{kind}` `{panes}`
+`{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{basis}` `{rule}`
+`{confidence}` `{via}` `{kind}` `{panes}`
 `{focus}` `{shape}` (the word: `block`, `underline`, `bar`) `{glyph}` `{leader}`; `{ name}` is a space and the value, or
 nothing when it is empty. Templates may use tmux formats and styles.
 
@@ -133,6 +135,8 @@ For every pane the daemon publishes these options (empty ones are unset):
 | `@modal_mode` | `normal`, `insert`, …, `unknown` (a full-screen app no spec knows, or its mode not readable), `none` (no full-screen app) |
 | `@modal_bucket` | `commanding`, `typing`, `unknown`, `none` |
 | `@modal_confidence` | `high` or `low` |
+| `@modal_mode_basis` | how the mode was decided: `marker`, `absence`, `veto`, `unconfirmed`, `always`, `policy` (see the `why` badge) |
+| `@modal_mode_rule` | the mode rule that matched, when it has a name of its own (`search`, `filter`, …) |
 | `@modal_alt` | `on` on the alternate screen |
 | `@modal_evidence` | `cmd`, `title`, `fp` (joined with `+`), or `mem` |
 | `@modal_score` | the fingerprint's score against its threshold, e.g. `110/40` |

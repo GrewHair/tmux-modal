@@ -176,3 +176,6 @@
   transport/local tmux/claimed command), badge rendering, split
   integration asserts `VIA ssh` and the order; live check: `VIA docker
   NEST tmux SPLIT 2 border` and a local `env -u TMUX tmux` client.
+- 1.5.0: owner asked whether modes have a confidence; explained (high/low
+  by decision path, no useful number), then asked for the badge: `why`
+  (D37), tests on htop/fzf/nested fixtures and the vim veto.

@@ -250,8 +250,9 @@ func cmdExplain(args []string) error {
 	for _, t := range traces {
 		validate.Trace(out, t)
 	}
-	fmt.Fprintf(out, "\nnow: app=%s mode=%s bucket=%s confidence=%s evidence=%s score=%s",
-		orDash(res.App), res.Mode, res.Bucket, res.Confidence, orDash(res.Evidence), orDash(res.Score))
+	fmt.Fprintf(out, "\nnow: app=%s mode=%s bucket=%s confidence=%s mode-by=%s evidence=%s score=%s",
+		orDash(res.App), res.Mode, res.Bucket, res.Confidence, orDash(strings.TrimSpace(res.ModeBasis+" "+res.ModeRule)),
+		orDash(res.Evidence), orDash(res.Score))
 	if res.Via != "" {
 		fmt.Fprintf(out, " via=%s", res.Via)
 	}

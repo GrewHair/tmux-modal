@@ -54,6 +54,13 @@ type Result struct {
 	// not acted on because there is no transport (Nested.Off); Nested is
 	// then "".
 	Via, NestedOff string
+	// ModeBasis is how the mode was decided: "marker" (a mode rule fired;
+	// ModeRule names it when it has a name of its own), "absence" (no
+	// marker on a confirmed screen: the default mode), "veto" (a
+	// corroboration overruled that default), "unconfirmed" (no marker and
+	// identity not confirmed on this capture), "always" (the spec has one
+	// mode), or "policy" (the nested policy made it unknown).
+	ModeBasis, ModeRule string
 }
 
 // Identity is the identity evaluation of one spec on one screen.
@@ -127,10 +134,10 @@ func Classify(sp *spec.Spec, s *screen.Screen, sticky bool) Trace {
 
 	if sp.Always != "" {
 		if !id.Identified {
-			res.Mode, res.Confidence = spec.ModeUnknown, Low
+			res.Mode, res.Confidence, res.ModeBasis = spec.ModeUnknown, Low, "unconfirmed"
 			res.Reason = "always-mode spec, but identity not seen on this capture"
 		} else {
-			res.Mode, res.Confidence = sp.Always, High
+			res.Mode, res.Confidence, res.ModeBasis = sp.Always, High, "always"
 			res.Reason = fmt.Sprintf("always = %q", sp.Always)
 		}
 		res.Bucket = sp.Bucket(res.Mode)
@@ -141,7 +148,10 @@ func Classify(sp *spec.Spec, s *screen.Screen, sticky bool) Trace {
 		rr := r.Eval(s)
 		t.ModeRules = append(t.ModeRules, rr)
 		if rr.Fired {
-			res.Mode, res.Confidence = r.Mode, High
+			res.Mode, res.Confidence, res.ModeBasis = r.Mode, High, "marker"
+			if r.Name != "" && r.Name != r.Mode {
+				res.ModeRule = r.Name
+			}
 			res.Reason = "mode rule fired: " + ruleLabel(r)
 			res.Bucket = sp.Bucket(res.Mode)
 			return t
@@ -151,22 +161,22 @@ func Classify(sp *spec.Spec, s *screen.Screen, sticky bool) Trace {
 	// No positive marker. Concluding anything from absence requires the
 	// identity to be confirmed on this very capture (§4.4).
 	if !id.Confirmed {
-		res.Mode, res.Confidence = sp.OtherwiseMode, Low
+		res.Mode, res.Confidence, res.ModeBasis = sp.OtherwiseMode, Low, "unconfirmed"
 		res.Reason = "no mode marker, and identity not confirmed on this capture"
 		res.Bucket = sp.Bucket(res.Mode)
 		return t
 	}
-	mode, conf, reason := sp.DefaultMode, High, "no mode marker; identity confirmed"
+	mode, conf, reason, basis := sp.DefaultMode, High, "no mode marker; identity confirmed", "absence"
 	for _, c := range sp.Corroborate {
 		rr := c.Rule.Eval(s)
 		t.Corroborate = append(t.Corroborate, rr)
 		if rr.Fired && contains(c.VetoModes, mode) {
 			reason = fmt.Sprintf("corroboration vetoed %q", mode)
-			mode, conf = c.ThenMode, c.Confidence
+			mode, conf, basis = c.ThenMode, c.Confidence, "veto"
 			break
 		}
 	}
-	res.Mode, res.Confidence, res.Reason = mode, conf, reason
+	res.Mode, res.Confidence, res.Reason, res.ModeBasis = mode, conf, reason, basis
 	res.Bucket = sp.Bucket(mode)
 	return t
 }
@@ -328,7 +338,7 @@ func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (R
 	case res.App == "" || res.Mode == spec.ModeUnknown || res.Mode == spec.ModeNone:
 	case (n.Split && n.Focus == nil) || sp == nil || (sp.HasKeys() && !opt.NestedRemap):
 		res.Reason = fmt.Sprintf("nested multiplexer (%s): would be %s, but %s", n.Evidence, res.Mode, nestedWhy(n))
-		res.Mode, res.Bucket, res.Confidence = spec.ModeUnknown, spec.ModeUnknown, Low
+		res.Mode, res.Bucket, res.Confidence, res.ModeBasis, res.ModeRule = spec.ModeUnknown, spec.ModeUnknown, Low, "policy", ""
 	case n.Focus != nil:
 		res.Confidence = Low
 		res.Reason = fmt.Sprintf("nested multiplexer (%s), the inner pane %dx%d at %d,%d is focused (by its %s): %s",

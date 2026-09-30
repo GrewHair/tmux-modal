@@ -157,8 +157,8 @@ func TestVimCursorShapeVeto(t *testing.T) {
 		if res.Mode != want {
 			t.Errorf("cursor shape %q: %s, want %s", shape, res.Mode, want)
 		}
-		if shape == "bar" && res.Confidence != classify.Low {
-			t.Errorf("a vetoed normal is low confidence, got %s", res.Confidence)
+		if shape == "bar" && (res.Confidence != classify.Low || res.ModeBasis != "veto") {
+			t.Errorf("a vetoed normal is low confidence, by veto: got %s by %q", res.Confidence, res.ModeBasis)
 		}
 	}
 }
