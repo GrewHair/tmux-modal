@@ -259,8 +259,8 @@ func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (R
 		res.Mode, res.Bucket, res.Confidence = spec.ModeUnknown, spec.ModeUnknown, Low
 	case n.Focus != nil:
 		res.Confidence = Low
-		res.Reason = fmt.Sprintf("nested multiplexer (%s), the inner pane %dx%d at %d,%d has the cursor: %s",
-			n.Evidence, n.Focus.W, n.Focus.H, n.Focus.X, n.Focus.Y, res.Reason)
+		res.Reason = fmt.Sprintf("nested multiplexer (%s), the inner pane %dx%d at %d,%d is focused (by its %s): %s",
+			n.Evidence, n.Focus.W, n.Focus.H, n.Focus.X, n.Focus.Y, n.FocusBy, res.Reason)
 	default:
 		res.Confidence = Low
 		res.Reason = fmt.Sprintf("nested multiplexer (%s): %s", n.Evidence, res.Reason)
@@ -270,7 +270,7 @@ func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (R
 
 func nestedWhy(n Nested) string {
 	if n.Split && n.Focus == nil {
-		return "the inner window is split and shows no cursor"
+		return "the inner window is split and neither the border colour nor the cursor shows the focused pane"
 	}
 	return "@modal_nested_remap is off"
 }

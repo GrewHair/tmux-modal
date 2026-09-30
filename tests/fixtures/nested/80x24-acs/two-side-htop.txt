@@ -1,0 +1,36 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 39,22
+# cursor_visible: 0
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: htop
+# expect_mode: normal
+# expect_mode_mono: unknown
+# note: two inner panes side by side, htop (left) focused: the top half of the border is green
+# ---
+                                        xdemo@remote:/$
+    0[        0.0%]   4[         0.0%]  x
+    1[        0.0%]   5[         0.0%]  x
+    2[        0.0%]   6[         0.0%]  x
+    3[        0.0%]   7[         0.0%]  x
+  Mem[|1.24G/15.4G] Tasks: 3, 0 thr, 0  x
+  Swp[    0K/4.00G] Load average: 0.85  x
+                    Uptime: 01:25:38    x
+                                        x
+  [Main] [I/O]                          x
+    PID USER       PRI  NI  VIRT   RES  x
+      1 demo        20   0 13668  5208  x
+      8 demo        20   0 14204  4340  x
+      9 demo        20   0  4848  3876  x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+F1Help  F2Setup F3SearchF4FilterF5Tree  x
+[0] 0:bash*                                             "remote" 07:20 30-Sep-26

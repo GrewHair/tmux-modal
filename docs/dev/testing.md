@@ -58,7 +58,7 @@ so the SSH tier fails instead of skipping. Keep it green before every push.
   [-meta key=value] %N`, or the scripts: `scripts/fixtures/htop.sh LABEL
   docker run --rm -it IMAGE htop`, `scripts/fixtures/apps.sh [image-tag]
   [app...]` (every other app, one function per app listing the states),
-  `scripts/fixtures/nested.sh`. All use `scripts/fixtures/lib.sh`: private
+  `scripts/fixtures/nested.sh` (`nested.sh colour IMAGE...` adds `nested/tmux-<version>/` from the `tmux-src.Dockerfile` images). All use `scripts/fixtures/lib.sh`: private
   `-L` socket, `-f /dev/null`, status off, neutral pane title; `snap FILE
   APP MODE NOTE [key=value...]`. Settle ~1.3 s after Escape for ncurses
   apps (F29); btop needs one key per write (F31) and its CPU model is

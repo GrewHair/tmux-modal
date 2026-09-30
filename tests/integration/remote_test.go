@@ -240,6 +240,9 @@ func TestNestedTmuxRemaps(t *testing.T) {
 	h.expectScreen("main", "PROMPT> j")
 	h.typeKeys("Escape")
 	h.expectState("main", "keyecho/normal/commanding", "modal-keyecho")
+	// The remote tmux binds the arrow keys with -r: an Up (k remapped)
+	// within repeat-time (500 ms) of C-b Left would select a pane.
+	time.Sleep(700 * time.Millisecond)
 	h.typeKeys("k")
 	h.expectScreen("main", "last=[Up]")
 }
@@ -285,26 +288,36 @@ func TestNestedTmuxHtop(t *testing.T) {
 	h.expectState("main", "htop/normal/commanding", "modal-htop")
 }
 
-// Inner splits: the keyboard belongs to whichever inner pane is active,
-// which the outer screen cannot tell. Even with the inner status line off,
-// the borders give the nesting away.
+// Inner splits: the keyboard belongs to whichever inner pane is active.
+// Even with the inner status line off, the borders give the nesting away,
+// and tmux's default green active border shows which inner pane has the
+// keyboard (keyecho hides no cursor state the daemon could use, so this is
+// the colour at work): that pane is read and remapped on its own. With the
+// shell beside it focused, nothing is remapped.
 func TestNestedTmuxSplit(t *testing.T) {
 	requireRemote(t)
 	h := newHarness(t, opts{cmd: sshCmd("tmux new-session " + remoteKeyecho + ` \; set status off \; split-window -h -d`)})
 	h.startDaemon()
 	h.expectScreen("main", "KEYECHO TEST APPLICATION")
-	h.waitFor("inner split", 5*time.Second, func() bool { return strings.Contains(h.screen("main"), "│") })
-	// The banner row now ends in the border and the right pane, so the
-	// app may not even be identified; either way the mode is unknown.
-	// Wait for both together: a capture taken while the inner tmux is
-	// still drawing the split can already be unknown without showing the
-	// whole border yet; the next capture has it.
-	h.waitFor("unknown mode with border evidence", 5*time.Second, func() bool {
-		return strings.HasSuffix(h.state("main"), "/unknown/unknown") && h.keyTable() == "root" &&
+	h.waitFor("keyecho read in the focused inner pane", 8*time.Second, func() bool {
+		return h.state("main") == "keyecho/normal/commanding" && h.keyTable() == "modal-keyecho" &&
 			h.option("main", "@modal_nested") == "borders"
 	})
 	h.typeKeys("j")
-	h.expectScreen("main", "last=[j]")
+	h.expectScreen("main", "last=[Down]")
+	// The shell on the right: C-b twice, the local tmux sends one on to
+	// the remote tmux.
+	h.typeKeys("C-b", "C-b", "Right")
+	h.waitFor("unknown with the shell focused", 8*time.Second, func() bool {
+		return strings.HasSuffix(h.state("main"), "/unknown/unknown") && h.keyTable() == "root"
+	})
+	h.typeKeys("C-b", "C-b", "Left")
+	h.expectState("main", "keyecho/normal/commanding", "modal-keyecho")
+	// The remote tmux binds the arrow keys with -r: an Up (k remapped)
+	// within repeat-time (500 ms) of C-b Left would select a pane.
+	time.Sleep(700 * time.Millisecond)
+	h.typeKeys("k")
+	h.expectScreen("main", "last=[Up]")
 }
 
 // A hooks-only spec still reports modes through a nested tmux (they drive

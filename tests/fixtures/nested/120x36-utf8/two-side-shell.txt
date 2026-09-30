@@ -1,0 +1,46 @@
+# tmux-modal fixture v1
+# size: 120x36
+# cursor: 76,0
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_mode: unknown
+# note: two inner panes side by side, the shell (right) focused
+# ---
+                                                            │demo@remote:/$
+    0[                  0.0%]   4[                   0.0%]  │
+    1[                  0.0%]   5[                   0.0%]  │
+    2[                  0.0%]   6[                   0.0%]  │
+    3[                  0.0%]   7[                   0.0%]  │
+  Mem[|||||||    1.21G/15.4G] Tasks: 3, 0 thr, 0 kthr; 1 r  │
+  Swp[              0K/4.00G] Load average: 0.42 0.43 0.21  │
+                              Uptime: 01:25:11              │
+                                                            │
+  [Main] [I/O]                                              │
+    PID USER       PRI  NI  VIRT   RES   SHR S  CPU%▽MEM%   │
+      1 demo        20   0 13676  5376  4676 S   N/A  0.0  0│
+      8 demo        20   0 14208  4392  3236 S   N/A  0.0  0│
+      9 demo        20   0  9784  4364  3608 R   N/A  0.0  0│
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+F1Help  F2Setup F3SearchF4FilterF5Tree  F6SortByF7Nice -F8Ni│
+[0] 0:htop*                                                                                     "remote" 07:20 30-Sep-26

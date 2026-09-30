@@ -248,9 +248,8 @@ Known limits — the screen alone cannot tell:
   tildes on screen) reads as unknown; once vim has been seen, it is known.
 - **Inside a remote tmux** it works the same (the inner status line is
   removed first; low confidence), also when the remote window is split:
-  vim shows its cursor, so the inner pane with the cursor is the one read.
-  While vim redraws (Escape out of visual, say) it hides the cursor for a
-  moment, which reads as unknown for about 100 ms. Escape takes the inner tmux's `escape-time` (500 ms on tmux 3.4; `set -s
+  the focused inner pane (green border, or the cursor) is the one read.
+  Escape takes the inner tmux's `escape-time` (500 ms on tmux 3.4; `set -s
   escape-time 10` on the remote fixes that) plus vim's `ttimeoutlen`.
 
 ## Key remapping
@@ -447,14 +446,20 @@ then:
   (`prefix _ l`), or set `@modal_nested_remap off` to leave every nested
   pane alone (N/A).
 - **Inner window split into several panes:** the outer screen shows all
-  inner panes at once. tmux draws the cursor only in the pane that has the
-  keyboard, so while the cursor is visible that inner pane is cut out
-  along the borders (splits within splits too) and read on its own: vim,
-  prompts and anything else that shows a cursor work as usual. When the
-  cursor is hidden (htop and btop hide it) nothing on screen says which
-  pane is focused: N/A (`unknown`, pass-through), keys untouched. A shell
-  in an inner pane is N/A too (no spec knows a shell on the alternate
-  screen; `MODAL_TYPING=1` either way).
+  inner panes at once. The focused one is cut out along the borders
+  (splits within splits too) and read on its own, so htop, vim and the
+  rest work as in an unsplit remote tmux, keys remapped included. It is
+  found by tmux's default active-border colour (green beside the focused
+  pane; with two panes only the half of the border on its side — the same
+  on tmux 3.0 to 3.7), or else by the cursor, which tmux draws only in the
+  focused pane. A remote tmux with a themed border colour falls back to the
+  cursor alone: htop and btop hide it, so they are N/A there. If colour and
+  cursor disagree, or neither says anything: N/A (`unknown`,
+  pass-through). A shell in an inner pane is N/A too (no spec knows a
+  shell on the alternate screen; `MODAL_TYPING=1` either way). tmux repeats
+  arrow keys after the prefix for 500 ms (`repeat-time`): a remapped `k`
+  (Up) typed right after `prefix Left` on the remote moves to the pane
+  above.
 - `@modal_nested` / `MODAL_NESTED` say why a pane was taken as nested:
   `command`, `status-line`, `borders` or `title`.
 

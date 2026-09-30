@@ -157,3 +157,79 @@ func TestScreenSub(t *testing.T) {
 		t.Error("cursor outside the rectangle must be hidden")
 	}
 }
+
+// The border colour shows the focused inner pane even with the cursor
+// hidden (htop), but only in tmux's default colours; anything else, or a
+// cursor in another pane, and nothing is guessed.
+func TestNestedFocusColour(t *testing.T) {
+	set := bundledSet(t)
+	load := func(name string) *screen.Screen {
+		f, err := screen.LoadFixture(fixtureRoot + "/nested/tmux-3.7c/" + name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return f.Screen
+	}
+	recolour := func(s *screen.Screen, from, to screen.Color) {
+		for _, row := range s.Cells {
+			for i := range row {
+				if row[i].Fg == from && strings.ContainsRune("│─├┤┬┴┼", row[i].Ch) {
+					row[i].Fg = to
+				}
+			}
+		}
+	}
+	green := screen.Color{Kind: screen.ColorIndexed, Index: 2}
+	yellow := screen.Color{Kind: screen.ColorIndexed, Index: 3}
+
+	s := load("three-htop.txt")
+	n := classify.DetectNested(set, s)
+	if n.Focus == nil || n.FocusBy != "border colour" || n.Focus.Y != 0 {
+		t.Fatalf("three panes, htop on top: focus %v by %q", n.Focus, n.FocusBy)
+	}
+	top := *n.Focus
+
+	themed := load("three-htop.txt")
+	recolour(themed, green, yellow)
+	if n := classify.DetectNested(set, themed); n.Focus != nil {
+		t.Errorf("a themed border colour: focus %v by %q, want none", *n.Focus, n.FocusBy)
+	}
+
+	elsewhere := load("three-htop.txt")
+	elsewhere.Cursor = screen.Cursor{X: 2, Y: top.H + 2, Visible: true}
+	if n := classify.DetectNested(set, elsewhere); n.Focus != nil {
+		t.Errorf("the cursor in another pane than the green border: focus %v by %q, want none", *n.Focus, n.FocusBy)
+	}
+
+	agree := load("three-htop.txt")
+	agree.Cursor = screen.Cursor{X: 2, Y: 2, Visible: true}
+	if n := classify.DetectNested(set, agree); n.Focus == nil || *n.Focus != top {
+		t.Errorf("cursor and border agree: focus %v, want %+v", n.Focus, top)
+	}
+
+	// vim hides the cursor for ~100 ms while it redraws: its pane is still
+	// known by the border, so it does not flicker to unknown.
+	for _, dir := range []string{"120x36-utf8", "80x24-acs"} {
+		f, err := screen.LoadFixture(fixtureRoot + "/nested/" + dir + "/split-vim-normal.txt")
+		if err != nil {
+			t.Fatal(err)
+		}
+		f.Screen.Cursor.Visible = false
+		if res, _ := classify.Pane(set, f.Screen, "vim"); res.Mode != "normal" {
+			t.Errorf("%s: split vim with the cursor hidden: %s (%s)", dir, res.Mode, res.Reason)
+		}
+	}
+
+	for _, name := range []string{"two-side-htop.txt", "two-stacked-htop.txt"} {
+		s := load(name)
+		n := classify.DetectNested(set, s)
+		if n.Focus == nil || n.Focus.X != 0 || n.Focus.Y != 0 {
+			t.Errorf("%s: focus %v, want the first pane", name, n.Focus)
+		}
+		all := load(name)
+		recolour(all, screen.Color{}, green)
+		if n := classify.DetectNested(set, all); n.Focus != nil {
+			t.Errorf("%s, the whole border green: focus %v, want none", name, *n.Focus)
+		}
+	}
+}

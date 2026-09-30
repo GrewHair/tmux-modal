@@ -227,8 +227,10 @@ func (d *Daemon) cycle() {
 				j.bottom = d.cfg.CaptureRows
 			}
 		}
+		// A nested pane always gets colour: across an inner split, tmux's
+		// green active border shows which inner pane has the keyboard.
 		if d.cfg.Colour {
-			j.colour = (sp != nil && sp.NeedsColour) || (sp == nil && d.anyColour())
+			j.colour = (sp != nil && sp.NeedsColour) || (sp == nil && d.anyColour()) || st.cur.Nested != ""
 		}
 		args := tmux.CaptureArgs(p.ID, p.Height, j.bottom, j.colour)
 		if c, ok := r.(*tmux.Control); ok {

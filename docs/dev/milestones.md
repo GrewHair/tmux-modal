@@ -153,6 +153,7 @@ No milestones left. Work now comes from the owner's dogfooding, one
 request at a time, each released as a minor version:
 - 1.1.0: debconf and whiptail (D33, F42, backlog B8).
 - 1.1.1: fix, output gating crashed tmux 3.2–3.6 (F43, D28 amended).
+- 1.2.0: split remote tmux read by the border colour too (B1 done, D34, F44).
 
 The pattern that worked for a new app: probe it in the images first
 (scratch script on a private `-L` socket; what the cursor does, which

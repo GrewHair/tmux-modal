@@ -361,3 +361,16 @@ control client (the "human"), and a second one that stops reading for
 400+ toggles on all of them. Benchmark with pause, 20 htop panes, scope
 active: daemon 0.20 / 0.20 / 0.45 %, server +0.15 / +0.60 / −0.05 %
 (frugal / balanced / snappy; noise level, as with off).
+
+**F44. tmux's default active-border colouring, 3.0a to 3.7c.** Probed with
+a default inner tmux (tmux-src images) under an outer `capture-pane -e`:
+border cells beside the active pane are `fg=green` (SGR 32), all others
+default; junctions follow the same rule. With exactly two panes only half
+of the shared border is green: the top half when the left pane is active,
+the bottom half for the right one; the left half for the top pane, the
+right half for the bottom one. With three or more panes every border cell
+beside the active pane is green, including a border it shares with a pane
+that is not active. Byte-identical grids on 3.0a, 3.2a, 3.3a, 3.4, 3.5a,
+3.6b and 3.7c. Also seen: after `prefix <arrow>` the remote tmux takes
+another arrow within `repeat-time` (500 ms) as a repeat, so a remapped
+`k` → Up right after `prefix Left` moves panes (test pitfall; README).

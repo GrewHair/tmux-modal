@@ -191,10 +191,10 @@ func TestNestedTmuxVim(t *testing.T) {
 			}
 		})
 	}
-	// A split remote window: the inner pane with the cursor is the one
-	// with the keyboard. vim shows its cursor in every mode, so it is read
-	// while focused; the shell beside it (no spec) is unknown, and so is
-	// htop, which hides the cursor.
+	// A split remote window: the focused inner pane (green border, cursor)
+	// is read on its own. vim is read while focused; the shell beside it
+	// (no spec) is unknown; htop there is read by the border colour alone
+	// (it hides the cursor) and remapped.
 	t.Run("split", func(t *testing.T) {
 		tmux, file := remoteTmux(t)
 		h := newHarness(t, opts{w: 100, h: 30,
@@ -220,10 +220,7 @@ func TestNestedTmuxVim(t *testing.T) {
 			return strings.HasSuffix(h.state("main"), "/unknown/unknown")
 		})
 		h.typeKeys("htop", "Enter")
-		time.Sleep(time.Second)
-		if st := h.state("main"); !strings.HasSuffix(st, "/unknown/unknown") {
-			t.Errorf("htop focused in an inner split: %s, want unknown", st)
-		}
+		h.expectState("main", "htop/normal/commanding", "modal-htop")
 		h.typeKeys("q")
 		time.Sleep(500 * time.Millisecond) // htop gone, back at the prompt
 		h.typeKeys("C-b", "C-b", "Left")

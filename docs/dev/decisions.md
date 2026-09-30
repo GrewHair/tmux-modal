@@ -417,6 +417,28 @@ in the other pane. No extra captures or colour for this: nested panes were
 already captured in full. Accepted side effect: vim hides the cursor for a
 moment while redrawing, which reads as unknown for ~100 ms in a split.
 
+## D34. Split remote tmux: the border colour too — owner, after 1.1.1
+
+The rest of B1, at the owner's request, for default configs only ("if I
+customise the remote tmux I'd set up a cleverer integration anyway").
+D32's worry was unfounded: the colouring is the same on every tmux from
+3.0a to 3.7c (F44), half-border rule for two panes included.
+`focusedPane` reads the border colour first (`colourFocus`: the border
+cells along each inner pane's sides, corners excluded; only green (index
+2) and default fg on a default bg are accepted, anything else is a theme
+and the colour says nothing; the active pane is the one whose sides are
+exactly the green cells; with two panes, a green first half means the
+first pane, a green second half the second), then the cursor. Colour and
+cursor disagreeing, or neither saying anything: unknown. `Nested.FocusBy`
+names the evidence in the reason. The daemon now captures nested panes
+with colour (`st.cur.Nested != ""`, unless `@modal_color_matching off`),
+which also ends vim's split-only flicker (its pane is known by the border
+while the cursor is hidden). Fixtures: new htop-focused layouts in
+`nested/{120x36-utf8,80x24-acs}` (tmux 3.4) and `nested/tmux-<v>/` for
+3.0a, 3.2a, 3.3a, 3.5a, 3.6b, 3.7c (`nested.sh colour IMAGE...`, images
+from `tmux-src.Dockerfile`). `TestNestedFocusColour` covers a themed
+colour, cursor/colour disagreement and an all-green border.
+
 ## D33. debconf and whiptail get keys — owner, after 1.0
 
 The owner met needrestart's debconf dialog ("Daemons using outdated

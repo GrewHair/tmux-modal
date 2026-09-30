@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-29, 1.1.1 (fix: tmux server crash from output gating on tmux < 3.7, F43). All brief milestones done; next: B1 colour (owner request, in progress)._
+_Last updated: 2026-09-30, 1.2.0 (split remote tmux read by the border colour too, D34; 1.1.1 fixed a tmux crash from output gating, F43). All brief milestones done; next: whatever the owner's dogfooding brings up._
 
 ## Milestones (brief §12)
 
@@ -18,7 +18,7 @@ _Last updated: 2026-09-29, 1.1.1 (fix: tmux server crash from output gating on t
 ## Where things live
 
 - Repo: https://github.com/GrewHair/tmux-modal (public). CI: `.github/workflows/ci.yml`; release on `v*` tags: `release.yml` (static binaries for linux/darwin/freebsd, amd64/arm64 + linux/arm, SHA256SUMS).
-- Current release: **v1.1.1** (fix: pause, not off, for unwatched panes — the off action crashed tmux 3.2–3.6, F43). v1.1.0 was debconf and whiptail dialogs remap (D33). v1.0.0 was M8 (split remote tmux read by the cursor, D32; README/benchmark/CHANGELOG). Each release's notes are its `CHANGELOG.md` section (`release.yml` fails without one). v0.6.0 was vim and neovim for the hook; v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 (bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
+- Current release: **v1.2.0** (split remote tmux: the focused inner pane by the default green border too, D34). v1.1.1 was the fix: pause, not off, for unwatched panes — the off action crashed tmux 3.2–3.6, F43. v1.1.0 was debconf and whiptail dialogs remap (D33). v1.0.0 was M8 (split remote tmux read by the cursor, D32; README/benchmark/CHANGELOG). Each release's notes are its `CHANGELOG.md` section (`release.yml` fails without one). v0.6.0 was vim and neovim for the hook; v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 (bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
 
 ## The owner is dogfooding it
 
@@ -66,11 +66,11 @@ Don't rewrite again without the owner asking.
   `ttimeoutlen`).
 - less over SSH is recognised only once it shows one of its own prompts
   (`(END)`, HELP, a message); REPLs only locally (D25, D26).
-- Inner tmux split into several panes: the inner pane with the visible
-  cursor is read (D32); with the cursor hidden (htop, btop) `unknown`. The
-  border-colour signal for that is in [backlog.md](backlog.md) B1. vim in
-  such a split flickers to `unknown` for ~100 ms while it redraws (it
-  hides the cursor); a grace-period fix is sketched in B1.
+- Inner tmux split into several panes: the focused inner pane is found by
+  the default green border (D34, tmux 3.0–3.7) or the cursor (D32). A
+  themed remote border colour falls back to the cursor (htop/btop N/A
+  there). After `prefix <arrow>` on the remote, a remapped k/j within
+  500 ms is taken by the remote tmux as a repeat (moves panes).
 - Remapping through a nested tmux: after the inner prefix key, a remapped
   key arrives remapped (`prefix l` → `prefix Right`); owner accepted.
 - Inside a remote tmux, Escape reaches the app after the inner tmux's

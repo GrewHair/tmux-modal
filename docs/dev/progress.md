@@ -142,3 +142,11 @@
   (D28 amended), `TestOutputGateSlowReader`. Released v1.1.1. (B1's colour
   work had just started: tmux-src images for 3.0a–3.7c built, nothing
   else yet.)
+
+**2026-09-30 (1.2.0)**
+- Owner asked for B1's colour part, default configs only, a few recent
+  tmux versions. Probed 3.0a–3.7c (F44: identical, half-border rule for
+  two panes); built `colourFocus` (D34), nested panes captured with
+  colour; fixtures for tmux 3.4 (both border alphabets) and six more
+  versions; `TestNestedFocusColour`; the split integration tests now
+  expect htop/keyecho read and remapped in a split. Released v1.2.0.

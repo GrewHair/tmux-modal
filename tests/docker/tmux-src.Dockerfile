@@ -1,5 +1,8 @@
 # tmux built from a release tarball, for probing formats newer than the
-# distribution's tmux (e.g. #{cursor_shape}, absent in 3.4).
+# distribution's tmux (e.g. #{cursor_shape}, absent in 3.4) and for the
+# per-version fixtures (scripts/fixtures/nested.sh colour).
+# docker build -f tests/docker/tmux-src.Dockerfile --build-arg TMUX_VERSION=3.7c \
+#   -t tmux-modal-tmuxsrc:3.7c tests/docker
 FROM ubuntu:24.04
 ARG TMUX_VERSION=3.5a
 ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 TERM=xterm-256color

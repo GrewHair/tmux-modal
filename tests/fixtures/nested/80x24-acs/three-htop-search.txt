@@ -1,0 +1,35 @@
+# tmux-modal fixture v1
+# size: 80x24
+# cursor: 40,10
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: htop
+# expect_mode: insert
+# note: three inner panes, htop's search open
+# ---
+
+    0[|||                         5.6%]   4[|||                          4.6%]
+    1[||                          4.2%]   5[||                           1.1%]
+    2[||                          1.1%]   6[||                           2.3%]
+    3[||                          1.1%]   7[||                           1.1%]
+  Mem[||||||||||           1.26G/15.4G] Tasks: 5, 0 thr, 0 kthr; 1 running
+  Swp[                        0K/4.00G] Load average: 0.78 0.53 0.25
+                                        Uptime: 01:25:44
+
+  [Main] [I/O]
+F3Next  S-F3Prev   EscCancel    Search:
+qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqwqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+demo@remote:/$                          xdemo@remote:/$
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+                                        x
+[0] 0:htop*                                             "remote" 07:20 30-Sep-26

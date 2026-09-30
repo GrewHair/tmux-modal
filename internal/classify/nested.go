@@ -27,6 +27,8 @@ type Nested struct {
 	// the screen without the inner status line; nil when Split and the
 	// screen does not show which one it is.
 	Focus *Rect
+	// FocusBy is what showed the focus: "border colour" or "cursor".
+	FocusBy string
 }
 
 // Rect is an area of the screen: an inner pane.
@@ -101,7 +103,7 @@ func DetectNested(set *spec.Set, s *screen.Screen) Nested {
 		if n.Evidence == "" {
 			n.Evidence = "borders"
 		}
-		n.Focus = focusedPane(s.WithoutRow(n.StatusRow))
+		n.Focus, n.FocusBy = focusedPane(s.WithoutRow(n.StatusRow))
 	}
 	if n.Evidence == "" && titleRE.MatchString(s.Title) {
 		n.Evidence = "title"
@@ -192,30 +194,146 @@ func borderRow(row []rune) bool {
 	return true
 }
 
-// focusedPane finds the inner pane that has the keyboard. tmux draws the
-// terminal cursor only in the active pane, and only while that pane shows
-// it: a visible cursor is inside the focused pane. A hidden cursor (htop,
-// btop) or one outside every pane (the inner command prompt, on the status
-// line removed from s) says nothing, and nothing is guessed. The active
-// border colour would tell more, but depends on the inner tmux's version
-// and theme (backlog).
-func focusedPane(s *screen.Screen) *Rect {
-	if !s.Cursor.Visible {
+// focusedPane finds the inner pane that has the keyboard, and says how.
+//
+// The border colour first. tmux's default pane-active-border-style is
+// green and pane-border-style the default colour: every border cell beside
+// the active pane is green and every other one is not (F44; the same on
+// tmux 3.0a to 3.7c). With exactly two panes tmux colours only the half of
+// the shared border on the active pane's side: the top or left half for
+// the first pane, the bottom or right half for the second. Any other
+// colour on a border means a theme, and the colour then says nothing.
+//
+// Then the cursor: tmux draws the terminal cursor only in the active pane,
+// and only while that pane shows it, so a visible cursor is inside the
+// focused pane. Needed when the capture has no colour.
+//
+// If the two disagree, or neither says anything (no colour and a hidden
+// cursor, or the cursor on the inner command prompt, removed from s),
+// nothing is guessed.
+func focusedPane(s *screen.Screen) (*Rect, string) {
+	grid := runeGrid(s)
+	panes := innerPanes(grid, s.Width)
+	byColour := colourFocus(s, grid, panes)
+	var byCursor *Rect
+	if s.Cursor.Visible {
+		for i := range panes {
+			if panes[i].contains(s.Cursor.X, s.Cursor.Y) {
+				byCursor = &panes[i]
+			}
+		}
+	}
+	switch {
+	case byColour != nil && byCursor != nil && *byColour != *byCursor:
+		return nil, ""
+	case byColour != nil:
+		return byColour, "border colour"
+	case byCursor != nil:
+		return byCursor, "cursor"
+	}
+	return nil, ""
+}
+
+type cell struct{ x, y int }
+
+// colourFocus reads the active pane from the border colours (see
+// focusedPane); nil when the capture has no colour or the colours are not
+// tmux's defaults.
+func colourFocus(s *screen.Screen, grid [][]rune, panes []Rect) *Rect {
+	if s.Cells == nil || len(panes) < 2 {
 		return nil
 	}
-	for _, p := range innerPanes(s) {
-		if p.contains(s.Cursor.X, s.Cursor.Y) {
-			return &p
+	// The border cells along each pane's sides, corners excluded (a
+	// junction touches several panes).
+	sides := make([][]cell, len(panes))
+	green := map[cell]bool{}
+	for i, p := range panes {
+		add := func(x, y int) {
+			if y < 0 || y >= len(grid) || x < 0 || x >= s.Width {
+				return
+			}
+			if r := grid[y][x]; !vBorder[r] && !hBorder[r] {
+				return
+			}
+			sides[i] = append(sides[i], cell{x, y})
 		}
+		for y := p.Y; y < p.Y+p.H; y++ {
+			add(p.X-1, y)
+			add(p.X+p.W, y)
+		}
+		for x := p.X; x < p.X+p.W; x++ {
+			add(x, p.Y-1)
+			add(x, p.Y+p.H)
+		}
+	}
+	for _, side := range sides {
+		for _, c := range side {
+			if _, seen := green[c]; seen {
+				continue
+			}
+			sc, ok := s.Cell(c.y, c.x)
+			if !ok || sc.Bg.Kind != screen.ColorDefault {
+				return nil
+			}
+			switch {
+			case sc.Fg.Kind == screen.ColorIndexed && sc.Fg.Index == 2:
+				green[c] = true
+			case sc.Fg.Kind == screen.ColorDefault:
+				green[c] = false
+			default:
+				return nil
+			}
+		}
+	}
+	ngreen := 0
+	for _, g := range green {
+		if g {
+			ngreen++
+		}
+	}
+	if ngreen == 0 {
+		return nil
+	}
+	// The active pane: its sides are exactly the green cells.
+	var found *Rect
+	for i := range panes {
+		all := len(sides[i]) == ngreen
+		for _, c := range sides[i] {
+			all = all && green[c]
+		}
+		if all {
+			if found != nil {
+				return nil
+			}
+			found = &panes[i]
+		}
+	}
+	if found != nil || len(panes) != 2 {
+		return found
+	}
+	// Two panes: half of the one border between them. sides lists it top
+	// to bottom or left to right.
+	shared := sides[0]
+	n := 0
+	for n < len(shared) && green[shared[n]] {
+		n++
+	}
+	if n > 0 && n < len(shared) && n == ngreen {
+		return &panes[0]
+	}
+	n = 0
+	for n < len(shared) && !green[shared[n]] {
+		n++
+	}
+	if n > 0 && n < len(shared) && len(shared)-n == ngreen {
+		return &panes[1]
 	}
 	return nil
 }
 
-// innerPanes cuts a full-screen grid without the inner status line into
-// the inner panes the way tmux lays them out: every split spans the whole
-// of the area it divides (the window first, then each part), so a border
-// running across an area cuts it in two and each part is cut again.
-func innerPanes(s *screen.Screen) []Rect {
+// runeGrid is a full-screen grid, one rune per column (a wide character's
+// second column is 0), padded with blanks.
+func runeGrid(s *screen.Screen) [][]rune {
 	grid := make([][]rune, len(s.Lines))
 	for r, line := range s.Lines {
 		row := make([]rune, s.Width)
@@ -232,6 +350,15 @@ func innerPanes(s *screen.Screen) []Rect {
 		}
 		grid[r] = row
 	}
+	return grid
+}
+
+// innerPanes cuts a full-screen grid without the inner status line into
+// the inner panes the way tmux lays them out: every split spans the whole
+// of the area it divides (the window first, then each part), so a border
+// running across an area cuts it in two and each part is cut again. The
+// first part of each cut (left or top) comes first.
+func innerPanes(grid [][]rune, width int) []Rect {
 	var out []Rect
 	var cut func(a Rect, depth int)
 	cut = func(a Rect, depth int) {
@@ -257,7 +384,7 @@ func innerPanes(s *screen.Screen) []Rect {
 		}
 		out = append(out, a)
 	}
-	cut(Rect{0, 0, s.Width, len(grid)}, 0)
+	cut(Rect{0, 0, width, len(grid)}, 0)
 	return out
 }
 

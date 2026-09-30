@@ -1,0 +1,47 @@
+# tmux-modal fixture v1
+# size: 120x36
+# cursor: 40,16
+# cursor_visible: 1
+# alternate_on: 1
+# command: docker
+# title: fixture
+# expect_app: htop
+# expect_mode: insert
+# note: three inner panes, htop's search open
+# ---
+
+    0[||||                                            5.7%]   4[||                                               1.9%]
+    1[|                                               1.6%]   5[|||                                              3.1%]
+    2[||||                                            5.4%]   6[|                                                0.8%]
+    3[||                                              2.0%]   7[||                                               2.4%]
+  Mem[||||||||||||||                           1.22G/15.4G] Tasks: 5, 0 thr, 0 kthr; 1 running
+  Swp[                                            0K/4.00G] Load average: 0.54 0.46 0.22
+                                                            Uptime: 01:25:17
+
+  [Main] [I/O]
+    PID USER       PRI  NI  VIRT   RES   SHR S  CPU%▽MEM%   TIME+  Command
+      8 demo        20   0 14208  4712  3512 S   0.4  0.0  0:00.01 tmux new-session htop
+      1 demo        20   0 13676  5384  4688 S   0.0  0.0  0:00.02 tmux new-session htop
+      9 demo        20   0  9784  4472  3708 R   0.0  0.0  0:00.00 htop
+     11 demo        20   0  9428  4328  3700 S   0.0  0.0  0:00.00 -bash
+     20 demo        20   0  9428  4344  3716 S   0.0  0.0  0:00.00 -bash
+F3Next  S-F3Prev   EscCancel    Search:
+────────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────
+demo@remote:/$                                              │demo@remote:/$
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+                                                            │
+[0] 0:htop*                                                                                     "remote" 07:20 30-Sep-26

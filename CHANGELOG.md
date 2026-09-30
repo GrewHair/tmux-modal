@@ -2,6 +2,14 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.2.0 — 2026-09-30
+
+- **Split remote tmux, any app:** the focused inner pane is now also found
+  by tmux's default green active border, so htop and btop (which hide the
+  cursor) are read and remapped there too, and vim no longer flickers to
+  N/A while it redraws. Checked on tmux 3.0 to 3.7; a remote tmux with a
+  themed border colour falls back to the cursor, as before.
+
 ## 1.1.1 — 2026-09-29
 
 - **Fix: the tmux server could crash** (tmux 3.2 to 3.6) while tmux-modal
