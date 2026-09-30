@@ -104,7 +104,11 @@ func DetectNested(set *spec.Set, s *screen.Screen) Nested {
 			break
 		}
 	}
-	if s.Top == 0 && len(s.Lines) == s.Height && hasBorders(s, n.StatusRow) {
+	// Borders as the only evidence must also be in tmux's default border
+	// colours: a TUI's own full-width rule (Claude Code's grey one under
+	// its prompt) is otherwise indistinguishable from a split.
+	strict := n.Evidence == ""
+	if s.Top == 0 && len(s.Lines) == s.Height && hasBorders(s, n.StatusRow, strict) {
 		n.Split = true
 		if n.Evidence == "" {
 			n.Evidence = "borders"
@@ -149,7 +153,11 @@ func commandClaimed(set *spec.Set, cmd string) bool {
 // it on at least half of the rows, which words never have.
 //
 // Either way the border must end in a plain line at the window edges.
-func hasBorders(s *screen.Screen, statusRow int) bool {
+//
+// With defaultColours (and a colour capture), a border cell must also be in
+// tmux's default border colours: default or green foreground (the active
+// border) on the default background (F46).
+func hasBorders(s *screen.Screen, statusRow int, defaultColours bool) bool {
 	if s.Width < 3 || s.Height < 3 {
 		return false
 	}
@@ -169,6 +177,9 @@ func hasBorders(s *screen.Screen, statusRow int) bool {
 		for _, ch := range line {
 			if c >= s.Width {
 				break
+			}
+			if (hBorder[ch] || vBorder[ch]) && defaultColours && !tmuxBorderColour(s, r, c) {
+				ch = ' '
 			}
 			row[c] = ch
 			if hBorder[ch] || vBorder[ch] {
@@ -190,6 +201,17 @@ func hasBorders(s *screen.Screen, statusRow int) bool {
 		}
 	}
 	return false
+}
+
+// tmuxBorderColour reports whether a cell has one of tmux's default border
+// colours; true when the capture has no colour.
+func tmuxBorderColour(s *screen.Screen, r, c int) bool {
+	cell, ok := s.Cell(r, c)
+	if !ok || s.Cells == nil {
+		return true
+	}
+	fg := cell.Fg.Kind == screen.ColorDefault || (cell.Fg.Kind == screen.ColorIndexed && cell.Fg.Index == 2)
+	return fg && cell.Bg.Kind == screen.ColorDefault
 }
 
 // borderRow reports a horizontal border across a whole area: border

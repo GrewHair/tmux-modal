@@ -269,3 +269,32 @@ func TestNestedBadgeFacts(t *testing.T) {
 		t.Errorf("htop's bottom bar gone, sticky: evidence %q (%s), want mem", res.Evidence, res.Reason)
 	}
 }
+
+// A TUI's own full-width rule is not a tmux border when it is the only
+// evidence: tmux draws borders in default or green, Claude Code draws the
+// rule under its prompt in grey (colour 244). F46.
+func TestNestedRuleColour(t *testing.T) {
+	set := bundledSet(t)
+	rule := strings.Repeat("─", 20)
+	mk := func(sgr string) *screen.Screen {
+		ansi := "some text above\n> a prompt\n" + sgr + rule + "\x1b[0m\nmore text below\nand a last line"
+		s := screen.FromText("some text above\n> a prompt\n"+rule+"\nmore text below\nand a last line", 20, 5)
+		s.Cells = screen.ParseANSI(ansi, 5)
+		s.Command, s.AltScreen = "ssh", true
+		return s
+	}
+	if n := classify.DetectNested(set, mk("\x1b[38;5;244m")); n.Evidence != "" {
+		t.Errorf("grey rule: nested %q (split %v), want none", n.Evidence, n.Split)
+	}
+	if n := classify.DetectNested(set, mk("")); n.Evidence != "borders" || !n.Split {
+		t.Errorf("default-coloured rule: nested %q split %v, want borders", n.Evidence, n.Split)
+	}
+	if n := classify.DetectNested(set, mk("\x1b[32m")); n.Evidence != "borders" {
+		t.Errorf("green (active) rule: nested %q, want borders", n.Evidence)
+	}
+	mono := mk("\x1b[38;5;244m")
+	mono.Cells = nil
+	if n := classify.DetectNested(set, mono); n.Evidence != "borders" {
+		t.Errorf("no colour captured: nested %q, want borders (nothing to tell them apart)", n.Evidence)
+	}
+}

@@ -381,3 +381,15 @@ reports `block` in normal mode and `bar` in insert, and the daemon
 publishes both (`@modal_cursor_shape`, the `cursor` badge) with the mode
 right each time (`NORMAL block`, `INSERT bar`). nvim sets the shape
 explicitly, so its badge always shows one. Not in CI (CI's tmux is 3.4).
+
+**F46. A TUI's full-width rule looked like a tmux split.** The owner's
+Claude Code pane read `NEST tmux SPLIT 2 cursor` (1.3.0 badges made it
+visible; before it was a plain N/A): the rule under its prompt is a
+full-width row of `─`, which `hasBorders` took for a horizontal pane
+border, the cursor in the prompt above it for the focus. The rule is
+colour 244; tmux's default borders are default fg or green on the
+default bg. Since 1.3.2, when borders are the only nesting evidence (no
+multiplexer command, no tmux status line) their cells must be in those
+colours (`tmuxBorderColour`); with a status line or the command, any
+colour still counts, so a themed remote tmux keeps its safe split
+handling. Without a colour capture nothing changes.

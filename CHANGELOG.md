@@ -2,6 +2,13 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.3.2 — 2026-09-30
+
+- Fix: a full-screen app with a full-width horizontal rule (Claude Code's
+  line under its prompt) was taken for a split remote tmux (`NEST tmux
+  SPLIT 2`). When pane borders are the only sign of a nested tmux, they
+  must now be in tmux's default border colours.
+
 ## 1.3.1 — 2026-09-30
 
 - The cursor badge draws the cursor shape the app set (`█` `▁` `▏`)

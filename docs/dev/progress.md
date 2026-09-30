@@ -165,3 +165,8 @@
   rendering and classify facts, integration tests for the border (MAP →
   MAP _ → MAP), the split facts and explain. Released v1.3.0; owner's
   border format switched to `#{E:@modal_badges}`.
+- 1.3.1: the cursor badge draws the shape (█ ▁ ▏); checked live on tmux
+  3.7c in Docker (F45, `scripts/probes/cursor-shape.sh`).
+- 1.3.2: the owner's Claude Code pane showed `NEST tmux SPLIT 2 cursor`:
+  its grey full-width rule passed for a tmux border (F46). Borders as the
+  only evidence must now have tmux's default colours.
