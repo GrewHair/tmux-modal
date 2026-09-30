@@ -78,7 +78,8 @@ Don't rewrite again without the owner asking.
 - Nested `cursor_shape` ~0.5 s delay (F11): cause unknown; only nvim on
   tmux ≥ 3.6 (backlog B2).
 - The cursor-shape veto was only unit-tested (shape set on a real
-  capture); no run on a real tmux ≥ 3.6 yet.
+  capture); a manual run on tmux 3.7c with nvim (F45) showed the shapes
+  reported and the modes right, but it is not in CI (CI's tmux is 3.4).
 - `@modal_burst_decay` is parsed but unused (reserved for a polling fallback).
 - CPU budget: measures only the daemon's own CPU, not the tmux server work
   it causes; the benchmark (README) measures both.

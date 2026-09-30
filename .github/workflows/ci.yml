@@ -24,7 +24,7 @@ jobs:
       - name: vet
         run: go vet ./...
       - name: shellcheck
-        run: shellcheck modal.tmux scripts/*.sh scripts/fixtures/*.sh examples/*.sh examples/hooks/*.sh tests/docker/*.sh
+        run: shellcheck modal.tmux scripts/*.sh scripts/fixtures/*.sh scripts/probes/*.sh examples/*.sh examples/hooks/*.sh tests/docker/*.sh
       - name: lint bundled specs
         run: go run ./cmd/tmux-modal lint --spec-path /nonexistent
       - name: unit and golden fixture tests

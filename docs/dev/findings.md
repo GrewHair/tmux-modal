@@ -374,3 +374,10 @@ that is not active. Byte-identical grids on 3.0a, 3.2a, 3.3a, 3.4, 3.5a,
 3.6b and 3.7c. Also seen: after `prefix <arrow>` the remote tmux takes
 another arrow within `repeat-time` (500 ms) as a repeat, so a remapped
 `k` → Up right after `prefix Left` moves panes (test pitfall; README).
+
+**F45. The cursor badge on a real tmux 3.7c** (`scripts/probes/cursor-shape.sh`,
+tmux-src image, the real daemon, nvim 0.9.5 with its defaults): tmux
+reports `block` in normal mode and `bar` in insert, and the daemon
+publishes both (`@modal_cursor_shape`, the `cursor` badge) with the mode
+right each time (`NORMAL block`, `INSERT bar`). nvim sets the shape
+explicitly, so its badge always shows one. Not in CI (CI's tmux is 3.4).
