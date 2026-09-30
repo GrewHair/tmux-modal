@@ -2,6 +2,22 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.3.0 — 2026-09-30
+
+- **Badges:** a row of small tags per pane, one fact each, instead of a
+  single NORMAL/INSERT/N/A: `ALT` (alternate screen), the app and how it
+  was recognised (`htop cmd+fp 110/40`: by command and fingerprint, with
+  the fingerprint's score; `mem` when only remembered; `?` when nothing
+  recognised it), the mode (`?` when not readable), `NEST tmux`,
+  `SPLIT 3 border` (inner panes, how the focused one was found), `MAP`
+  while keys are remapped (`MAP _` after the escape leader), the cursor
+  shape. Use `#{E:@modal_badges}` in a border format; every badge is also
+  its own option with its own template. The facts are pane options too
+  (`@modal_evidence`, `@modal_score`, `@modal_nested_kind`, …).
+- `tmux-modal explain [pane]`: what the daemon published for a pane and a
+  fresh classification with the full score sheet (bind it to a popup).
+- `@modal_indicator` is unchanged.
+
 ## 1.2.1 — 2026-09-30
 
 - **fzf `--reverse`** (the query on top, as `fzf-tmux --reverse` shows it)

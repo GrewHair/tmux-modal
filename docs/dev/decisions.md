@@ -439,6 +439,37 @@ while the cursor is hidden). Fixtures: new htop-focused layouts in
 from `tmux-src.Dockerfile`). `TestNestedFocusColour` covers a themed
 colour, cursor/colour disagreement and an all-green border.
 
+## D35. Badges: one fact each, in the owner's face — owner, after 1.2.1
+
+The single indicator's "N/A" covered four situations (an unrecognised
+full-screen app, an app whose mode this capture does not show, a split
+remote tmux with no visible focus, remapping through a nested tmux off),
+which left the owner guessing while dogfooding. Their brief: many small
+badges, each exactly one fact, no invented terms ("ALT" means the
+alternate screen, nothing more), nested and split as separate badges, the
+nested badge naming the multiplexer (tmux now; screen/zellij later), short
+texts (NEST, MAP); rethink only if ~10 would show at once.
+
+Badges, in order: `alt`, `app` (name + evidence cmd/title/fp joined with
+"+", or mem, + the fingerprint score vs threshold; "fp" because "screen"
+reads as GNU screen), `mode` (`?` when unreadable), `nest` (kind), `split`
+(inner panes + focus by border/cursor/?), `map` (session key table is the
+pane's app's; the escape leader's one-shot table is shown as `MAP _` by a
+tmux format in the template — the daemon never sees it; the border
+redraws on key-table changes, verified on 3.4), `cursor` (shape, tmux ≥
+3.5). Confidence stays high/low in `@modal_confidence` (owner's choice);
+the numeric fact is the score.
+
+Mechanics: `Result` carries Evidence/Score/NestedKind/InnerPanes/FocusBy;
+the daemon keeps them per pane as `detail`, outside `modeState`, so hooks
+still fire only on app/mode changes. `publishBadges` runs each cycle after
+`syncKeyTables` and sends only options whose value changed. Raw facts are
+pane options too (`@modal_alt`, `@modal_evidence`, …, `@modal_reason`).
+Templates `@modal_badge_<key>_format`, `off` hides (the config read cannot
+tell unset from empty). `@modal_indicator` unchanged for compatibility.
+`tmux-modal explain [pane]` prints the published options and a fresh
+classification with the score sheet, for a popup.
+
 ## D33. debconf and whiptail get keys — owner, after 1.0
 
 The owner met needrestart's debconf dialog ("Daemons using outdated

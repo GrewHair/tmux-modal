@@ -17,14 +17,14 @@ Two independent things can subscribe to that:
    can react — e.g. switch an outer keyboard layer off while vim is in
    normal mode and on while you type.
 
-> **Status: 1.1.** Recognises [vim and neovim](#vim-and-neovim) (for the
+> **Status: 1.3.** Recognises [vim and neovim](#vim-and-neovim) (for the
 > hook) and, through [bundled specs](#bundled-specs), htop, btop, apt's
 > package questions (debconf), whiptail dialogs, less, man, tig, lazygit,
 > k9s, ranger, lf, nnn, ncdu, mc, fzf and common REPLs,
 > any of which [can be given keys](#add-keys-to-any-app); locally, over SSH
 > and through a [remote tmux](#ssh-and-nested-tmux) (tested against a real
-> sshd). Any full-screen app no spec recognises shows as **N/A** and is
-> left completely alone.
+> sshd). Any full-screen app no spec recognises shows as `ALT ?` (N/A in
+> the older single indicator) and is left completely alone.
 
 ## Install
 
@@ -57,40 +57,96 @@ It never affects window sizes (`ignore-size`) and never sends keys to panes.
 
 ## Showing the mode
 
-For every pane the daemon publishes these pane options:
+### Badges
+
+The daemon publishes a row of small **badges** per pane, one fact each, so
+you can see at a glance what it concluded and why:
+
+```
+ALT  htop cmd+fp 110/40  NORMAL  NEST tmux  SPLIT 3 border  MAP
+```
+
+| Badge | Shown when | Default text |
+|---|---|---|
+| `alt` | the pane is on the alternate screen (a full-screen app runs) | `ALT` |
+| `app` | an app is recognised: its name, how, and the fingerprint score; `?` for a full-screen app nothing recognised (left alone) | `htop cmd+fp 110/40`, `?` |
+| `mode` | an app is recognised: its mode; `?` when this capture does not show it | `NORMAL` (green), `INSERT` (yellow), `?` |
+| `nest` | the pane shows another multiplexer, and which one | `NEST tmux` |
+| `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none) | `SPLIT 3 border` |
+| `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
+| `cursor` | the app set a cursor shape (tmux ≥ 3.5) | `bar` |
+
+How the app was recognised (`app` badge, `@modal_evidence`): `cmd` the
+pane's command, `title` its title, `fp` the screen fingerprint (its score
+against the spec's threshold follows, e.g. `110/40`; for rules without
+weights, clauses matched of all), joined with `+`; `mem` when none of them
+held on this capture and the app is remembered from an earlier one.
+
+A shell shows no badges. Put them in a pane border (`E:` makes tmux
+evaluate the `MAP _` part when it draws):
+
+```tmux
+set -g pane-border-status top
+set -g pane-border-format '#{pane_index} "#{pane_title}" #{E:@modal_badges}'
+```
+
+Each badge is also published on its own (`@modal_badge_alt`,
+`@modal_badge_app`, … `@modal_badge_cursor`) to place anywhere, and each
+has a template option, `@modal_badge_<key>_format`: keys `alt`, `app`,
+`app_unknown`, `mode_commanding`, `mode_typing`, `mode_unknown`, `nest`,
+`split`, `map`, `cursor`. `off` hides a badge. Placeholders: `{app}`
+`{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{kind}` `{panes}`
+`{focus}` `{shape}` `{leader}`; `{ name}` is a space and the value, or
+nothing when it is empty. Templates may use tmux formats and styles.
+
+**Why a pane looks the way it does:** `tmux-modal explain [pane]` prints
+the pane's published options and a fresh classification with the full
+score sheet. Bind it to a key:
+
+```tmux
+bind M display-popup -E -w 90% -h 90% "~/.config/tmux/plugins/tmux-modal/bin/tmux-modal explain #{pane_id} | less -R"
+```
+
+### Pane options
+
+For every pane the daemon publishes these options (empty ones are unset):
 
 | Option | Values |
 |---|---|
 | `@modal_app` | spec name, e.g. `htop`; empty when nothing recognised |
-| `@modal_mode` | `normal`, `insert`, …, `unknown` (a full-screen app no spec knows), `none` (no full-screen app) |
+| `@modal_mode` | `normal`, `insert`, …, `unknown` (a full-screen app no spec knows, or its mode not readable), `none` (no full-screen app) |
 | `@modal_bucket` | `commanding`, `typing`, `unknown`, `none` |
 | `@modal_confidence` | `high` or `low` |
-| `@modal_nested` | empty, or why the pane looks like it shows another tmux: `command`, `status-line`, `borders`, `title` (see [SSH and nested tmux](#ssh-and-nested-tmux)) |
-| `@modal_indicator` | a ready-rendered tag, see below |
-
-Put the indicator wherever you like; a pane border is the natural place,
-because the mode belongs to a pane:
-
-```tmux
-set -g pane-border-status top
-set -g pane-border-format '#{pane_index} "#{pane_title}" #{@modal_indicator}'
-# or the focused pane's mode in the status line:
-set -g status-right '#{@modal_indicator} %H:%M'
-```
+| `@modal_alt` | `on` on the alternate screen |
+| `@modal_evidence` | `cmd`, `title`, `fp` (joined with `+`), or `mem` |
+| `@modal_score` | the fingerprint's score against its threshold, e.g. `110/40` |
+| `@modal_nested` | empty, or why the pane looks like it shows another multiplexer: `command`, `status-line`, `borders`, `title` (see [SSH and nested tmux](#ssh-and-nested-tmux)) |
+| `@modal_nested_kind` | which one: `tmux` (also for status line, borders, title: those are tmux's), or the local command: `screen`, `zellij`, `tmate`, `byobu` |
+| `@modal_split` | number of inner panes when its window is split |
+| `@modal_focus_by` | `border`, `cursor`, or `?` (split, focus not visible) |
+| `@modal_remap` | `on` while keys are remapped for this pane |
+| `@modal_cursor_shape` | `block`, `underline`, `bar` when the app set one (tmux ≥ 3.5) |
+| `@modal_reason` | the classifier's own sentence for the latest capture |
+| `@modal_badges`, `@modal_badge_<name>` | the rendered badges, above |
+| `@modal_indicator` | the older single tag, below |
 
 Formats only read variables; all matching happens in the daemon, never in
 a format string. You do **not** need `status-interval 0`: the daemon pushes
-a status redraw (`refresh-client -S`) itself whenever an indicator changes,
-and pane borders redraw on their own.
+a status redraw (`refresh-client -S`) itself whenever a badge or the
+indicator changes, and pane borders redraw on their own.
 
-Indicator templates, one per bucket (`{MODE}`/`{mode}`, `{APP}`/`{app}`,
+### The single indicator
+
+`@modal_indicator` is one tag per pane, kept from before the badges (e.g.
+for a status line: `set -g status-right '#{@modal_indicator} %H:%M'`).
+Templates, one per bucket (`{MODE}`/`{mode}`, `{APP}`/`{app}`,
 `{bucket}`, `{confidence}` are substituted):
 
 | Option | Default | Shown for |
 |---|---|---|
 | `@modal_indicator_commanding` | `#[fg=black,bg=green,bold] {MODE} #[default]` | normal, visual, … |
 | `@modal_indicator_typing` | `#[fg=black,bg=yellow,bold] {MODE} #[default]` | insert, command line, prompts |
-| `@modal_indicator_unknown` | `#[fg=black,bg=colour244] N/A #[default]` | a full-screen app no spec recognises (left alone) |
+| `@modal_indicator_unknown` | `#[fg=black,bg=colour244] N/A #[default]` | a full-screen app no spec recognises, or whose mode is not readable (left alone) |
 | `@modal_indicator_none` | *(empty)* | plain shell, no full-screen app |
 
 (`@modal_indicator_format` is accepted as an alias for the commanding one.)

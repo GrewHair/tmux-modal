@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-09-30, 1.2.1 (fzf --reverse recognised from the screen). All brief milestones done; next: whatever the owner's dogfooding brings up._
+_Last updated: 2026-09-30, 1.3.0 (badges, one fact each, D35; `tmux-modal explain`). All brief milestones done; next: whatever the owner's dogfooding brings up._
 
 ## Milestones (brief §12)
 
@@ -18,7 +18,7 @@ _Last updated: 2026-09-30, 1.2.1 (fzf --reverse recognised from the screen). All
 ## Where things live
 
 - Repo: https://github.com/GrewHair/tmux-modal (public). CI: `.github/workflows/ci.yml`; release on `v*` tags: `release.yml` (static binaries for linux/darwin/freebsd, amd64/arm64 + linux/arm, SHA256SUMS).
-- Current release: **v1.2.1** (fzf `--reverse` recognised from the screen). v1.2.0: split remote tmux, the focused inner pane by the default green border too, D34. v1.1.1 was the fix: pause, not off, for unwatched panes — the off action crashed tmux 3.2–3.6, F43. v1.1.0 was debconf and whiptail dialogs remap (D33). v1.0.0 was M8 (split remote tmux read by the cursor, D32; README/benchmark/CHANGELOG). Each release's notes are its `CHANGELOG.md` section (`release.yml` fails without one). v0.6.0 was vim and neovim for the hook; v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 (bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
+- Current release: **v1.3.0** (badges per pane, one fact each, D35; `tmux-modal explain`). v1.2.1: fzf `--reverse` recognised from the screen. v1.2.0: split remote tmux, the focused inner pane by the default green border too, D34. v1.1.1 was the fix: pause, not off, for unwatched panes — the off action crashed tmux 3.2–3.6, F43. v1.1.0 was debconf and whiptail dialogs remap (D33). v1.0.0 was M8 (split remote tmux read by the cursor, D32; README/benchmark/CHANGELOG). Each release's notes are its `CHANGELOG.md` section (`release.yml` fails without one). v0.6.0 was vim and neovim for the hook; v0.5.0 was overlays and remap-ready specs; v0.4.0 was M6 (bundled specs for btop, less, man, tig, lazygit, k9s, ranger, lf, nnn, ncdu, mc, fzf and REPLs; output gating for unwatched panes; spec `poll_interval`); v0.3.0 was remapping through nested tmux on by default (owner's call). `VERSION` must equal the tag without `v` (the release workflow checks). `scripts/binary.sh` downloads the binary matching `VERSION`, so **bump `VERSION` and tag whenever users should get new daemon code** — a plugin update without a new release keeps running the old binary (the resolver accepts a stale binary only as last resort, and re-downloads when the version string differs).
 
 ## The owner is dogfooding it
 
@@ -26,7 +26,7 @@ On the owner's own tmux (WSL2, tmux 3.4, fish shell, TPM):
 
 - Plugin clone: `~/.config/tmux/plugins/tmux-modal` (a git clone of the public repo, binary pre-downloaded into its `bin/`). Update with `git pull` there (or TPM `prefix+U`), then the binary resolver fetches the matching release.
 - Options: `~/.config/tmux/tmux.conf.d/modal/modal.tmux` (sourced from `tmux.conf`); `@plugin 'GrewHair/tmux-modal'` added to `tmux.conf`.
-- Indicator in `pane-border-format` (owner's choice), three-way: NORMAL / INSERT / N/A, nothing for shells.
+- Badges in `pane-border-format` (`#{E:@modal_badges}`, since 1.3.0; before: the three-way indicator NORMAL / INSERT / N/A), nothing for shells.
 - Hook options in that file, one to be uncommented at a time: `log.sh`,
   `windows-toast.sh`, `ahk-http.sh` (option 4, the owner's AutoHotkey v2
   HTTP endpoint on Windows' localhost:42800, `/send/F?OSD;;;;<payload>`;

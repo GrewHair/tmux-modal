@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/GrewHair/tmux-modal/internal/screen"
 	"github.com/GrewHair/tmux-modal/internal/spec"
@@ -32,6 +33,22 @@ type Result struct {
 	// Nested is the evidence of an inner multiplexer ("" if none); see
 	// DetectNested.
 	Nested string
+
+	// What the badges show about how this result came about.
+	//
+	// Evidence is how the app was identified on this capture: "cmd"
+	// (the pane's command), "title", "fp" (the screen fingerprint), joined
+	// with "+" when several held, or "mem" when none did and the app is
+	// remembered from an earlier capture. Score is the fingerprint's score
+	// against its threshold ("70/40"), or satisfied/total clauses for a
+	// rule without numeric weights ("3/3"); "" when the spec has none.
+	Evidence, Score string
+	// NestedKind is the inner multiplexer (Nested.Kind); InnerPanes the
+	// number of inner panes when its window is split, and FocusBy how the
+	// focused one was found ("border colour", "cursor", or "" for none).
+	NestedKind string
+	InnerPanes int
+	FocusBy    string
 }
 
 // Identity is the identity evaluation of one spec on one screen.
@@ -101,6 +118,7 @@ func Classify(sp *spec.Spec, s *screen.Screen, sticky bool) Trace {
 	}
 	res.App = sp.Name
 	res.Confirmed = id.Confirmed
+	res.Evidence, res.Score = evidence(id)
 
 	if sp.Always != "" {
 		if !id.Identified {
@@ -146,6 +164,39 @@ func Classify(sp *spec.Spec, s *screen.Screen, sticky bool) Trace {
 	res.Mode, res.Confidence, res.Reason = mode, conf, reason
 	res.Bucket = sp.Bucket(mode)
 	return t
+}
+
+// evidence describes an identity for the badges (Result.Evidence, Score).
+func evidence(id Identity) (string, string) {
+	var parts []string
+	if id.CommandMatch {
+		parts = append(parts, "cmd")
+	}
+	if id.TitleMatch {
+		parts = append(parts, "title")
+	}
+	if id.Screen != nil && id.Screen.Fired {
+		parts = append(parts, "fp")
+	}
+	ev := strings.Join(parts, "+")
+	if !id.Identified {
+		ev = "mem"
+	}
+	score := ""
+	if r := id.Screen; r != nil {
+		if r.Rule.Threshold > 0 {
+			score = fmt.Sprintf("%g/%g", r.Score, r.Rule.Threshold)
+		} else {
+			ok := 0
+			for _, c := range r.Clauses {
+				if c.State == spec.Satisfied {
+					ok++
+				}
+			}
+			score = fmt.Sprintf("%d/%d", ok, len(r.Clauses))
+		}
+	}
+	return ev, score
 }
 
 func ruleLabel(r *spec.Rule) string {
@@ -250,7 +301,10 @@ func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (R
 	if n.Evidence == "" {
 		return res, traces
 	}
-	res.Nested = n.Evidence
+	res.Nested, res.NestedKind = n.Evidence, n.Kind
+	if n.Split {
+		res.InnerPanes, res.FocusBy = n.Panes, n.FocusBy
+	}
 	sp := set.Specs[res.App]
 	switch {
 	case res.App == "" || res.Mode == spec.ModeUnknown || res.Mode == spec.ModeNone:

@@ -396,7 +396,7 @@ func (d *Daemon) shutdown() {
 	d.restoreAllKeyTables(r)
 	var cmds []string
 	for id := range d.panes {
-		for _, o := range paneOptions {
+		for _, o := range PublishedOptions() {
 			cmds = append(cmds, tmux.Command("set-option", "-p", "-u", "-q", "-t", id, o))
 		}
 	}

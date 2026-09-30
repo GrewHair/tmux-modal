@@ -233,3 +233,39 @@ func TestNestedFocusColour(t *testing.T) {
 		}
 	}
 }
+
+// What the badges show: the inner multiplexer's kind, the split and how
+// the focus was found, and how the app was identified.
+func TestNestedBadgeFacts(t *testing.T) {
+	set := bundledSet(t)
+	for cmd, want := range map[string]string{"tmux": "tmux", "screen": "screen", "zellij": "zellij", "tmate": "tmate"} {
+		s := screen.FromText("hello", 20, 3)
+		s.Command = cmd
+		if n := classify.DetectNested(set, s); n.Kind != want {
+			t.Errorf("command %s: kind %q, want %q", cmd, n.Kind, want)
+		}
+	}
+	f, err := screen.LoadFixture(fixtureRoot + "/nested/tmux-3.7c/three-htop.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	res, _ := classify.Pane(set, f.Screen, "")
+	if res.NestedKind != "tmux" || res.InnerPanes != 3 || res.FocusBy != "border colour" ||
+		res.Evidence != "fp" || res.Score == "" {
+		t.Errorf("three-htop: kind %q panes %d focus %q evidence %q score %q",
+			res.NestedKind, res.InnerPanes, res.FocusBy, res.Evidence, res.Score)
+	}
+	local := *f.Screen
+	local.Command = "tmux"
+	if res, _ := classify.Pane(set, &local, "htop"); res.Evidence != "fp" || res.NestedKind != "tmux" {
+		t.Errorf("three-htop, local tmux, sticky htop: evidence %q kind %q", res.Evidence, res.NestedKind)
+	}
+	hidden := *f.Screen
+	hidden.Lines = append([]string{}, hidden.Lines...)
+	for i := range hidden.Lines {
+		hidden.Lines[i] = strings.ReplaceAll(hidden.Lines[i], "F1Help", "      ") // the required bottom bar
+	}
+	if res, _ := classify.Pane(set, &hidden, "htop"); res.Evidence != "mem" {
+		t.Errorf("htop's bottom bar gone, sticky: evidence %q (%s), want mem", res.Evidence, res.Reason)
+	}
+}

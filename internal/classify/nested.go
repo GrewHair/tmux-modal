@@ -29,6 +29,12 @@ type Nested struct {
 	Focus *Rect
 	// FocusBy is what showed the focus: "border colour" or "cursor".
 	FocusBy string
+	// Panes is the number of inner panes when Split.
+	Panes int
+	// Kind is the inner multiplexer: the local command's name when that
+	// gave it away (tmux, tmate, screen, zellij, byobu), otherwise "tmux":
+	// the status line, borders and title recognised are tmux's.
+	Kind string
 }
 
 // Rect is an area of the screen: an inner pane.
@@ -103,10 +109,16 @@ func DetectNested(set *spec.Set, s *screen.Screen) Nested {
 		if n.Evidence == "" {
 			n.Evidence = "borders"
 		}
-		n.Focus, n.FocusBy = focusedPane(s.WithoutRow(n.StatusRow))
+		n.Focus, n.FocusBy, n.Panes = focusedPane(s.WithoutRow(n.StatusRow))
 	}
 	if n.Evidence == "" && titleRE.MatchString(s.Title) {
 		n.Evidence = "title"
+	}
+	switch {
+	case n.Evidence == "command":
+		n.Kind = cmd
+	case n.Evidence != "":
+		n.Kind = "tmux"
 	}
 	return n
 }
@@ -211,7 +223,7 @@ func borderRow(row []rune) bool {
 // If the two disagree, or neither says anything (no colour and a hidden
 // cursor, or the cursor on the inner command prompt, removed from s),
 // nothing is guessed.
-func focusedPane(s *screen.Screen) (*Rect, string) {
+func focusedPane(s *screen.Screen) (*Rect, string, int) {
 	grid := runeGrid(s)
 	panes := innerPanes(grid, s.Width)
 	byColour := colourFocus(s, grid, panes)
@@ -225,13 +237,13 @@ func focusedPane(s *screen.Screen) (*Rect, string) {
 	}
 	switch {
 	case byColour != nil && byCursor != nil && *byColour != *byCursor:
-		return nil, ""
+		return nil, "", len(panes)
 	case byColour != nil:
-		return byColour, "border colour"
+		return byColour, "border colour", len(panes)
 	case byCursor != nil:
-		return byCursor, "cursor"
+		return byCursor, "cursor", len(panes)
 	}
-	return nil, ""
+	return nil, "", len(panes)
 }
 
 type cell struct{ x, y int }

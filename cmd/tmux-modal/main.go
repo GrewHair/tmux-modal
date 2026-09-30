@@ -26,6 +26,7 @@ commands:
   daemon     run the detector for the tmux server in $TMUX (started by modal.tmux)
   stop       stop the running daemon and restore key tables
   validate   lint a spec and score it against a screen
+  explain    show why the daemon sees a pane the way it does
   capture    save a pane as a test fixture
   lint       load every spec and report warnings and errors
   version    print the version
@@ -49,6 +50,8 @@ func main() {
 		err = cmdValidate(args)
 	case "capture":
 		err = cmdCapture(args)
+	case "explain":
+		err = cmdExplain(args)
 	case "lint":
 		err = cmdLint(args)
 	case "version", "--version", "-v":
@@ -182,6 +185,79 @@ func cmdValidate(args []string) error {
 	}
 	fmt.Fprintf(out, "\nfinal: app=%s mode=%s bucket=%s confidence=%s (%s)\n",
 		orDash(res.App), res.Mode, res.Bucket, res.Confidence, res.Reason)
+	return nil
+}
+
+// cmdExplain prints what the daemon published for a pane (its @modal_*
+// options) and a fresh classification of the pane with the full score
+// sheet: meant for a popup bound to a key while dogfooding.
+func cmdExplain(args []string) error {
+	fs := flag.NewFlagSet("explain", flag.ExitOnError)
+	var paths multiFlag
+	fs.Var(&paths, "spec-path", "extra spec directory (repeatable)")
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "usage: tmux-modal explain [flags] [pane]   (default: $TMUX_PANE)\n\nflags:\n")
+		fs.PrintDefaults()
+	}
+	fs.Parse(args)
+	target := fs.Arg(0)
+	if target == "" {
+		target = os.Getenv("TMUX_PANE")
+	}
+	if target == "" {
+		return fmt.Errorf("no pane: give one (e.g. %%3) or run inside tmux")
+	}
+	r := tmux.Exec{Server: tmux.FromEnv()}
+	out := os.Stdout
+
+	opts := daemon.PublishedOptions()
+	parts := make([]string, len(opts))
+	for i, o := range opts {
+		parts[i] = "#{" + o + "}"
+	}
+	lines, err := r.Run("display-message", "-p", "-t", target, strings.Join(parts, "\t"))
+	if err != nil {
+		return err
+	}
+	vals := strings.Split(strings.Join(lines, "\n"), "\t")
+	fmt.Fprintf(out, "published for %s:\n", target)
+	for i, o := range opts {
+		if i < len(vals) && vals[i] != "" && !strings.HasPrefix(o, "@modal_badge") && o != "@modal_indicator" {
+			fmt.Fprintf(out, "  %-20s %s\n", o, vals[i])
+		}
+	}
+	sticky := ""
+	if len(vals) > 0 {
+		sticky = vals[0] // @modal_app
+	}
+	remap := "on"
+	if l, err := r.Run("show-options", "-gqv", "@modal_nested_remap"); err == nil && len(l) > 0 && l[0] != "" {
+		remap = l[0]
+	}
+
+	set := spec.Load(sources(paths, false))
+	s, _, _, err := tmux.Capture(r, target, true)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintln(out)
+	validate.Screen(out, "live pane "+target, s)
+	res, traces := classify.PaneWith(set, s, sticky, classify.Options{NestedRemap: remap != "off"})
+	for _, t := range traces {
+		validate.Trace(out, t)
+	}
+	fmt.Fprintf(out, "\nnow: app=%s mode=%s bucket=%s confidence=%s evidence=%s score=%s",
+		orDash(res.App), res.Mode, res.Bucket, res.Confidence, orDash(res.Evidence), orDash(res.Score))
+	if res.Nested != "" {
+		fmt.Fprintf(out, " nested=%s(%s)", res.NestedKind, res.Nested)
+	}
+	if res.InnerPanes > 0 {
+		fmt.Fprintf(out, " split=%d focus=%s", res.InnerPanes, orDash(res.FocusBy))
+	}
+	fmt.Fprintf(out, "\n     %s\n", res.Reason)
+	if sticky != "" {
+		fmt.Fprintf(out, "     (classified as the daemon does, with %s remembered)\n", sticky)
+	}
 	return nil
 }
 

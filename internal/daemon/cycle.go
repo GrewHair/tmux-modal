@@ -30,6 +30,8 @@ type paneState struct {
 	cur       modeState
 	published bool
 	indicator string
+	det       detail   // badge facts from the latest capture
+	badgeVals []string // badge and detail options as last published
 	pending   modeState
 	pendingN  int
 
@@ -177,7 +179,7 @@ func (d *Daemon) cycle() {
 			if st.published {
 				d.publish(st, modeState{}, "disabled")
 			}
-			st.app = ""
+			st.app, st.det = "", detail{}
 			continue
 		}
 		// Tier-1 invalidation signals.
@@ -207,7 +209,7 @@ func (d *Daemon) cycle() {
 		// Primary-screen specs (REPLs) are recognised by their own command
 		// name, never a shell's, so this holds even when some are loaded.
 		if p.Dead || (!p.Alt && classify.Shells[filepath.Base(p.Command)]) {
-			st.app, st.identFails = "", 0
+			st.app, st.identFails, st.det = "", 0, detail{}
 			d.transition(st, modeState{Mode: spec.ModeNone, Bucket: spec.ModeNone, Confidence: classify.High}, "tier-1: shell on primary screen", now)
 			st.due = now.Add(d.cfg.Idle)
 			continue
@@ -264,6 +266,7 @@ func (d *Daemon) cycle() {
 		}
 	}
 	d.syncKeyTables(r, panes, humans)
+	d.publishBadges(panes, humans)
 	d.syncOutput(panes, humans)
 	d.sweepFocus(panes, humans)
 	d.refreshStatus(r)
@@ -297,6 +300,7 @@ func (d *Daemon) examine(st *paneState, s *screen.Screen, full bool, now time.Ti
 	}
 
 	next := modeState{App: res.App, Mode: res.Mode, Bucket: res.Bucket, Confidence: res.Confidence, Nested: res.Nested}
+	st.det = detailOf(res, s)
 	d.transition(st, next, res.Reason, now)
 
 	switch {

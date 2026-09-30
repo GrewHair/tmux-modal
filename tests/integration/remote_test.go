@@ -305,11 +305,18 @@ func TestNestedTmuxSplit(t *testing.T) {
 	})
 	h.typeKeys("j")
 	h.expectScreen("main", "last=[Down]")
+	for opt, want := range map[string]string{"@modal_nested_kind": "tmux", "@modal_split": "2",
+		"@modal_focus_by": "border", "@modal_remap": "on"} {
+		if got := h.option("main", opt); got != want {
+			t.Errorf("%s = %q, want %q", opt, got, want)
+		}
+	}
 	// The shell on the right: C-b twice, the local tmux sends one on to
 	// the remote tmux.
 	h.typeKeys("C-b", "C-b", "Right")
 	h.waitFor("unknown with the shell focused", 8*time.Second, func() bool {
-		return strings.HasSuffix(h.state("main"), "/unknown/unknown") && h.keyTable() == "root"
+		return strings.HasSuffix(h.state("main"), "/unknown/unknown") && h.keyTable() == "root" &&
+			h.option("main", "@modal_remap") == ""
 	})
 	h.typeKeys("C-b", "C-b", "Left")
 	h.expectState("main", "keyecho/normal/commanding", "modal-keyecho")

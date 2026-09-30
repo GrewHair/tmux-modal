@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -31,6 +32,9 @@ type Config struct {
 
 	// Indicator templates by bucket, published per pane as @modal_indicator.
 	Indicator map[string]string
+	// Badge templates by key (defaultBadges); a key missing is a badge
+	// switched off.
+	Badges map[string]string
 }
 
 type profile struct{ burst, poll, idle int }
@@ -41,7 +45,7 @@ var profiles = map[string]profile{
 	"snappy":   {15, 60, 1000},
 }
 
-var optionNames = []string{
+var optionNames = append([]string{
 	"@modal_enabled", "@modal_profile", "@modal_poll_interval",
 	"@modal_idle_interval", "@modal_burst_interval", "@modal_burst_decay",
 	"@modal_scope", "@modal_capture_rows", "@modal_cpu_budget",
@@ -50,6 +54,15 @@ var optionNames = []string{
 	"@modal_log_level", "@modal_confirm_captures", "@modal_nested_remap",
 	"@modal_indicator_format", "@modal_indicator_commanding",
 	"@modal_indicator_typing", "@modal_indicator_unknown", "@modal_indicator_none",
+}, badgeTemplateOptions()...)
+
+func badgeTemplateOptions() []string {
+	var opts []string
+	for key := range defaultBadges {
+		opts = append(opts, badgeOption(key))
+	}
+	sort.Strings(opts)
+	return opts
 }
 
 // Default indicator templates. {MODE}/{mode}, {APP}/{app}, {bucket} and
@@ -135,6 +148,16 @@ func parseConfig(raw map[string]string) Config {
 	}
 	if raw["@modal_indicator_none"] == "off" {
 		c.Indicator["none"] = ""
+	}
+	c.Badges = map[string]string{}
+	for key, def := range defaultBadges {
+		switch v := raw[badgeOption(key)]; v {
+		case "off":
+		case "":
+			c.Badges[key] = def
+		default:
+			c.Badges[key] = v
+		}
 	}
 	name := pick(raw["@modal_profile"], "balanced", "frugal", "balanced", "snappy", "custom")
 	p, ok := profiles[name]

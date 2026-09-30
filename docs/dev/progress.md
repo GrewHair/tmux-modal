@@ -157,3 +157,11 @@
   layout (threshold 100; the cursor clause, the heaviest, can hold for one
   layout only); `--reverse` fixtures from the three images; scored 100 on
   a live fzf 0.70. Released v1.2.1.
+- Owner asked (plan mode) for richer indicators while dogfooding: several
+  widgets, app and confidence visible, no "N/A" lie. Agreed plan: badges
+  one fact each (ALT, app+evidence+score, mode, NEST kind, SPLIT, MAP
+  with the leader state via `#{client_key_table}`, cursor shape), raw
+  facts as options, templates, `explain`. Built (D35); unit tests for
+  rendering and classify facts, integration tests for the border (MAP →
+  MAP _ → MAP), the split facts and explain. Released v1.3.0; owner's
+  border format switched to `#{E:@modal_badges}`.

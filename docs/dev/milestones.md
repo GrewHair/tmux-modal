@@ -155,6 +155,7 @@ request at a time, each released as a minor version:
 - 1.1.1: fix, output gating crashed tmux 3.2–3.6 (F43, D28 amended).
 - 1.2.0: split remote tmux read by the border colour too (B1 done, D34, F44).
 - 1.2.1: fzf `--reverse` recognised from the screen (owner's `fzf-tmux --reverse` read N/A).
+- 1.3.0: badges, one fact each (D35), and `tmux-modal explain`.
 
 The pattern that worked for a new app: probe it in the images first
 (scratch script on a private `-L` socket; what the cursor does, which
