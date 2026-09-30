@@ -76,7 +76,12 @@
   badge, exact terms (ALT = alternate screen, name the multiplexer:
   `NEST tmux`), short texts; findings that are not acted on are shown
   struck through, not hidden — absent only when never probed. Only start
-  trading off when ~10 badges would show at once (D35, D36).
+  trading off when ~10 badges would show at once (D35, D36). One badge
+  per *subject*: a fact's qualifiers stay in its badge (1.7.1: `NORMAL
+  absence hi`, low confidence a red tail of it). Colours (1.7.2, owner's
+  set): NORMAL blue 75, INSERT green 114, MAP yellow 220, NEST/SPLIT
+  mauve 139, VIA tan 180, hook lavender 183, lo/fail red 124; keep
+  neighbours distinct when recolouring.
 - **Wording is the owner's call, and they value space but dislike cryptic
   abbreviations.** Accepted: `NEST`, `MAP`, `VIA`, `fp`, `mem`, `hi`/`lo`,
   `fp:<rule>`, cursor glyphs █ ▁ ▏ ("show, don't tell"). Declined: `dflt`,

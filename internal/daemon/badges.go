@@ -30,21 +30,21 @@ var defaultBadges = map[string]string{
 	"app_unknown": "#[fg=colour255,bg=colour238] ? #[default]",
 	// The mode, then how it was decided and the confidence in it (D37);
 	// the _low variants put a low confidence in red.
-	"mode_commanding":     "#[fg=black,bg=green,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
-	"mode_typing":         "#[fg=black,bg=yellow,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
+	"mode_commanding":     "#[fg=black,bg=colour75,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
+	"mode_typing":         "#[fg=black,bg=colour114,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
 	"mode_unknown":        "#[fg=black,bg=colour244] ?{ basis}{:rule}{ conf} #[default]",
-	"mode_commanding_low": "#[fg=black,bg=green,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
-	"mode_typing_low":     "#[fg=black,bg=yellow,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
+	"mode_commanding_low": "#[fg=black,bg=colour75,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
+	"mode_typing_low":     "#[fg=black,bg=colour114,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
 	"mode_unknown_low":    "#[fg=black,bg=colour244] ?{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
 	"via":                 "#[fg=black,bg=colour180] VIA {via} #[default]",
-	"nest":                "#[fg=black,bg=colour110] NEST {kind} #[default]",
-	"split":               "#[fg=black,bg=colour110] SPLIT {panes} {focus} #[default]",
+	"nest":                "#[fg=black,bg=colour139] NEST {kind} #[default]",
+	"split":               "#[fg=black,bg=colour139] SPLIT {panes} {focus} #[default]",
 	// Seen on screen but not acted on: no transport in the pane (D36).
 	"nest_off":  "#[fg=colour244,strikethrough] NEST {kind} #[default]",
 	"split_off": "#[fg=colour244,strikethrough] SPLIT {panes} {focus} #[default]",
 	// The escape leader switches the client to a one-shot table; the
 	// daemon never sees that, tmux does when it draws the border.
-	"map": "#[fg=black,bg=cyan,bold] #{?#{m:modal-literal-*,#{client_key_table}},MAP {leader},MAP} #[default]",
+	"map": "#[fg=black,bg=colour220,bold] #{?#{m:modal-literal-*,#{client_key_table}},MAP {leader},MAP} #[default]",
 	// The cursor drawn as the app set it: show, don't tell.
 	"cursor": "#[fg=colour255,bg=colour238] {glyph} #[default]",
 	// The transition hook just ran for this pane: shown for

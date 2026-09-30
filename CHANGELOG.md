@@ -2,6 +2,15 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.7.2 — 2026-09-30
+
+- New badge colours (owner's request): commanding modes (`NORMAL`) blue
+  (colour75), typing modes (`INSERT`) green (colour114); `MAP` yellow
+  (colour220, was cyan, too close to the new blue); `NEST`/`SPLIT` mauve
+  (colour139, was steel blue). The `@modal_indicator` defaults follow the
+  same mode colours. Fixed 256-colour indices, so terminal themes do not
+  shift them.
+
 ## 1.7.1 — 2026-09-30
 
 - The `why` badge is now part of the `mode` badge, which reads as one

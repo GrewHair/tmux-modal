@@ -196,3 +196,6 @@
   `TestHookFollowsTerminalFocus` (two real clients, focus bytes).
 - 1.7.1: owner confirmed 1.7.0 works ("it works!"); asked for the why
   words inside the mode badge, like the app badge: merged (D37 amended).
+- 1.7.2: owner liked the merged mode badge ("exactly how I wanted");
+  asked for NORMAL blue / INSERT green and neighbours re-tuned: MAP
+  yellow (was cyan), NEST/SPLIT mauve (was steel blue), indicator too.

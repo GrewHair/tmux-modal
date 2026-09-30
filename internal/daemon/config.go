@@ -74,8 +74,8 @@ func badgeTemplateOptions() []string {
 // {confidence} are substituted by the daemon; the result is published as a
 // plain pane option so status formats only ever read a variable.
 var defaultIndicators = map[string]string{
-	"commanding": "#[fg=black,bg=green,bold] {MODE} #[default]",
-	"typing":     "#[fg=black,bg=yellow,bold] {MODE} #[default]",
+	"commanding": "#[fg=black,bg=colour75,bold] {MODE} #[default]",
+	"typing":     "#[fg=black,bg=colour114,bold] {MODE} #[default]",
 	"unknown":    "#[fg=black,bg=colour244] N/A #[default]",
 	"none":       "",
 }

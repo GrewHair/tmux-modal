@@ -72,7 +72,7 @@ ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL absence lo  MAP
 | `alt` | the pane is on the alternate screen (a full-screen app runs) | `ALT` |
 | `via` | the pane's command is a remote transport (below) | `VIA ssh`, `VIA docker` |
 | `app` | an app is recognised: its name, how, and the fingerprint score; `?` for a full-screen app nothing recognised (left alone) | `htop cmd+fp 110/40`, `?` |
-| `mode` | an app is recognised: its mode (`?` when this capture does not show it), then how it was decided and the confidence in it (`hi`/`lo`, `lo` in red): `fp:<rule>` a mode rule's fingerprint matched (the rule's name, or its mode when it has none: `fp:search`, `fp:insert`), `absence` no mode fingerprint matched on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `mem` no mode fingerprint and the app only remembered from an earlier capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always `lo` | `NORMAL absence hi` (green), `INSERT fp:insert hi` (yellow), `? mem lo` |
+| `mode` | an app is recognised: its mode (`?` when this capture does not show it), then how it was decided and the confidence in it (`hi`/`lo`, `lo` in red): `fp:<rule>` a mode rule's fingerprint matched (the rule's name, or its mode when it has none: `fp:search`, `fp:insert`), `absence` no mode fingerprint matched on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `mem` no mode fingerprint and the app only remembered from an earlier capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always `lo` | `NORMAL absence hi` (blue), `INSERT fp:insert hi` (green), `? mem lo` |
 | `nest` | the pane shows another multiplexer, and which one; grey and struck through when seen on screen but not in effect (no transport, below) | `NEST tmux` |
 | `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none); struck through like `nest` | `SPLIT 3 border` |
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
@@ -168,8 +168,8 @@ Templates, one per bucket (`{MODE}`/`{mode}`, `{APP}`/`{app}`,
 
 | Option | Default | Shown for |
 |---|---|---|
-| `@modal_indicator_commanding` | `#[fg=black,bg=green,bold] {MODE} #[default]` | normal, visual, … |
-| `@modal_indicator_typing` | `#[fg=black,bg=yellow,bold] {MODE} #[default]` | insert, command line, prompts |
+| `@modal_indicator_commanding` | `#[fg=black,bg=colour75,bold] {MODE} #[default]` | normal, visual, … |
+| `@modal_indicator_typing` | `#[fg=black,bg=colour114,bold] {MODE} #[default]` | insert, command line, prompts |
 | `@modal_indicator_unknown` | `#[fg=black,bg=colour244] N/A #[default]` | a full-screen app no spec recognises, or whose mode is not readable (left alone) |
 | `@modal_indicator_none` | *(empty)* | plain shell, no full-screen app |
 
