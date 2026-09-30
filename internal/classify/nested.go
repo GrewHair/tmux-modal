@@ -35,6 +35,23 @@ type Nested struct {
 	// gave it away (tmux, tmate, screen, zellij, byobu), otherwise "tmux":
 	// the status line, borders and title recognised are tmux's.
 	Kind string
+	// Via is the remote transport the pane's command is (ssh, docker,
+	// kubectl, ...; Transports), or "".
+	Via string
+	// Off: the screen showed an inner multiplexer, but the pane's command
+	// is neither a transport nor a multiplexer, so it cannot be one (tmux
+	// does not nest locally unless told to, and a local client's command
+	// is tmux itself). Reported, not acted on (D36).
+	Off bool
+}
+
+// Transports are the commands that reach another machine or container,
+// where a nested multiplexer can run. @modal_transports adds more.
+var Transports = map[string]bool{
+	"ssh": true, "autossh": true, "mosh-client": true, "et": true, "telnet": true,
+	"docker": true, "podman": true, "nerdctl": true, "kubectl": true, "oc": true,
+	"lxc": true, "incus": true, "multipass": true, "machinectl": true,
+	"distrobox": true, "toolbox": true, "session-manager-plugin": true,
 }
 
 // Rect is an area of the screen: an inner pane.
@@ -87,8 +104,16 @@ func runeSet(s string) map[rune]bool {
 // are cheap: two regexes on two rows, and one pass over the grid for
 // borders, which needs a full-screen capture.
 func DetectNested(set *spec.Set, s *screen.Screen) Nested {
+	return DetectNestedWith(set, s, nil)
+}
+
+// DetectNestedWith is DetectNested with extra transport commands.
+func DetectNestedWith(set *spec.Set, s *screen.Screen, extra []string) Nested {
 	n := Nested{StatusRow: -1}
 	cmd := filepath.Base(s.Command)
+	if Transports[cmd] || contains(extra, cmd) {
+		n.Via = cmd
+	}
 	if Multiplexers[cmd] {
 		n.Evidence = "command"
 	} else if !s.AltScreen || commandClaimed(set, cmd) {
@@ -123,6 +148,7 @@ func DetectNested(set *spec.Set, s *screen.Screen) Nested {
 		n.Kind = cmd
 	case n.Evidence != "":
 		n.Kind = "tmux"
+		n.Off = n.Via == ""
 	}
 	return n
 }

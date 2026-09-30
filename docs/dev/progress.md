@@ -170,3 +170,9 @@
 - 1.3.2: the owner's Claude Code pane showed `NEST tmux SPLIT 2 cursor`:
   its grey full-width rule passed for a tmux border (F46). Borders as the
   only evidence must now have tmux's default colours.
+- 1.4.0 (owner's idea, planned together): nesting in effect only behind a
+  transport (D36), `VIA` badge, findings without one struck through,
+  badges in path order. Tests: classify gate (docker/claude/user
+  transport/local tmux/claimed command), badge rendering, split
+  integration asserts `VIA ssh` and the order; live check: `VIA docker
+  NEST tmux SPLIT 2 border` and a local `env -u TMUX tmux` client.

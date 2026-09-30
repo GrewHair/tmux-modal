@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"testing"
@@ -306,10 +307,14 @@ func TestNestedTmuxSplit(t *testing.T) {
 	h.typeKeys("j")
 	h.expectScreen("main", "last=[Down]")
 	for opt, want := range map[string]string{"@modal_nested_kind": "tmux", "@modal_split": "2",
-		"@modal_focus_by": "border", "@modal_remap": "on"} {
+		"@modal_focus_by": "border", "@modal_remap": "on", "@modal_via": "ssh", "@modal_nested_off": ""} {
 		if got := h.option("main", opt); got != want {
 			t.Errorf("%s = %q, want %q", opt, got, want)
 		}
+	}
+	badges := regexp.MustCompile(`#\[[^]]*\]`).ReplaceAllString(h.option("main", "@modal_badges"), "")
+	if want := "ALT VIA ssh NEST tmux SPLIT 2 border keyecho"; !strings.HasPrefix(strings.Join(strings.Fields(badges), " "), want) {
+		t.Errorf("badges %q, want them to start %q", badges, want)
 	}
 	// The shell on the right: C-b twice, the local tmux sends one on to
 	// the remote tmux.

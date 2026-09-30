@@ -60,19 +60,21 @@ It never affects window sizes (`ignore-size`) and never sends keys to panes.
 ### Badges
 
 The daemon publishes a row of small **badges** per pane, one fact each, so
-you can see at a glance what it concluded and why:
+you can see at a glance what it concluded and why. They read as a path,
+left to right:
 
 ```
-ALT  htop cmd+fp 110/40  NORMAL  NEST tmux  SPLIT 3 border  MAP
+ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL  MAP
 ```
 
 | Badge | Shown when | Default text |
 |---|---|---|
 | `alt` | the pane is on the alternate screen (a full-screen app runs) | `ALT` |
+| `via` | the pane's command is a remote transport (below) | `VIA ssh`, `VIA docker` |
 | `app` | an app is recognised: its name, how, and the fingerprint score; `?` for a full-screen app nothing recognised (left alone) | `htop cmd+fp 110/40`, `?` |
 | `mode` | an app is recognised: its mode; `?` when this capture does not show it | `NORMAL` (green), `INSERT` (yellow), `?` |
-| `nest` | the pane shows another multiplexer, and which one | `NEST tmux` |
-| `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none) | `SPLIT 3 border` |
+| `nest` | the pane shows another multiplexer, and which one; grey and struck through when seen on screen but not in effect (no transport, below) | `NEST tmux` |
+| `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none); struck through like `nest` | `SPLIT 3 border` |
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
 | `cursor` | the app set a cursor shape (tmux ≥ 3.5): the cursor drawn as set, block, underline or bar | `█` `▁` `▏` |
 
@@ -81,6 +83,19 @@ pane's command, `title` its title, `fp` the screen fingerprint (its score
 against the spec's threshold follows, e.g. `110/40`; for rules without
 weights, clauses matched of all), joined with `+`; `mem` when none of them
 held on this capture and the app is remembered from an earlier one.
+
+**Transports.** A multiplexer inside a pane only makes sense on another
+machine or in a container: tmux refuses to nest locally unless `TMUX` is
+unset, and a local client's command is then `tmux` itself. So a remote
+tmux seen on screen (its status line, borders or title) is acted on only
+when the pane's command is a transport: `ssh`, `autossh`, `mosh-client`,
+`et`, `telnet`, `docker`, `podman`, `nerdctl`, `kubectl`, `oc`, `lxc`,
+`incus`, `multipass`, `machinectl`, `distrobox`, `toolbox`,
+`session-manager-plugin` (AWS SSM), or one you add with
+`@modal_transports` (e.g. a wrapper script's name). Otherwise the pane is
+read as one screen and the finding is still shown, struck through. When
+a spec claims the pane's command (a local htop, a REPL), the screen is
+not probed for a multiplexer at all, and those badges are absent.
 
 A shell shows no badges. Put them in a pane border (`E:` makes tmux
 evaluate the `MAP _` part when it draws):
@@ -92,10 +107,11 @@ set -g pane-border-format '#{pane_index} "#{pane_title}" #{E:@modal_badges}'
 
 Each badge is also published on its own (`@modal_badge_alt`,
 `@modal_badge_app`, … `@modal_badge_cursor`) to place anywhere, and each
-has a template option, `@modal_badge_<key>_format`: keys `alt`, `app`,
-`app_unknown`, `mode_commanding`, `mode_typing`, `mode_unknown`, `nest`,
-`split`, `map`, `cursor`. `off` hides a badge. Placeholders: `{app}`
-`{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{kind}` `{panes}`
+has a template option, `@modal_badge_<key>_format`: keys `alt`, `via`,
+`app`, `app_unknown`, `mode_commanding`, `mode_typing`, `mode_unknown`,
+`nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`. `off` hides a
+badge. Placeholders: `{app}`
+`{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{via}` `{kind}` `{panes}`
 `{focus}` `{shape}` (the word: `block`, `underline`, `bar`) `{glyph}` `{leader}`; `{ name}` is a space and the value, or
 nothing when it is empty. Templates may use tmux formats and styles.
 
@@ -120,7 +136,9 @@ For every pane the daemon publishes these options (empty ones are unset):
 | `@modal_alt` | `on` on the alternate screen |
 | `@modal_evidence` | `cmd`, `title`, `fp` (joined with `+`), or `mem` |
 | `@modal_score` | the fingerprint's score against its threshold, e.g. `110/40` |
-| `@modal_nested` | empty, or why the pane looks like it shows another multiplexer: `command`, `status-line`, `borders`, `title` (see [SSH and nested tmux](#ssh-and-nested-tmux)) |
+| `@modal_via` | the transport the pane's command is: `ssh`, `docker`, `kubectl`, … |
+| `@modal_nested` | empty, or why the pane is taken to show another multiplexer: `command`, `status-line`, `borders`, `title` (see [SSH and nested tmux](#ssh-and-nested-tmux)) |
+| `@modal_nested_off` | the same evidence when it was seen but not acted on (no transport) |
 | `@modal_nested_kind` | which one: `tmux` (also for status line, borders, title: those are tmux's), or the local command: `screen`, `zellij`, `tmate`, `byobu` |
 | `@modal_split` | number of inner panes when its window is split |
 | `@modal_focus_by` | `border`, `cursor`, or `?` (split, focus not visible) |
@@ -414,6 +432,7 @@ Details that make this safe:
 | `@modal_hook_timeout` | 500 | ms |
 | `@modal_hook_debounce` | 30 | ms |
 | `@modal_confirm_captures` | 2 | captures that must agree before remapping resumes |
+| `@modal_transports` | *(none)* | extra commands that count as a remote transport (space-separated), next to the built-in list (see [Badges](#badges)) |
 | `@modal_nested_remap` | `on` | remap keys inside a tmux running in the pane (usually on a remote host); `off`: such panes are N/A, keys untouched. See [SSH and nested tmux](#ssh-and-nested-tmux) |
 | `@modal_log_level` | `warn` | log: `~/.local/state/tmux-modal/<server>.log` |
 

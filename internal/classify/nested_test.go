@@ -298,3 +298,56 @@ func TestNestedRuleColour(t *testing.T) {
 		t.Errorf("no colour captured: nested %q, want borders (nothing to tell them apart)", n.Evidence)
 	}
 }
+
+// A multiplexer seen on screen is acted on only behind a remote transport
+// (or when the pane's command is the multiplexer itself); otherwise it is
+// reported as seen but off, and the whole screen is the app's (D36).
+func TestNestedTransportGate(t *testing.T) {
+	set := bundledSet(t)
+	load := func(path, cmd string) *screen.Screen {
+		f, err := screen.LoadFixture(fixtureRoot + path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		f.Screen.Command = cmd
+		return f.Screen
+	}
+	const split = "/nested/120x36-utf8/split-htop-focused.txt" // status off: borders only
+	const status = "/nested/tmux-3.7c/three-htop.txt"          // status line and borders
+
+	res, _ := classify.Pane(set, load(split, "docker"), "")
+	if res.Via != "docker" || res.Nested != "borders" || res.NestedOff != "" || res.App != "htop" || res.Mode != "normal" {
+		t.Errorf("behind docker: via %q nested %q off %q, %s/%s", res.Via, res.Nested, res.NestedOff, res.App, res.Mode)
+	}
+	for _, c := range []struct{ path, cmd, evidence string }{
+		{split, "claude", "borders"},
+		{status, "claude", "status-line"},
+	} {
+		res, _ := classify.Pane(set, load(c.path, c.cmd), "")
+		if res.Nested != "" || res.NestedOff != c.evidence || res.NestedKind != "tmux" || res.InnerPanes == 0 || res.Via != "" {
+			t.Errorf("%s as %s: nested %q off %q kind %q panes %d via %q, want seen but off (%s)",
+				c.path, c.cmd, res.Nested, res.NestedOff, res.NestedKind, res.InnerPanes, res.Via, c.evidence)
+		}
+	}
+	// A command a spec claims (node: the REPL spec) is never probed, so
+	// nothing is reported at all.
+	if res, _ := classify.Pane(set, load(status, "node"), ""); res.NestedKind != "" || res.NestedOff != "" {
+		t.Errorf("a claimed command was probed: kind %q off %q", res.NestedKind, res.NestedOff)
+	}
+	opt := classify.DefaultOptions
+	opt.Transports = []string{"myssh"}
+	if res, _ := classify.PaneWith(set, load(split, "myssh"), "", opt); res.Via != "myssh" || res.Nested != "borders" {
+		t.Errorf("a transport of the user's own: via %q nested %q", res.Via, res.Nested)
+	}
+	if res, _ := classify.Pane(set, load(split, "tmux"), ""); res.Via != "" || res.Nested != "command" || res.NestedOff != "" {
+		t.Errorf("a local tmux client: via %q nested %q off %q", res.Via, res.Nested, res.NestedOff)
+	}
+	for cmd, want := range map[string]string{"ssh": "ssh", "mosh-client": "mosh-client", "kubectl": "kubectl",
+		"/usr/bin/ssh": "ssh", "bash": "", "claude": ""} {
+		s := screen.FromText("x", 10, 2)
+		s.Command = cmd
+		if n := classify.DetectNested(set, s); n.Via != want {
+			t.Errorf("command %s: via %q, want %q", cmd, n.Via, want)
+		}
+	}
+}

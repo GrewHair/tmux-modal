@@ -274,7 +274,7 @@ func (d *Daemon) cycle() {
 
 // examine classifies one captured pane and applies the result.
 func (d *Daemon) examine(st *paneState, s *screen.Screen, full bool, now time.Time) {
-	opt := classify.Options{NestedRemap: d.cfg.NestedRemap}
+	opt := classify.Options{NestedRemap: d.cfg.NestedRemap, Transports: d.cfg.Transports}
 	res, _ := classify.PaneWith(d.set, s, st.app, opt)
 	if st.app != "" && !res.Confirmed {
 		// Sticky identity not re-confirmed. If this capture is the full

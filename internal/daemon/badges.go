@@ -14,11 +14,12 @@ import (
 // wrong conclusion is visible at a glance (D35). Each is published as its
 // own pane option (@modal_badge_<name>) and all of them, in this order,
 // joined by spaces as @modal_badges. A badge whose template is "off" is
-// never shown.
-var badgeNames = []string{"alt", "app", "mode", "nest", "split", "map", "cursor"}
+// never shown. The order reads as a path: over ssh, into a tmux, its
+// split, the app there, its mode, the keys, the cursor.
+var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "map", "cursor"}
 
 // Default badge templates. Placeholders: {app} {APP} {mode} {MODE}
-// {evidence} {score} {kind} {panes} {focus} {shape} {glyph} {leader};
+// {evidence} {score} {via} {kind} {panes} {focus} {shape} {glyph} {leader};
 // "{ name}"
 // is a space and the value, or nothing when the value is empty.
 var defaultBadges = map[string]string{
@@ -28,8 +29,12 @@ var defaultBadges = map[string]string{
 	"mode_commanding": "#[fg=black,bg=green,bold] {MODE} #[default]",
 	"mode_typing":     "#[fg=black,bg=yellow,bold] {MODE} #[default]",
 	"mode_unknown":    "#[fg=black,bg=colour244] ? #[default]",
+	"via":             "#[fg=black,bg=colour180] VIA {via} #[default]",
 	"nest":            "#[fg=black,bg=colour110] NEST {kind} #[default]",
 	"split":           "#[fg=black,bg=colour110] SPLIT {panes} {focus} #[default]",
+	// Seen on screen but not acted on: no transport in the pane (D36).
+	"nest_off":  "#[fg=colour244,strikethrough] NEST {kind} #[default]",
+	"split_off": "#[fg=colour244,strikethrough] SPLIT {panes} {focus} #[default]",
 	// The escape leader switches the client to a one-shot table; the
 	// daemon never sees that, tmux does when it draws the border.
 	"map": "#[fg=black,bg=cyan,bold] #{?#{m:modal-literal-*,#{client_key_table}},MAP {leader},MAP} #[default]",
@@ -45,6 +50,8 @@ func badgeOption(key string) string { return "@modal_badge_" + key + "_format" }
 type detail struct {
 	Alt        bool
 	Unknown    bool // alternate screen, no spec recognised the app
+	Via        string
+	NestedOff  string // inner multiplexer seen but not in effect: the evidence
 	Evidence   string
 	Score      string
 	NestedKind string
@@ -62,6 +69,8 @@ func detailOf(res classify.Result, s *screen.Screen) detail {
 		Evidence:   res.Evidence,
 		Score:      res.Score,
 		NestedKind: res.NestedKind,
+		Via:        res.Via,
+		NestedOff:  res.NestedOff,
 		InnerPanes: res.InnerPanes,
 		FocusBy:    res.FocusBy,
 		Reason:     res.Reason,
@@ -75,7 +84,7 @@ func detailOf(res classify.Result, s *screen.Screen) detail {
 // badgeValues are the raw facts, published as pane options next to the
 // badges so formats can use them directly.
 var detailOptions = []string{
-	"@modal_alt", "@modal_evidence", "@modal_score", "@modal_nested_kind",
+	"@modal_alt", "@modal_via", "@modal_nested_off", "@modal_evidence", "@modal_score", "@modal_nested_kind",
 	"@modal_split", "@modal_focus_by", "@modal_remap", "@modal_cursor_shape", "@modal_reason",
 }
 
@@ -90,7 +99,7 @@ func (det detail) values() []string {
 	if det.InnerPanes > 0 {
 		split = strconv.Itoa(det.InnerPanes)
 	}
-	return []string{onOff(det.Alt), det.Evidence, det.Score, det.NestedKind, split,
+	return []string{onOff(det.Alt), det.Via, det.NestedOff, det.Evidence, det.Score, det.NestedKind, split,
 		focusWord(det), onOff(det.Remap), det.Shape, det.Reason}
 }
 
@@ -113,7 +122,7 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		"app": m.App, "APP": strings.ToUpper(m.App),
 		"mode": m.Mode, "MODE": strings.ToUpper(m.Mode),
 		"evidence": det.Evidence, "score": det.Score,
-		"kind": det.NestedKind, "panes": "", "focus": focusWord(det),
+		"via": det.Via, "kind": det.NestedKind, "panes": "", "focus": focusWord(det),
 		"shape": det.Shape, "glyph": cursorGlyphs[det.Shape], "leader": formatEscape(leader),
 	}
 	if det.InnerPanes > 0 {
@@ -134,10 +143,18 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		case "mode":
 			show = m.App != "" && m.Bucket != spec.ModeNone
 			key = "mode_" + m.Bucket
+		case "via":
+			show = det.Via != ""
 		case "nest":
 			show = det.NestedKind != ""
+			if det.NestedOff != "" {
+				key = "nest_off"
+			}
 		case "split":
 			show = det.InnerPanes > 0
+			if det.NestedOff != "" {
+				key = "split_off"
+			}
 		case "map":
 			show = det.Remap
 		case "cursor":

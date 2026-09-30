@@ -29,14 +29,16 @@ func TestBadges(t *testing.T) {
 			"ALT htop fp 80/40 NORMAL #{?#{m:modal-literal-*,#{client_key_table}},MAP _,MAP}"},
 		{"vim remembered, mode unreadable", modeState{App: "vim", Mode: "unknown", Bucket: "unknown"},
 			detail{Alt: true, Evidence: "mem", Score: "0/60"}, "ALT vim mem 0/60 ?"},
-		{"split remote tmux, focus by border", normal,
-			detail{Alt: true, Evidence: "fp", Score: "80/40", NestedKind: "tmux", InnerPanes: 3, FocusBy: "border colour"},
-			"ALT htop fp 80/40 NORMAL NEST tmux SPLIT 3 border"},
+		{"split remote tmux over ssh, focus by border", normal,
+			detail{Alt: true, Via: "ssh", Evidence: "fp", Score: "80/40", NestedKind: "tmux", InnerPanes: 3, FocusBy: "border colour"},
+			"ALT VIA ssh NEST tmux SPLIT 3 border htop fp 80/40 NORMAL"},
 		{"split remote tmux, no focus", modeState{Mode: "unknown", Bucket: "unknown"},
-			detail{Alt: true, Unknown: true, NestedKind: "tmux", InnerPanes: 2},
-			"ALT ? NEST tmux SPLIT 2 ?"},
-		{"remote screen by command", modeState{Mode: "unknown", Bucket: "unknown"},
-			detail{Alt: true, Unknown: true, NestedKind: "screen"}, "ALT ? NEST screen"},
+			detail{Alt: true, Via: "docker", Unknown: true, NestedKind: "tmux", InnerPanes: 2},
+			"ALT VIA docker NEST tmux SPLIT 2 ? ?"},
+		{"local screen client by command", modeState{Mode: "unknown", Bucket: "unknown"},
+			detail{Alt: true, Unknown: true, NestedKind: "screen"}, "ALT NEST screen ?"},
+		{"htop over ssh, no nesting", normal, detail{Alt: true, Via: "ssh", Evidence: "fp", Score: "80/40"},
+			"ALT VIA ssh htop fp 80/40 NORMAL"},
 		{"cursor shape reported", modeState{App: "nvim", Mode: "insert", Bucket: "typing"},
 			detail{Alt: true, Evidence: "cmd+fp", Score: "100/100", Shape: "bar"},
 			"ALT nvim cmd+fp 100/100 INSERT ▏"},
@@ -49,6 +51,16 @@ func TestBadges(t *testing.T) {
 		if got := plain(joinBadges(renderBadges(tpl, c.m, c.det, "_"))); got != c.want {
 			t.Errorf("%s:\n got %q\nwant %q", c.name, got, c.want)
 		}
+	}
+
+	// Seen but not in effect (no transport): the same text, struck through.
+	off := renderBadges(tpl, modeState{Mode: "unknown", Bucket: "unknown"},
+		detail{Alt: true, Unknown: true, NestedKind: "tmux", NestedOff: "borders", InnerPanes: 2, FocusBy: "cursor"}, "_")
+	if got := plain(joinBadges(off)); got != "ALT NEST tmux SPLIT 2 cursor ?" {
+		t.Errorf("seen but off: %q", got)
+	}
+	if !strings.Contains(off[2], "strikethrough") || !strings.Contains(off[3], "strikethrough") {
+		t.Errorf("seen but off, not struck through: %q %q", off[2], off[3])
 	}
 
 	// "off" hides a badge; a template of the user's own is used as is.

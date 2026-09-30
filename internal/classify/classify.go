@@ -49,6 +49,11 @@ type Result struct {
 	NestedKind string
 	InnerPanes int
 	FocusBy    string
+	// Via is the remote transport the pane's command is ("" if none).
+	// NestedOff is the evidence of an inner multiplexer seen on screen but
+	// not acted on because there is no transport (Nested.Off); Nested is
+	// then "".
+	Via, NestedOff string
 }
 
 // Identity is the identity evaluation of one spec on one screen.
@@ -270,6 +275,9 @@ type Options struct {
 	// prefix Down); the escape leader avoids that. Off: such panes are
 	// unknown (pass-through).
 	NestedRemap bool
+	// Transports are commands added to the built-in transport list
+	// (@modal_transports).
+	Transports []string
 }
 
 // DefaultOptions are the options when the user sets nothing.
@@ -290,7 +298,16 @@ func Pane(set *spec.Set, s *screen.Screen, stickyApp string) (Result, []Trace) {
 // panes and does not show which one has the keyboard. A key-remapping spec is
 // also unknown there unless opt.NestedRemap.
 func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (Result, []Trace) {
-	n := DetectNested(set, s)
+	n := DetectNestedWith(set, s, opt.Transports)
+	if n.Off {
+		// Seen but not in effect: the whole screen is the app's.
+		res, traces := pane(set, s, stickyApp)
+		res.Via, res.NestedOff, res.NestedKind = n.Via, n.Evidence, n.Kind
+		if n.Split {
+			res.InnerPanes, res.FocusBy = n.Panes, n.FocusBy
+		}
+		return res, traces
+	}
 	if n.StatusRow >= 0 {
 		s = s.WithoutRow(n.StatusRow)
 	}
@@ -298,6 +315,7 @@ func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (R
 		s = s.Sub(n.Focus.X, n.Focus.Y, n.Focus.W, n.Focus.H)
 	}
 	res, traces := pane(set, s, stickyApp)
+	res.Via = n.Via
 	if n.Evidence == "" {
 		return res, traces
 	}

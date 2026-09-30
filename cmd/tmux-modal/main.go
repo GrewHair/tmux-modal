@@ -234,6 +234,10 @@ func cmdExplain(args []string) error {
 	if l, err := r.Run("show-options", "-gqv", "@modal_nested_remap"); err == nil && len(l) > 0 && l[0] != "" {
 		remap = l[0]
 	}
+	var transports []string
+	if l, err := r.Run("show-options", "-gqv", "@modal_transports"); err == nil && len(l) > 0 {
+		transports = strings.Fields(l[0])
+	}
 
 	set := spec.Load(sources(paths, false))
 	s, _, _, err := tmux.Capture(r, target, true)
@@ -242,14 +246,20 @@ func cmdExplain(args []string) error {
 	}
 	fmt.Fprintln(out)
 	validate.Screen(out, "live pane "+target, s)
-	res, traces := classify.PaneWith(set, s, sticky, classify.Options{NestedRemap: remap != "off"})
+	res, traces := classify.PaneWith(set, s, sticky, classify.Options{NestedRemap: remap != "off", Transports: transports})
 	for _, t := range traces {
 		validate.Trace(out, t)
 	}
 	fmt.Fprintf(out, "\nnow: app=%s mode=%s bucket=%s confidence=%s evidence=%s score=%s",
 		orDash(res.App), res.Mode, res.Bucket, res.Confidence, orDash(res.Evidence), orDash(res.Score))
+	if res.Via != "" {
+		fmt.Fprintf(out, " via=%s", res.Via)
+	}
 	if res.Nested != "" {
 		fmt.Fprintf(out, " nested=%s(%s)", res.NestedKind, res.Nested)
+	}
+	if res.NestedOff != "" {
+		fmt.Fprintf(out, " nested=%s(%s; off: the command is no transport)", res.NestedKind, res.NestedOff)
 	}
 	if res.InnerPanes > 0 {
 		fmt.Fprintf(out, " split=%d focus=%s", res.InnerPanes, orDash(res.FocusBy))

@@ -439,6 +439,28 @@ while the cursor is hidden). Fixtures: new htop-focused layouts in
 from `tmux-src.Dockerfile`). `TestNestedFocusColour` covers a themed
 colour, cursor/colour disagreement and an all-green border.
 
+## D36. Nesting needs a transport; VIA badge; "seen but off" — owner, after 1.3.2
+
+After F46 the owner proposed a guard independent of colour: an inner
+multiplexer only makes sense behind a remote transport (tmux will not
+nest locally unless `TMUX` is unset, and a local client's command is the
+multiplexer itself, already `command` evidence). Screen evidence (status
+line, borders, title) is now in effect only when the pane's command is a
+transport (`classify.Transports`: ssh, autossh, mosh-client, et, telnet,
+docker, podman, nerdctl, kubectl, oc, lxc, incus, multipass, machinectl,
+distrobox, toolbox, session-manager-plugin; `@modal_transports` adds
+more). Otherwise `Nested.Off`: the pane is classified as one screen, and
+the finding is published (`@modal_nested_off`, kind, split, focus) and
+drawn struck through in grey (`nest_off`, `split_off` templates) — the
+owner's rule: tell things as they are; absent only when never probed (a
+claimed command is not probed). `@modal_nested`/`MODAL_NESTED` keep
+meaning "in effect". New `via` badge (`VIA ssh`) and `@modal_via`;
+badges reordered as a path: alt via nest split app mode map cursor. The
+F46 colour rule stays (a grey rule is no border at all, so no badge).
+Risk accepted: a remote tmux reached through an unlisted wrapper is read
+as one screen (N/A at worst, since the mixed screen rarely matches a
+spec) until the wrapper is added to `@modal_transports`.
+
 ## D35. Badges: one fact each, in the owner's face — owner, after 1.2.1
 
 The single indicator's "N/A" covered four situations (an unrecognised

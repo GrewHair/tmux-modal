@@ -2,6 +2,18 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.4.0 — 2026-09-30
+
+- **A nested multiplexer needs a transport:** a remote tmux seen on screen
+  is acted on only when the pane's command is `ssh`, `mosh-client`,
+  `docker`, `kubectl` and the like (`@modal_transports` adds your own);
+  a local tmux client counts by its own command. Elsewhere the finding is
+  still shown, struck through in grey, and the pane is read as one screen.
+- **`VIA ssh` badge** (and `@modal_via`): the transport. Badges now read
+  as a path: `ALT VIA ssh NEST tmux SPLIT 2 border htop fp 70/40 NORMAL MAP`.
+- New options `@modal_via`, `@modal_nested_off`, `@modal_transports`;
+  templates `via`, `nest_off`, `split_off`.
+
 ## 1.3.2 — 2026-09-30
 
 - Fix: a full-screen app with a full-width horizontal rule (Claude Code's
