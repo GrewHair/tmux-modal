@@ -439,6 +439,35 @@ while the cursor is hidden). Fixtures: new htop-focused layouts in
 from `tmux-src.Dockerfile`). `TestNestedFocusColour` covers a themed
 colour, cursor/colour disagreement and an all-green border.
 
+## D39. The hook follows the terminal typed into — owner, after 1.6.0
+
+The owner's AutoHotkey layer follows the hook; coming back to the
+terminal from the browser fired nothing, so AHK kept a stale layer. Found
+around it (by reading the code, then tests): the focus stream was kept per
+*session*, so switching between the owner's two terminals (two sessions),
+`switch-client`, and re-attaching fired nothing when that session had been
+reported before; and each session's focused pane was "active", so a mode
+change in a terminal the owner was not looking at retargeted AHK.
+Now the stream is per *client*, and the focused client is known from
+`#{client_flags}` `focused` (F48): the one focused client, else the one
+that just gained focus (both are flagged for a moment), else the one that
+had it (also while none has it). The pane typed into is the focused pane
+of its session; `focus` fires when that changes and **again whenever its
+terminal regains focus** (replay, even with nothing changed); other
+sessions' focused panes go through `transition` with Active=0
+(`typedInto`). Focus is "not known" — every client's pane counts, as
+before but per client — when `focus-events` is off (every client then
+stays flagged), on tmux < 3.2, or when several are flagged and none just
+gained it. The daemon learns of focus changes at once through its own
+entries `client-focus-in[7171]`/`client-focus-out[7171]` (tmux ≥ 3.3):
+`run-shell -b 'kill -WINCH #{@modal_daemon_pid}'`; SIGWINCH (ignored by
+default, so a stale pid is harmless) re-reads the clients and runs a cycle,
+without re-reading the config. They are removed at shutdown; on 3.2 the
+flags are read at the idle reconcile. Owner's calls: follow the focused
+terminal; a `blur` event (focus lost, mode none, nothing more until focus
+returns) only behind `@modal_hook_blur`, default off ("not sure how it'll
+play out"). `MODAL_CLIENT` names the terminal. Code: `internal/daemon/focus.go`.
+
 ## D38. The hook badge: a short flash per call — owner, after 1.5.2
 
 The owner wanted to see that the hook fired, next to the other badges.

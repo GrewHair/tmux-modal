@@ -187,3 +187,10 @@
   two-phase badge that is gone 1–2 s after firing (D38). Tests: runner
   notes (true / exit 3 / timeout, no flash for stop), flash state (late
   and stale results, expiry, off), integration on a real border.
+- 1.7.0: owner's AHK layer went stale after coming back from the browser
+  (no hook). Probed focus in the images (F48), found the per-session
+  stream's gaps (terminal switch, switch-client, reattach, other terminal
+  "active"); owner chose to follow the focused terminal, blur behind a
+  flag, off (D39). Tests: `focus_test.go` (replay, two terminals, typed
+  into, session switch/reattach, blur, unknown focus) and
+  `TestHookFollowsTerminalFocus` (two real clients, focus bytes).

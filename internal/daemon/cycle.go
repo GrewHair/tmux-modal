@@ -141,6 +141,7 @@ func (d *Daemon) cycle() {
 			humans[c.SessionID] = true
 		}
 	}
+	d.resolveFocus()
 
 	type job struct {
 		st     *paneState
@@ -269,7 +270,7 @@ func (d *Daemon) cycle() {
 	d.syncKeyTables(r, panes, humans)
 	d.publishBadges(panes, humans)
 	d.syncOutput(panes, humans)
-	d.sweepFocus(panes, humans)
+	d.sweepFocus(panes)
 	d.refreshStatus(r)
 }
 
@@ -343,10 +344,10 @@ func (d *Daemon) transition(st *paneState, next modeState, reason string, now ti
 	d.publish(st, next, reason)
 	d.log.Infof("%s: %s/%s -> %s/%s (%s, %s)", st.id, orNone(prev.App), orNone(prev.Mode),
 		orNone(next.App), next.Mode, next.Confidence, reason)
-	// The focused pane of each session is reported by sweepFocus, which
-	// also covers focus moving between panes; here only the others.
-	if !st.info.Focused() {
-		d.hooks.Emit(d.hookEvent("mode", "p:"+st.id, &st.info, prev, next, false))
+	// The pane being typed into is reported by sweepFocus, which also
+	// covers focus moving between panes and terminals; here only the others.
+	if !d.typedInto(&st.info) {
+		d.emit(d.hookEvent("mode", "p:"+st.id, &st.info, prev, next, false))
 	}
 }
 
@@ -426,39 +427,6 @@ func (d *Daemon) refreshStatus(r tmux.Runner) {
 		}
 	}
 	d.run(r, cmds)
-}
-
-// focusState is what the hook last reported for a session's focused pane.
-type focusState struct {
-	pane string
-	m    modeState
-}
-
-// sweepFocus reports each session's focused pane whenever its pane or its
-// mode changes. This is the stream an outer keyboard layer follows: it
-// needs "what am I typing into now", which changes on focus moves as well
-// as on mode changes.
-func (d *Daemon) sweepFocus(panes []tmux.PaneInfo, humans map[string]bool) {
-	for i := range panes {
-		p := &panes[i]
-		if !p.Focused() || !humans[p.SessionID] {
-			continue
-		}
-		st, ok := d.panes[p.ID]
-		if !ok || (!st.published && p.Enabled != "off") {
-			continue // not examined yet; a disabled pane reports none
-		}
-		prev, seen := d.focusEmitted[p.SessionID]
-		if seen && prev.pane == p.ID && prev.m == st.cur {
-			continue
-		}
-		event := "mode"
-		if !seen || prev.pane != p.ID {
-			event = "focus"
-		}
-		d.focusEmitted[p.SessionID] = focusState{pane: p.ID, m: st.cur}
-		d.hooks.Emit(d.hookEvent(event, "s:"+p.SessionID, p, prev.m, st.cur, true))
-	}
 }
 
 // hookEvent builds a hook event; the global hook runs first, then the

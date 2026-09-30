@@ -163,6 +163,16 @@ kind, split, focus, evidence, score, transport gate, mode basis),
 MAP _ → MAP, explain, the hook flash) and `TestNestedTmuxSplit` (VIA ssh,
 path order).
 
+## Terminal focus tests (D39)
+
+`internal/daemon/focus_test.go` drives `resolveFocus`/`sweepFocus` with
+fake clients ("name@sid", `+` = focused) and records hook events through
+`Daemon.sink`. `TestHookFollowsTerminalFocus` attaches two real inner
+clients (outer panes `%0`, `%1`) and writes focus reports into them with
+`send-keys -H 1b 5b 49` (in) / `4f` (out); truncate the hook log between
+steps, since lines repeat. `scripts/probes/focus.sh` re-checks the
+version facts (F48) in the tmux-src images.
+
 ## CPU benchmark
 
 `TMUX_MODAL_BENCH=1 [TMUX_MODAL_BENCH_SECONDS=30] go test ./tests/integration/

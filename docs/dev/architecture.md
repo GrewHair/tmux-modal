@@ -23,7 +23,7 @@ tmux server
 | `internal/classify` | `EvalIdentity` (Identified vs Confirmed), `Classify` (always → mode rules → absence needs confirmed identity → corroboration veto → default), `Identify` (all specs: priority, then command match, then confirmed, then score), `Pane` (entry point: nested detection + status-row strip, sticky app, shell fast path, nested policy); `nested.go` `DetectNested` |
 | `internal/validate` | the score-sheet report |
 | `internal/tmux` | `Exec` runner, `Control` client (pipelined `Send`/`Wait`, guarded block parser, `ClientLabel`), `Quote`/`Command`, `ListPanes` tier-1 snapshot, `CaptureArgs`/`Fill`, `Capture` |
-| `internal/daemon` | `daemon.go` lifecycle/reconcile/shutdown/`runLines`; `cycle.go` scheduler, examine, transition, publish, indicator, focus sweep, hook events; `badges.go` badge facts, rendering and publishing, the hook flash (D35–D38; the hook runner reports calls through `hookRunner.observe` → `events.onHook` → `publishBadges`); `sessions.go` key-table ownership, client re-point, install, recovery; `keys.go` binding generation; `hooks.go` runner (per key: leading edge, then coalesce within the debounce window, D31); `config.go` options/profiles/unescape; `sys.go` lock + CPU throttle; `log.go` |
+| `internal/daemon` | `daemon.go` lifecycle/reconcile/shutdown/`runLines`; `cycle.go` scheduler, examine, transition, publish, indicator, focus sweep, hook events; `badges.go` badge facts, rendering and publishing, the hook flash (D35–D38; the hook runner reports calls through `hookRunner.observe` → `events.onHook` → `publishBadges`); `sessions.go` key-table ownership, client re-point, install, recovery; `keys.go` binding generation; `focus.go` which terminal is typed into and the hook's focus stream (D39: client focus flags, the `client-focus-in/out[7171]` hooks that SIGWINCH the daemon, replay, blur); `hooks.go` runner (per key: leading edge, then coalesce within the debounce window, D31); `config.go` options/profiles/unescape; `sys.go` lock + CPU throttle; `log.go` |
 | `modal.tmux`, `scripts/binary.sh` | TPM entry: resolve binary, `run-shell -b` the daemon with `--socket '#{socket_path}'` |
 | `examples/` | hook scripts (`log`, `notify`, `windows-toast`, `fifo`) and `listener.sh` |
 
@@ -35,7 +35,9 @@ tmux server
 4. The session key-table is only ever set to a table that becomes the default; `switch-client -T` is only used (a) to re-point clients to that same default and (b) for the one-shot literal table.
 5. The daemon never sends keys to panes.
 6. Every failure mode (spec error, tmux error, crash) degrades to pass-through; a spec that fails to load is skipped with a warning.
-7. Formats in status/border only read `@modal_*` variables.
+7. Formats in status/border only read `@modal_*` variables. The only
+   server state the daemon adds besides options and key tables is its
+   `client-focus-in/out[7171]` hook entries, removed at shutdown (D39).
 8. A multiplexer seen on screen counts only behind a remote transport command, or when the pane's command is the multiplexer (D36); otherwise the pane is one screen and the finding is only reported. A pane whose inner window is split reports a mode only for the **focused inner pane** — shown by tmux's default green active border (D34) or the visible cursor (D32), never both disagreeing — cut out along the borders and classified on its own; when neither shows it (themed colours and a hidden cursor, a cursor outside every inner pane), it never reports a mode. With `@modal_nested_remap off`, no nested pane reports a key-remapping spec's mode (D20).
 9. A remapping spec's commanding default should only be concluded when a binding identity clause anchors the rows its mode rules read, covering them or pinned to one row on the same edge (D21, D29; `lint` warns, and a unit test holds every bundled spec to it as if it had keys).
 

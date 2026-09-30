@@ -191,18 +191,34 @@ The command runs through `/bin/sh -c`, detached, with:
 | `MODAL_APP`, `MODAL_APP_FROM` | spec names (empty for no app) |
 | `MODAL_CONFIDENCE` | `low` when the mode came from corroboration rather than a positive marker, or through a nested tmux |
 | `MODAL_NESTED` | same as `@modal_nested`: empty unless the pane shows another tmux |
-| `MODAL_EVENT` | `mode` (mode changed), `focus` (focus moved to another pane), `stop` (daemon exiting) |
+| `MODAL_EVENT` | `mode` (mode changed), `focus` (you now type into another pane — or the same one again, when its terminal regains focus), `blur` (the terminal lost focus; only with `@modal_hook_blur on`), `stop` (daemon exiting) |
 | `MODAL_PANE`, `MODAL_PANE_ACTIVE`, `MODAL_WINDOW`, `MODAL_SESSION`, `MODAL_SESSION_ID`, `MODAL_TIMESTAMP_MS` | where and when |
+| `MODAL_CLIENT` | the tmux client (terminal) typed into, e.g. `/dev/pts/3`; empty for `MODAL_PANE_ACTIVE=0` |
 
 `MODAL_TYPING=1` for a plain shell (you are editing a command line) and for
 unrecognised apps: a subscriber should only ever do the "commanding" thing
 when the daemon is sure.
 
-The hook reports **the focused pane of each session**, both when its mode
-changes and when focus moves to another pane — that is what an outer
-keyboard layer needs to know ("what am I typing into right now?").
-Unfocused panes' changes are reported too, with `MODAL_PANE_ACTIVE=0`,
-when `@modal_scope` makes them observed.
+The hook reports **the pane you type into** (`MODAL_PANE_ACTIVE=1`) —
+what an outer keyboard layer needs to know ("what am I typing into right
+now?"): when its mode changes, when focus moves to another pane, window or
+session, when you switch to another terminal attached to the server, and
+**again whenever a terminal regains focus** (back from the browser), even
+if nothing changed meanwhile, so a subscriber that reset itself in between
+is set right. Other panes' changes are reported too, with
+`MODAL_PANE_ACTIVE=0`, when `@modal_scope` makes them observed — including
+the focused pane of another terminal you are not looking at.
+
+Knowing which terminal has focus needs `set -g focus-events on` (tmux ≥
+3.2 tracks it; ≥ 3.3 tells the daemon at once, older ones within
+`@modal_idle_interval`) and a terminal that reports focus (Windows
+Terminal, iTerm2, kitty, foot, xterm and most others do). Without it,
+every attached terminal's focused pane counts as typed into.
+
+With `set -g @modal_hook_blur on`, a terminal losing focus to another
+window, with no other terminal of this server taking it, is reported as
+`MODAL_EVENT=blur` (`MODAL_MODE_TO=none`, the pane it left), and nothing
+more is reported until a terminal has focus again.
 
 Guarantees:
 - A transition runs the hook **at once**; further transitions within
@@ -438,6 +454,7 @@ Details that make this safe:
 | `@modal_hook_timeout` | 500 | ms |
 | `@modal_hook_flash` | 1500 | ms the `hook` badge shows after each hook call; `0` never shows it |
 | `@modal_hook_debounce` | 30 | ms |
+| `@modal_hook_blur` | `off` | `on` reports a terminal losing focus as `MODAL_EVENT=blur` (needs `focus-events on`) |
 | `@modal_confirm_captures` | 2 | captures that must agree before remapping resumes |
 | `@modal_transports` | *(none)* | extra commands that count as a remote transport (space-separated), next to the built-in list (see [Badges](#badges)) |
 | `@modal_nested_remap` | `on` | remap keys inside a tmux running in the pane (usually on a remote host); `off`: such panes are N/A, keys untouched. See [SSH and nested tmux](#ssh-and-nested-tmux) |

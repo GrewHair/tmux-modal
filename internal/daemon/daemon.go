@@ -51,7 +51,8 @@ type Daemon struct {
 	lastCPU        float64
 
 	hooks        *hookRunner
-	focusEmitted map[string]focusState // session id -> last focus report
+	sink         func(*HookEvent) // tests: receives hook events instead of the runner
+	focus        focusTracker
 	statusDirty  bool
 	indicatorKey string
 }
@@ -124,6 +125,7 @@ type clientInfo struct {
 	SessionID string
 	Control   bool
 	KeyTable  string
+	Focused   bool // the terminal has focus (tmux >= 3.2; never for control clients)
 }
 
 // Main runs the daemon (the `daemon` subcommand).
@@ -166,8 +168,7 @@ func Main(args []string, bundled spec.Source) error {
 		sessions:  map[string]*sessionState{},
 		installed: map[string]string{},
 		throttle:  1,
-
-		focusEmitted: map[string]focusState{},
+		focus:     newFocusTracker(),
 	}
 	d.hooks = newHookRunner(d.log)
 	d.hooks.observe = d.ev.onHook
@@ -204,12 +205,13 @@ func (d *Daemon) loop() error {
 	d.applyConfig(cfg)
 	d.pidOpt = strconv.Itoa(os.Getpid())
 	d.exec.Run("set-option", "-g", "@modal_daemon_pid", d.pidOpt)
+	d.installFocusHooks(d.exec)
 	d.recoverKeyTables()
 	d.log.Infof("started pid=%d profile=%s burst=%v poll=%v idle=%v scope=%s specs=%d",
 		os.Getpid(), d.cfg.Profile, d.cfg.Burst, d.cfg.Poll, d.cfg.Idle, d.cfg.Scope, len(d.set.Order))
 
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
+	signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP, syscall.SIGWINCH)
 	timer := time.NewTimer(0)
 	lastReconcile := time.Time{}
 
@@ -228,6 +230,13 @@ func (d *Daemon) loop() error {
 		resetTimer(timer, d.nextWake(lastReconcile))
 		select {
 		case s := <-sigs:
+			if s == syscall.SIGWINCH {
+				// A terminal gained or lost focus (installFocusHooks):
+				// re-read the clients' focus flags, then run a cycle.
+				d.log.Debugf("focus poke")
+				d.refreshClients(d.runner())
+				continue
+			}
 			if s == syscall.SIGHUP {
 				d.log.Infof("SIGHUP: reloading specs")
 				d.specKey = ""
@@ -379,7 +388,7 @@ func (d *Daemon) reconcile() bool {
 	return true
 }
 
-var clientFormat = "#{client_name}\t#{session_id}\t#{client_control_mode}\t#{client_key_table}"
+var clientFormat = "#{client_name}\t#{session_id}\t#{client_control_mode}\t#{client_key_table}\t#{client_flags}"
 
 func (d *Daemon) refreshClients(r tmux.Runner) {
 	lines, err := r.Run("list-clients", "-F", clientFormat)
@@ -388,11 +397,13 @@ func (d *Daemon) refreshClients(r tmux.Runner) {
 	}
 	d.clients = d.clients[:0]
 	for _, l := range lines {
-		f := strings.SplitN(l, "\t", 4)
-		if len(f) != 4 {
+		f := strings.SplitN(l, "\t", 5)
+		if len(f) != 5 {
 			continue
 		}
-		d.clients = append(d.clients, clientInfo{Name: f[0], SessionID: f[1], Control: f[2] == "1", KeyTable: f[3]})
+		control := f[2] == "1"
+		d.clients = append(d.clients, clientInfo{Name: f[0], SessionID: f[1], Control: control, KeyTable: f[3],
+			Focused: !control && hasFlag(f[4], "focused")})
 	}
 }
 
@@ -408,13 +419,8 @@ func (d *Daemon) shutdown() {
 	r := d.runner()
 	// Tell subscribers detection has stopped, so nothing stays stuck in a
 	// commanding state the daemon can no longer vouch for.
-	for sid, f := range d.focusEmitted {
-		p := tmux.PaneInfo{ID: f.pane, SessionID: sid}
-		if st, ok := d.panes[f.pane]; ok {
-			p = st.info
-		}
-		d.hooks.Emit(d.hookEvent("stop", "s:"+sid, &p, f.m, modeState{}, true))
-	}
+	d.stopFocus()
+	d.removeFocusHooks(r)
 	d.hooks.Flush(d.cfg.HookTimeout + time.Second)
 	d.restoreAllKeyTables(r)
 	var cmds []string

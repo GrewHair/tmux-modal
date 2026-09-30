@@ -2,6 +2,27 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.7.0 — 2026-09-30
+
+- **The hook follows the terminal you type into.** With tmux's
+  `focus-events on` (tmux ≥ 3.2), the daemon knows which attached terminal
+  has focus:
+  - coming back to a terminal (from the browser, or from another terminal)
+    reports its pane again as `MODAL_EVENT=focus`, even if nothing changed;
+  - switching between terminals attached to the same server reports the
+    newly focused one;
+  - a mode change in a terminal you are not looking at is reported with
+    `MODAL_PANE_ACTIVE=0`, so an outer keyboard layer no longer switches
+    under you.
+- Switching a client to another session (`switch-client`, choose-tree) and
+  re-attaching now report the pane too; before, nothing fired when that
+  session had been reported earlier.
+- New `MODAL_CLIENT` (the terminal's tmux client) and, off by default,
+  `@modal_hook_blur on`: a terminal losing focus is reported as
+  `MODAL_EVENT=blur` with mode `none`.
+- The daemon adds its own entries (index 7171) to the `client-focus-in`
+  and `client-focus-out` hooks (tmux ≥ 3.3) and removes them when it stops.
+
 ## 1.6.0 — 2026-09-30
 
 - **Hook badge:** when the transition hook runs for a pane, a badge

@@ -9,6 +9,11 @@
 # or an unrecognised app is "typing"); "-" stands for no app. The last is
 # the transition's time in milliseconds (MODAL_TIMESTAMP_MS).
 #
+# The pane is the one you type into: with tmux's focus-events on, the call
+# is repeated whenever a terminal regains focus (back from another window)
+# and a terminal you are not looking at is left out. With
+# `set -g @modal_hook_blur on`, leaving the terminal sends "-/none/typing".
+#
 # Fire and forget: curl.exe is started detached and the hook returns at
 # once, never waiting for a response. So two quick transitions may arrive
 # out of order (process start varies by tens of ms): the receiver should

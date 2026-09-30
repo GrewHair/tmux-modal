@@ -15,8 +15,8 @@ import (
 
 // HookEvent is one transition delivered to the transition hook (§8).
 type HookEvent struct {
-	Event      string // mode | focus | stop
-	Key        string // debounce/cancellation key: "s:<session>" or "p:<pane>"
+	Event      string // mode | focus | blur | stop
+	Key        string // debounce/cancellation key: "focus", "c:<client>" or "p:<pane>"
 	Pane       string
 	App        string
 	AppFrom    string
@@ -29,6 +29,7 @@ type HookEvent struct {
 	SessionID  string
 	Window     string
 	Active     bool
+	Client     string   // the tmux client (terminal) typed into, for Active events
 	Commands   []string // global hook, then the spec's own
 	Merged     int      // transitions this call stands for (coalesced)
 }
@@ -77,6 +78,7 @@ func (e *HookEvent) env(now time.Time) []string {
 		"MODAL_SESSION_ID="+e.SessionID,
 		"MODAL_WINDOW="+e.Window,
 		"MODAL_PANE_ACTIVE="+active,
+		"MODAL_CLIENT="+e.Client,
 		"MODAL_TIMESTAMP_MS="+strconv.FormatInt(now.UnixMilli(), 10),
 	)
 }

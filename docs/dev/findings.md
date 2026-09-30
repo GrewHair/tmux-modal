@@ -429,3 +429,28 @@ handling. Without a colour capture nothing changes.
   for the human's terminal, which keeps tmux reading the pane) and a
   gated reader (a blocking `Read` on a paused pane hangs the harness);
   `'%0:off'` must be quoted (F34).
+
+## Terminal focus (1.7.0)
+
+**F48. What tmux knows about the terminal's focus**
+(`scripts/probes/focus.sh` in the tmux-src images 3.0a, 3.2a, 3.3a, 3.4,
+3.7c; read-only on the owner's server):
+- `#{client_flags}` has `focused` from 3.2 (3.0a has no such flag). A
+  client **starts out focused** when it attaches; `ESC [ O` / `ESC [ I`
+  from its terminal clear and set it.
+- tmux only asks the terminal for focus reports (DECSET 1004) with
+  `focus-events on`; with it off, clients stay flagged forever — so
+  several flagged clients mean "not known".
+- Control clients always show `focused`: ignore them.
+- `client-focus-in` / `client-focus-out` hooks exist from 3.3 (on 3.2
+  `set-hook` says "invalid option"); they take an array index
+  (`client-focus-in[7171]`) next to the user's own entries, and
+  `run-shell` in a hook expands formats (`#{@modal_daemon_pid}`) when
+  it runs, not when it is set.
+- `pane-focus-in` also fires on a session switch and (3.2) on terminal
+  focus-in; not used.
+- A format prints the `focus-events` flag as `1`, not `on`.
+- Windows Terminal through WSL2 delivers focus reports: on the owner's
+  server one of two terminals was `focused`, the other not.
+- Tests fake a terminal's focus report by writing the bytes into the
+  inner client from the outer server: `send-keys -t <outer pane> -H 1b 5b 49`.
