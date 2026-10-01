@@ -209,3 +209,8 @@
   to tmux 3.7 eventually.
 - 1.8.0: owner asked for a toast like the hook flash when the daemon
   attaches: `MODAL <version>` on the focused pane for 2 s (D41).
+- 1.9.0: owner noticed the remote tmux status line shows the command;
+  measured its lag (F50); owner chose "ranks, screen identifies" and the
+  word `tmuxline` (D42). Before it, a Claude Code dialog investigation with
+  a mock API in Docker ended with h/l in the owner's Claude keybindings
+  only (j/k work natively; nothing kept in the repo).

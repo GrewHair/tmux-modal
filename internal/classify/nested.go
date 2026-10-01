@@ -3,6 +3,7 @@ package classify
 import (
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/GrewHair/tmux-modal/internal/screen"
 	"github.com/GrewHair/tmux-modal/internal/spec"
@@ -20,6 +21,10 @@ type Nested struct {
 	Evidence string
 	// StatusRow is the full-screen row of the inner status line, or -1.
 	StatusRow int
+	// Window is the current window's name on that status line ("" when
+	// there is none or it can't be read): by default, the command of its
+	// active pane (D42).
+	Window string
 	// Split is true when inner pane borders divide the screen, so the
 	// captured grid mixes several inner panes.
 	Split bool
@@ -123,6 +128,7 @@ func DetectNestedWith(set *spec.Set, s *screen.Screen, extra []string) Nested {
 	for _, r := range []int{s.Height - 1, 0} {
 		if l, ok := s.Line(r); ok && statusRE.MatchString(l) {
 			n.StatusRow = r
+			n.Window = windowName(l)
 			if n.Evidence == "" {
 				n.Evidence = "status-line"
 			}
@@ -485,4 +491,28 @@ func borderColumn(grid [][]rune, c int) bool {
 		}
 	}
 	return !letters || 2*blankSide >= len(grid)
+}
+
+// windowEntryRE is one window in tmux's default window list: index, name,
+// flags (current *, last -, activity #, bell !, silence ~, marked M,
+// zoomed Z).
+var windowEntryRE = regexp.MustCompile(`^[0-9]+:(.+?)([-*#!~MZ]*)$`)
+
+// windowName reads the current window's name from a status line in tmux's
+// default format ("[0] 0:bash- 1:htop*  ..."): the one entry flagged *.
+// Names from automatic-rename have no spaces; a renamed window's might,
+// and is then simply not found.
+func windowName(line string) string {
+	name, found := "", 0
+	for _, f := range strings.Fields(line) {
+		m := windowEntryRE.FindStringSubmatch(f)
+		if m != nil && strings.Contains(m[2], "*") {
+			name = m[1]
+			found++
+		}
+	}
+	if found != 1 {
+		return ""
+	}
+	return name
 }

@@ -2,6 +2,15 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.9.0 — 2026-10-01
+
+- **Through a remote tmux, its status line names the app:** by default
+  tmux names each window after its active pane's command (`0:htop*`).
+  That name now ranks the apps the screen recognised — it tells vim from
+  nvim — and shows as `tmuxline` evidence: `htop tmuxline+fp 110/40`. It
+  never recognises an app alone, because tmux updates it seconds after the
+  app starts or quits.
+
 ## 1.8.0 — 2026-10-01
 
 - **Attach badge:** when the daemon attaches to a session — it starts, or

@@ -31,6 +31,10 @@ type Screen struct {
 	AltScreen     bool
 	Command       string // pane_current_command
 	Title         string // pane_title
+	// Tmuxline is the name an inner tmux's status line gives the window
+	// shown (by default its active pane's command), when this screen is
+	// that window's focused pane; "" otherwise (D42).
+	Tmuxline string
 }
 
 // Line returns the rendered text of full-screen row r and whether that row

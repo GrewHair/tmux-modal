@@ -439,6 +439,20 @@ while the cursor is hidden). Fixtures: new htop-focused layouts in
 from `tmux-src.Dockerfile`). `TestNestedFocusColour` covers a themed
 colour, cursor/colour disagreement and an all-green border.
 
+## D42. The inner status line ranks, the screen identifies — owner, after 1.8.0
+
+The owner pointed out that a remote tmux's default status line shows the
+current window's name, which automatic-rename keeps at its active pane's
+command — the focused inner pane we read. But the name lags (F50), so,
+the owner's call: it never identifies on its own. `Nested.Window`
+(`windowName`: the one `*`-flagged entry of the default window list) is
+put on the inner screen as `Screen.Tmuxline` when nesting is in effect
+(not on the no-transport `Off` path); `Identity.TmuxlineMatch` ranks with
+`CommandMatch` in `identify` and adds the evidence word `tmuxline` (the
+owner's word), but is not part of `Identified`/`Confirmed`. Stale names
+are therefore harmless: the fixtures `three-shell`, `two-side-shell` and
+`split-vim-shell-focused` carry them and still claim nothing.
+
 ## D41. The attach badge — owner, after 1.7.4
 
 The owner wanted a sign at the start of a terminal session that the

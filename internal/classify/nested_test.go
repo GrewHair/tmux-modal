@@ -351,3 +351,70 @@ func TestNestedTransportGate(t *testing.T) {
 		}
 	}
 }
+
+// The inner tmux's status line names the current window, by default its
+// active pane's command (D42).
+func TestWindowName(t *testing.T) {
+	set := bundledSet(t)
+	for line, want := range map[string]string{
+		`[0] 0:bash- 1:htop*                     "host" 07:19 30-Sep-26`: "htop",
+		`[main] 0:vim*Z 1:bash-`:             "vim",
+		`[0] 0:bash* 1:htop-`:                "bash",
+		`[0] 0:bash- 1:htop`:                 "",
+		`[0] 0:a* 1:b*`:                      "",
+		`[s] 0:my work*  "host" 10:00 1-Oct`: "",
+	} {
+		sc := screen.FromText("hello\n\n"+line, 80, 3)
+		sc.AltScreen, sc.Command = true, "ssh"
+		if got := classify.DetectNested(set, sc).Window; got != want {
+			t.Errorf("window name in %q = %q, want %q", line, got, want)
+		}
+	}
+}
+
+// The window name ranks, the screen identifies (D42): it shows up as
+// evidence when it agrees, decides between apps whose screens both fire,
+// and on its own (stale, or naming an app the screen doesn't show) it
+// claims nothing.
+func TestTmuxlineEvidence(t *testing.T) {
+	set := bundledSet(t)
+	load := func(name string) *screen.Screen {
+		f, err := screen.LoadFixture(fixtureRoot + "/nested/120x36-utf8/" + name + ".txt")
+		if err != nil {
+			t.Fatal(err)
+		}
+		return f.Screen
+	}
+	if res, _ := classify.Pane(set, load("status-bottom-search"), ""); res.App != "htop" || res.Evidence != "tmuxline+fp" {
+		t.Errorf("status-bottom-search (0:htop*): %s by %q, want htop by tmuxline+fp", res.App, res.Evidence)
+	}
+	// Stale names: the window still says htop or vim while a shell has focus.
+	for _, name := range []string{"three-shell", "two-side-shell", "split-vim-shell-focused"} {
+		if res, _ := classify.Pane(set, load(name), ""); res.App != "" {
+			t.Errorf("%s: claimed %s (%s) by a stale window name", name, res.App, res.Evidence)
+		}
+	}
+	// vim and nvim both read this screen; the window name tells them apart.
+	rename := func(s *screen.Screen, from, to string) *screen.Screen {
+		c := *s
+		c.Lines = append([]string{}, s.Lines...)
+		last := len(c.Lines) - 1
+		c.Lines[last] = strings.Replace(c.Lines[last], from, to, 1)
+		return &c
+	}
+	vim := load("split-vim-insert")
+	for win, want := range map[string]string{"0:vim*": "vim", "0:nvim*": "nvim"} {
+		if res, _ := classify.Pane(set, rename(vim, "0:vim*", win), ""); res.App != want || !strings.Contains(res.Evidence, "tmuxline") {
+			t.Errorf("split vim screen, window %s: %s by %q, want %s by tmuxline", win, res.App, res.Evidence, want)
+		}
+	}
+	if res, _ := classify.Pane(set, rename(vim, "0:vim*", "0:bash*"), ""); res.App != "vim" || strings.Contains(res.Evidence, "tmuxline") {
+		t.Errorf("split vim screen, window bash: %s by %q, want vim by fp alone", res.App, res.Evidence)
+	}
+	// No transport: the inner tmux is seen but not acted on, nor its name.
+	local := *vim
+	local.Command = "claude"
+	if res, _ := classify.Pane(set, &local, ""); strings.Contains(res.Evidence, "tmuxline") {
+		t.Errorf("no transport: evidence %q", res.Evidence)
+	}
+}

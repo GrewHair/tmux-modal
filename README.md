@@ -81,7 +81,9 @@ ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL absence lo  MAP
 | `attach` | the daemon just attached to this session (it starts, or you attach a terminal to a session that had none): it is running, and its version. On the focused pane, gone after `@modal_attach_flash` (2 s) | `MODAL 1.8.0` |
 
 How the app was recognised (`app` badge, `@modal_evidence`): `cmd` the
-pane's command, `title` its title, `fp` the screen fingerprint (its score
+pane's command, `tmuxline` the command a remote tmux's status line names
+for the window shown (see [SSH and nested tmux](#ssh-and-nested-tmux)),
+`title` its title, `fp` the screen fingerprint (its score
 against the spec's threshold follows, e.g. `110/40`; for rules without
 weights, clauses matched of all), joined with `+`; `mem` when none of them
 held on this capture and the app is remembered from an earlier one.
@@ -141,7 +143,7 @@ For every pane the daemon publishes these options (empty ones are unset):
 | `@modal_mode_basis` | how the mode was decided: `fp`, `absence`, `veto`, `mem`, `always`, `policy` (see the `why` badge) |
 | `@modal_mode_rule` | the mode rule whose fingerprint matched: its name, or its mode when it has none (`search`, `filter`, `insert`, …) |
 | `@modal_alt` | `on` on the alternate screen |
-| `@modal_evidence` | `cmd`, `title`, `fp` (joined with `+`), or `mem` |
+| `@modal_evidence` | `cmd`, `tmuxline`, `title`, `fp` (joined with `+`), or `mem` |
 | `@modal_score` | the fingerprint's score against its threshold, e.g. `110/40` |
 | `@modal_via` | the transport the pane's command is: `ssh`, `docker`, `kubectl`, … |
 | `@modal_nested` | empty, or why the pane is taken to show another multiplexer: `command`, `status-line`, `borders`, `title` (see [SSH and nested tmux](#ssh-and-nested-tmux)) |
@@ -563,6 +565,14 @@ then:
   above.
 - `@modal_nested` / `MODAL_NESTED` say why a pane was taken as nested:
   `command`, `status-line`, `borders` or `title`.
+- **The inner status line names the app** — by default tmux names each
+  window after its active pane's command (`[0] 0:htop*`), i.e. the focused
+  inner pane. That name ranks the apps the screen recognised (it tells vim
+  from nvim, for example) and shows up as `tmuxline` evidence
+  (`htop tmuxline+fp 110/40`), but it never recognises an app on its own:
+  tmux updates it lazily, seconds after the app starts or quits (up to
+  `status-interval`, 15 s), so a shell can sit under a window still named
+  `htop`. Renamed windows or a custom status format simply give nothing.
 
 A remote tmux with its status line off and a single pane is not even
 recognised as nested — it looks exactly like plain SSH — which makes no

@@ -76,8 +76,13 @@ type Result struct {
 type Identity struct {
 	AltOK        bool
 	CommandMatch bool
-	TitleMatch   bool
-	Screen       *spec.RuleResult
+	// TmuxlineMatch: the inner tmux's status line names this app's
+	// command for the window shown. It only ranks candidates, never
+	// identifies: the name lags the screen by seconds (D42, F50).
+	TmuxlineMatch bool
+	Tmuxline      string // the name it showed
+	TitleMatch    bool
+	Screen        *spec.RuleResult
 	// Identified: this pane runs the app, by any evidence.
 	Identified bool
 	// Confirmed: the rendered screen itself shows the app on this
@@ -99,6 +104,8 @@ var Shells = map[string]bool{
 func EvalIdentity(sp *spec.Spec, s *screen.Screen) Identity {
 	id := Identity{AltOK: !sp.Identity.RequiresAlt || s.AltScreen}
 	id.CommandMatch = sp.MatchesCommand(filepath.Base(s.Command))
+	id.Tmuxline = s.Tmuxline
+	id.TmuxlineMatch = s.Tmuxline != "" && sp.MatchesCommand(s.Tmuxline)
 	if sp.Identity.Title != nil && s.Title != "" {
 		id.TitleMatch = sp.Identity.Title.MatchString(s.Title)
 	}
@@ -193,6 +200,9 @@ func evidence(id Identity) (string, string) {
 	if id.CommandMatch {
 		parts = append(parts, "cmd")
 	}
+	if id.TmuxlineMatch {
+		parts = append(parts, "tmuxline")
+	}
 	if id.TitleMatch {
 		parts = append(parts, "title")
 	}
@@ -266,8 +276,10 @@ func identify(set *spec.Set, s *screen.Screen) ([]Trace, *Trace) {
 		}
 		// Equal footing: the one the pane's command names (nvim, not vim,
 		// when both read the same screen).
-		if a.Identity.CommandMatch != b.Identity.CommandMatch {
-			return a.Identity.CommandMatch
+		// (or the inner tmux's status line names: a remote pane's)
+		ca := a.Identity.CommandMatch || a.Identity.TmuxlineMatch
+		if cb := b.Identity.CommandMatch || b.Identity.TmuxlineMatch; ca != cb {
+			return ca
 		}
 		if a.Identity.Confirmed != b.Identity.Confirmed {
 			return a.Identity.Confirmed
@@ -364,6 +376,11 @@ func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (R
 	}
 	if n.Focus != nil {
 		s = s.Sub(n.Focus.X, n.Focus.Y, n.Focus.W, n.Focus.H)
+	}
+	if n.Window != "" {
+		c := *s
+		c.Tmuxline = n.Window
+		s = &c
 	}
 	res, traces := pane(set, s, stickyApp)
 	res.Via = n.Via

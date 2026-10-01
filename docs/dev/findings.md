@@ -482,3 +482,14 @@ Since 1.7.4 the daemon attaches control clients one at a time, after
 250 ms without notifications or an attach of its own (`attachQuiet`,
 at most 2 s of waiting). With no control client attached yet it hears
 nothing, so the first attach of all is not delayed.
+
+## Remote tmux window names (1.9.0)
+
+**F50. The inner status line's window name lags the screen.** Default
+tmux shows `[session] N:name*` with automatic-rename naming the window
+after its active pane's command. Measured with tmux 3.4 inside tmux on
+private sockets: bash → htop showed after 1.3–1.7 s; htop → bash after
+5 ms, 9 s, 5 ms — the rename runs on a timer and the status line redraws
+lazily, up to `status-interval` (15 s). Several nested fixtures captured
+in 1.2.0 show it: `three-shell` and `two-side-shell` still say `0:htop*`,
+`split-vim-shell-focused` `0:vim*`, all with a shell focused. Hence D42.

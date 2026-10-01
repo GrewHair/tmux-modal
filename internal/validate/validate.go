@@ -148,6 +148,9 @@ func Trace(w io.Writer, t classify.Trace) {
 	}
 	if len(t.Spec.Identity.Commands) > 0 {
 		fmt.Fprintf(w, "  command %v: %s (local fast path only; an SSH pane reports ssh)\n", t.Spec.Identity.Commands, yn(id.CommandMatch))
+		if id.Tmuxline != "" {
+			fmt.Fprintf(w, "  inner tmux status line names %q: %s (ranks only)\n", id.Tmuxline, yn(id.TmuxlineMatch))
+		}
 	}
 	if t.Spec.Identity.Title != nil {
 		fmt.Fprintf(w, "  title /%s/: %s\n", t.Spec.Identity.Title, yn(id.TitleMatch))

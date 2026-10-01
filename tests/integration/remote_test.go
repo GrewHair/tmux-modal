@@ -286,7 +286,11 @@ func TestNestedTmuxHtop(t *testing.T) {
 	h.typeKeys("j")
 	h.expectScreen("main", "Search: j")
 	h.typeKeys("Escape")
-	h.expectState("main", "htop/normal/commanding", "modal-htop")
+	h.expectState("main", "htop/normal/commanding", "modal-htop") // The remote status line names the window after its command once the
+	// remote tmux renames it (seconds later): evidence, not identity (D42).
+	h.waitFor("tmuxline evidence", 20*time.Second, func() bool {
+		return strings.HasPrefix(h.option("main", "@modal_evidence"), "tmuxline")
+	})
 }
 
 // Inner splits: the keyboard belongs to whichever inner pane is active.
