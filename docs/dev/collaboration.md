@@ -112,3 +112,15 @@
   day: five hung tmux test servers from repeated gate-test runs (cleanup
   only sent `kill-server`), a test container, 924 socket files; the
   harness now reaps by PID and deletes sockets.
+- **Use the evidence the owner already gave.** When they send a screenshot
+  of a problem, it *is* the reproduction: compare it against the repro
+  detail by detail (it had a `│` gutter mine lacked) and check their own
+  environment (settings, keybindings, versions, tmux key tables —
+  read-only) before asking for more. Asking for "a screenshot next time"
+  after they sent one annoyed them (2026-10-01).
+- **Facts can overturn a request.** The Claude Code j/k "bug" turned out
+  native; the owner then chose the smallest fix (h/l in their own
+  keybindings) over a new spec. Stop and report when facts contradict the
+  plan, as the plan said.
+- **"Remove all leftovers"** means everything made for an investigation:
+  containers, images, scratch rigs (even ones offered to keep), backups.

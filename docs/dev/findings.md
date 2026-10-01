@@ -493,3 +493,30 @@ private sockets: bash → htop showed after 1.3–1.7 s; htop → bash after
 lazily, up to `status-interval` (15 s). Several nested fixtures captured
 in 1.2.0 show it: `three-shell` and `two-side-shell` still say `0:htop*`,
 `split-vim-shell-focused` `0:vim*`, all with a shell focused. Hence D42.
+
+## Claude Code (2026-10-01, not a spec)
+
+**F51. Claude Code's question dialog and j/k/h/l** (2.1.285 and 2.1.286,
+read from the binary and driven against a mock API in Docker; the rig was
+not kept, see testing.md "Ad-hoc probing recipes").
+- Keys are configurable per context in `~/.claude/keybindings.json`. The
+  generic `Select` context binds `j`/`k` (and ctrl+n/p) by default, and
+  the AskUserQuestion dialog's option list *does* take j/k. Its question
+  tabs are the `Tabs` context (tab/left/right only); adding
+  `"h": "tabs:previous", "l": "tabs:next"` there works, and the context is
+  inactive while the free-text option ("Type something.") has focus, so
+  h/l are typed there; `/config` (search box focused) types them too.
+- The "Chat about this" item below the separator has its own handler:
+  only the Up arrow leaves it, not `k`. The owner chose to leave it.
+- Hint line: `Enter to select · Tab/Arrow keys to navigate · Esc to
+  cancel` (several questions; one question shows an up/down chord). A
+  `· ctrl+g to edit in <editor>` segment appears once the free-text option
+  has been visited (it stays after leaving it) and only when an editor
+  resolves — not a focus signal.
+- The terminal cursor is hidden but positioned: column 0 of the pointer
+  row on a normal option or "Chat about this", the text caret (column ≥ 5)
+  on the free-text option. That would be the discriminator for a remapping
+  spec (B11). The question line gets a `│` gutter for some texts
+  (`needsGutter`), cosmetic.
+- 2.1.286 defaults to the alternate screen (`tui: "fullscreen"`), prompt
+  `❯ `; the dialog's hint is not necessarily on the bottom rows.

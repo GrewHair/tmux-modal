@@ -49,12 +49,18 @@ good for now" (B7 stays parked). The owner hit needrestart's debconf
 dialog on a server — that is what 1.1.0 is for. Their tmux 3.4 crashed
 "at random" in 1.1.0 days: our output gating (F43), fixed in 1.1.1.
 
-**Plugin clone: v1.7.0** (pulled, release binary fetched). As of
-2026-09-30 the owner had reloaded once on 1.3.x (saw the badges, found
-F46 on this very Claude Code pane) and said they would restart tmux and
-test 1.4–1.6 later. Expect feedback on: the badges' look and wording, the
-struck-through NEST/SPLIT, the why badge, the hook flash with their AHK
-hook, and whether their Claude Code pane now shows just `ALT ?`.
+**Plugin clone: v1.9.0** (pulled, release binary fetched). The owner
+last restarted tmux around 1.7.2 (confirmed: the hook follows the focused
+terminal — "it works!"; the merged `NORMAL absence hi` badge; the new
+colours). 1.7.3–1.9.0 (struck-through findings, colour16 text, the
+quiet-spell attach, the `MODAL <version>` attach badge, `tmuxline`) take
+effect at their next restart; expect feedback on how they look. They plan
+to move to tmux 3.7 eventually (F43, F49 gone there; Homebrew has 3.7c).
+
+Outside this repo, also done for the owner on 2026-10-01: `h`/`l` added
+to the `Tabs` context of their Claude Code `keybindings.json` (question
+tabs in the AskUserQuestion dialog; F51). Machine etiquette (CLAUDE.md)
+also lives in their user-level CLAUDE.md for every project.
 
 **History was rewritten once** (after M6, to remove the machine name):
 anyone with an old clone must `git fetch && git reset --hard origin/main`.

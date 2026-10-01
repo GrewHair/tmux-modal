@@ -138,3 +138,14 @@ owner's call.
 Owner chose the quiet-spell attach (1.7.4); keeping control clients attached
 across a human detach was declined for now (no leak: one per human session,
 closed when the last human leaves, verified live).
+
+## B11. Claude Code spec (parked, 2026-10-01)
+
+Not needed for now: j/k work natively in its question dialog, h/l were
+added in the owner's keybindings (F51). If ever wanted (the `k` gap on
+"Chat about this", or Claude Code versions without the bindings): spec
+`claude`, default `insert` (`otherwise = "insert"`), commanding mode
+`menu` only by a positive fingerprint — the hint line (any variant) plus
+a cursor clause at column 0 (the hidden cursor sits at the caret ≥ 5 on
+the free-text option). Identity by command `claude`; no alternate screen
+required. Capture with the mock-API rig (testing.md).

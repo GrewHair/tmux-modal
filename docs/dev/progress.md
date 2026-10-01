@@ -214,3 +214,6 @@
   word `tmuxline` (D42). Before it, a Claude Code dialog investigation with
   a mock API in Docker ended with h/l in the owner's Claude keybindings
   only (j/k work natively; nothing kept in the repo).
+- 2026-10-01 handover: test leak fixed (`reapServer`), machine etiquette
+  in CLAUDE.md (3 heavy jobs, tuned by halving); F51 Claude Code facts,
+  B11 parked spec, testing recipes for crash cores and the mock API.

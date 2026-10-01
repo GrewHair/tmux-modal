@@ -148,6 +148,42 @@ status-off single-pane (documented limitation: remaps), local tmux-in-tmux
   `XDG_STATE_HOME` pointed at a scratch dir, attach from an outer `-L`
   server, then `kill-server` both (the sandbox daemon exits by itself).
 
+### Crash investigation: symbolise and reproduce tmux crashes (F49)
+
+- WSL keeps cores of crashed processes in
+  `%LOCALAPPDATA%\Temp\wsl-crashes\wsl-crash-<ts>-<pid>-_usr_bin_tmux-11.dmp`
+  (ELF cores; the kernel log `dmesg | grep tmux` gives the fault offset).
+- Ubuntu publishes no symbols for security rebuilds (3.4-1ubuntu0.1:
+  debuginfod 404, no ddeb). The original build's dbgsym
+  (`ddebs.ubuntu.com/pool/main/t/tmux/tmux-dbgsym_3.4-1build1_amd64.ddeb`)
+  had identical code bytes at the crash offsets: `gdb -batch -ex 'info
+  symbol 0x4c675' <the .debug file>` named the frames.
+- Reproduce under gdb in the tmux-src images (they keep function
+  symbols): derive an image with gdb (`USER root; apt-get install gdb`),
+  run `tmux -D -L x -f /dev/null` under `gdb -batch -ex run -ex bt` with
+  `--cap-add SYS_PTRACE --security-opt seccomp=unconfined`, add `break
+  fatal`/`break fatalx` (tmux exits 1 through them). F49's trigger: a
+  `set-buffer` loop (paste-buffer notifications reach every control
+  client) while control clients attach and leave in a loop.
+
+### Claude Code against a mock API (F51)
+
+Claude Code can be driven into its dialogs with no account: a small HTTP
+server answering `POST /v1/messages` (SSE: message_start,
+content_block_start/delta(`input_json_delta`)/stop, message_delta with
+`stop_reason: tool_use`, message_stop) with a scripted `AskUserQuestion`
+or `Bash` tool_use when the last *user*-role message's text block is a
+trigger word (Claude Code may append a system-role message after it;
+a `tool_result` block means "acknowledge"). In an Ubuntu image: install
+with `curl -fsSL https://claude.ai/install.sh | bash -s <version>`, set
+`ANTHROPIC_BASE_URL`, a dummy `ANTHROPIC_API_KEY`,
+`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`, `DISABLE_AUTOUPDATER=1`, and
+pre-seed `~/.claude.json` with `hasCompletedOnboarding`, the work dir's
+`hasTrustDialogAccepted`, and `customApiKeyResponses.approved` = the
+key's **last 20 characters**. A user's settings/keybindings can be copied
+into the container's `~/.claude/` to reproduce their behaviour. The rig
+was deleted after use (owner's call); rebuild from this when needed.
+
 ## Still missing (planned)
 
 - The cursor-shape veto and cursor badge on tmux ≥ 3.5 run only by hand
