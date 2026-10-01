@@ -439,6 +439,18 @@ while the cursor is hidden). Fixtures: new htop-focused layouts in
 from `tmux-src.Dockerfile`). `TestNestedFocusColour` covers a themed
 colour, cursor/colour disagreement and an all-green border.
 
+## D41. The attach badge — owner, after 1.7.4
+
+The owner wanted a sign at the start of a terminal session that the
+plugin runs, like the hook flash. When a control client attaches
+(`attachQuiet`), `attachFlash[session]` holds an expiry; `publishBadges`
+shows the `attach` badge on that session's focused pane until then, and
+`nextWake` wakes for it. Text `MODAL <version>` (`daemon.Version`, set
+from `main.version`): it says "running" and confirms an upgrade took
+effect after a restart. Last in the row, so nothing shifts; 2 s by
+default (`@modal_attach_flash`). A second terminal on an already attached
+session does not attach a control client, so it shows nothing.
+
 ## D40. Struck through = read but not in effect — owner, after 1.7.2
 
 The owner asked to find more "detected but useless" findings and strike

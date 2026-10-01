@@ -160,6 +160,7 @@ request at a time, each released as a minor version:
 - 1.4.0: nesting needs a transport, VIA badge, seen-but-off badges (D36).
 - 1.5.0: the why badge, how the mode was decided (D37); 1.5.1–1.5.2 wording.
 - 1.6.0: the hook badge, a flash per hook call (D38).
+- 1.8.0: the attach badge, `MODAL <version>` for 2 s when the daemon attaches (D41).
 - 1.7.4: control clients attach after a quiet spell (tmux < 3.7 notify crash, F49).
 - 1.7.3: struck-through read-but-not-in-effect findings, `?` reason grey, colour16 text (D40).
 - 1.7.2: badge colours: NORMAL blue, INSERT green, MAP yellow, NEST/SPLIT mauve (owner).

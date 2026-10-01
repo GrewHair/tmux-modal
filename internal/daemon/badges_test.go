@@ -78,6 +78,11 @@ func TestBadges(t *testing.T) {
 	if !strings.Contains(near[4], "strikethrough] htop 30/40#[nostrikethrough]") {
 		t.Errorf("near app not struck through: %q", near[4])
 	}
+	// The attach badge: last, with the version.
+	if got := plain(joinBadges(renderBadges(tpl, modeState{Mode: "none", Bucket: "none"}, detail{Attach: true}, "_"))); got != "MODAL "+Version {
+		t.Errorf("attach badge: %q", got)
+	}
+
 	// Black text is colour16: bold "black" is drawn grey by terminals
 	// that brighten bold text.
 	for key, t1 := range tpl {

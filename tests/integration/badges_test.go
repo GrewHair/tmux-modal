@@ -66,3 +66,22 @@ func TestHookBadgeFlash(t *testing.T) {
 		t.Errorf("the badge showed for about %v, want about 1 s", d)
 	}
 }
+
+// The attach badge: when the daemon attaches to a session, its focused
+// pane — a plain shell here — shows MODAL <version> for
+// @modal_attach_flash, then it goes. The harness binary is built without
+// a version.
+func TestAttachBadgeFlash(t *testing.T) {
+	h := newHarness(t, opts{cmd: []string{"bash", "--norc", "--noprofile"}, options: map[string]string{
+		"@modal_attach_flash": "1000",
+		"pane-border-status":  "top", "pane-border-format": "<#{E:@modal_badges}>",
+	}})
+	border := func() string { return strings.SplitN(h.tmuxOut("capture-pane", "-p"), "\n", 2)[0] }
+	start := time.Now()
+	h.startDaemon()
+	h.waitFor("MODAL dev on the border", 3*time.Second, func() bool { return strings.Contains(border(), "MODAL dev") })
+	h.waitFor("the attach badge gone", 3*time.Second, func() bool { return !strings.Contains(border(), "MODAL") })
+	if d := time.Since(start); d < 800*time.Millisecond || d > 3*time.Second {
+		t.Errorf("the badge was gone after %v, want about 1 s after the attach", d)
+	}
+}

@@ -32,6 +32,7 @@ type Config struct {
 	Transports   []string      // @modal_transports: commands added to the transport list
 	HookFlash    time.Duration // @modal_hook_flash: how long the hook badge shows; 0 = never
 	HookBlur     bool          // @modal_hook_blur: report a terminal losing focus
+	AttachFlash  time.Duration // @modal_attach_flash: how long the attach badge shows; 0 = never
 	FocusEvents  bool          // tmux's focus-events: the terminals report focus
 
 	// Indicator templates by bucket, published per pane as @modal_indicator.
@@ -56,7 +57,7 @@ var optionNames = append([]string{
 	"@modal_spec_paths", "@modal_escape_leader", "@modal_color_matching",
 	"@modal_transition_hook", "@modal_hook_timeout", "@modal_hook_debounce",
 	"@modal_log_level", "@modal_confirm_captures", "@modal_nested_remap", "@modal_transports", "@modal_hook_flash",
-	"@modal_hook_blur", "focus-events",
+	"@modal_hook_blur", "focus-events", "@modal_attach_flash",
 	"@modal_indicator_format", "@modal_indicator_commanding",
 	"@modal_indicator_typing", "@modal_indicator_unknown", "@modal_indicator_none",
 }, badgeTemplateOptions()...)
@@ -139,6 +140,7 @@ func parseConfig(raw map[string]string) Config {
 		Transports:   strings.Fields(raw["@modal_transports"]),
 		HookFlash:    ms(atoi(raw["@modal_hook_flash"], 1500)),
 		HookBlur:     raw["@modal_hook_blur"] == "on",
+		AttachFlash:  ms(atoi(raw["@modal_attach_flash"], 2000)),
 		FocusEvents:  raw["focus-events"] == "1" || raw["focus-events"] == "on", // a format prints a flag as 1
 	}
 	if c.Confirm < 1 {

@@ -78,6 +78,7 @@ ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL absence lo  MAP
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
 | `hook` | the transition hook just ran for this pane: `HOOK …` while it runs, then `HOOK ✓ insert` (exit 0, and the mode it was told), `HOOK ✗ 1` (exit status) or `HOOK ⏱` (killed at `@modal_hook_timeout`); `×3` when three transitions were merged into one call; grey and struck through when the call was for a pane you are not typing into (`MODAL_PANE_ACTIVE=0`). Gone `@modal_hook_flash` (1.5 s) after the call started, whatever it shows | `HOOK ✓ insert` |
 | `cursor` | the app set a cursor shape (tmux ≥ 3.5): the cursor drawn as set, block, underline or bar | `█` `▁` `▏` |
+| `attach` | the daemon just attached to this session (it starts, or you attach a terminal to a session that had none): it is running, and its version. On the focused pane, gone after `@modal_attach_flash` (2 s) | `MODAL 1.8.0` |
 
 How the app was recognised (`app` badge, `@modal_evidence`): `cmd` the
 pane's command, `title` its title, `fp` the screen fingerprint (its score
@@ -112,10 +113,10 @@ has a template option, `@modal_badge_<key>_format`: keys `alt`, `via`,
 `app`, `app_unknown`, `mode_commanding`, `mode_typing`, `mode_unknown`,
 `mode_commanding_low`, `mode_typing_low` (low confidence), `nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`,
 `hook_fired`, `hook_ok`, `hook_fail`, `hook_timeout` and their `_off`
-variants (`hook_ok_off`, …: a call for a pane not typed into). `off` hides a
+variants (`hook_ok_off`, …: a call for a pane not typed into), `attach`. `off` hides a
 badge. Placeholders: `{app}`
 `{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{basis}` `{rule}`
-`{confidence}` `{conf}` (`hi`/`lo`) `{dropped}` `{near}` `{code}` `{merged}` `{via}` `{kind}` `{panes}`
+`{confidence}` `{conf}` (`hi`/`lo`) `{dropped}` `{near}` `{version}` `{code}` `{merged}` `{via}` `{kind}` `{panes}`
 `{focus}` `{shape}` (the word: `block`, `underline`, `bar`) `{glyph}` `{leader}`; `{ name}` / `{:name}` are a space / a colon and the value, or
 nothing when it is empty. Templates may use tmux formats and styles.
 
@@ -453,6 +454,7 @@ Details that make this safe:
 | `@modal_transition_hook` | *(none)* | see above |
 | `@modal_hook_timeout` | 500 | ms |
 | `@modal_hook_flash` | 1500 | ms the `hook` badge shows after each hook call; `0` never shows it |
+| `@modal_attach_flash` | 2000 | ms the `attach` badge (`MODAL <version>`) shows when the daemon attaches to a session; `0` never shows it |
 | `@modal_hook_debounce` | 30 | ms |
 | `@modal_hook_blur` | `off` | `on` reports a terminal losing focus as `MODAL_EVENT=blur` (needs `focus-events on`) |
 | `@modal_confirm_captures` | 2 | captures that must agree before remapping resumes |

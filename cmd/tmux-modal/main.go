@@ -43,6 +43,7 @@ func main() {
 	var err error
 	switch cmd {
 	case "daemon":
+		daemon.Version = version
 		err = daemon.Main(args, bundled())
 	case "stop":
 		err = daemon.Stop(args)

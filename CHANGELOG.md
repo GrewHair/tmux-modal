@@ -2,6 +2,14 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.8.0 — 2026-10-01
+
+- **Attach badge:** when the daemon attaches to a session — it starts, or
+  a terminal attaches to a session that had none — the focused pane shows
+  `MODAL 1.8.0` for 2 s: it is running, and which version
+  (`@modal_attach_flash`, ms; `0` turns it off; template
+  `@modal_badge_attach_format`, placeholder `{version}`).
+
 ## 1.7.4 — 2026-10-01
 
 - Fewer chances to hit a tmux < 3.7 crash: tmux 3.2–3.6 crash when a

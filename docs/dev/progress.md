@@ -207,3 +207,5 @@
   reproduced under gdb on 3.4/3.6b, 3.7c clean; our pause/continue soaked
   4×3000 toggles clean). Owner picked the quiet-spell attach; will move
   to tmux 3.7 eventually.
+- 1.8.0: owner asked for a toast like the hook flash when the daemon
+  attaches: `MODAL <version>` on the focused pane for 2 s (D41).

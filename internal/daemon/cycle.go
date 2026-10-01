@@ -466,6 +466,11 @@ func (d *Daemon) nextWake(lastReconcile time.Time) time.Duration {
 	if d.forceReconcile {
 		return 0
 	}
+	for _, until := range d.attachFlash {
+		if until.Before(next) {
+			next = until // the attach badge goes away
+		}
+	}
 	if !d.reconcileAt.IsZero() && d.reconcileAt.Before(next) {
 		next = d.reconcileAt // a control client waits to attach
 	}

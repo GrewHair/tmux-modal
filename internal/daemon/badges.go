@@ -17,11 +17,11 @@ import (
 // joined by spaces as @modal_badges. A badge whose template is "off" is
 // never shown. The order reads as a path: over ssh, into a tmux, its
 // split, the app there, its mode, the keys, the cursor.
-var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "map", "cursor", "hook"}
+var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "map", "cursor", "hook", "attach"}
 
 // Default badge templates. Placeholders: {app} {APP} {mode} {MODE}
 // {evidence} {score} {via} {kind} {panes} {focus} {basis} {rule}
-// {confidence} {conf} (hi/lo) {dropped} {near} {shape} {glyph} {leader}; "{ name}" and
+// {confidence} {conf} (hi/lo) {dropped} {near} {version} {shape} {glyph} {leader}; "{ name}" and
 // "{:name}" are a space or a colon and the value, or nothing when the
 // value is empty.
 var defaultBadges = map[string]string{
@@ -61,6 +61,9 @@ var defaultBadges = map[string]string{
 	"hook_ok_off":      "#[fg=colour244,strikethrough] HOOK ✓{ mode}{ merged} #[default]",
 	"hook_fail_off":    "#[fg=colour244,strikethrough] HOOK ✗ {code}{ merged} #[default]",
 	"hook_timeout_off": "#[fg=colour244,strikethrough] HOOK ⏱{ merged} #[default]",
+	// The daemon just attached to this session: it is running, and which
+	// version. Shown for @modal_attach_flash on the focused pane.
+	"attach": "#[fg=colour16,bg=colour216,bold] MODAL {version} #[default]",
 }
 
 // badgeOptions are the template options, by badge template key.
@@ -78,6 +81,7 @@ type detail struct {
 	Dropped    string    // mode read but not reported (nested policy)
 	Near       string    // the closest app not recognised, with its score
 	Hook       hookFlash // set by publishBadges while it shows
+	Attach     bool      // set by publishBadges: the daemon just attached
 	Evidence   string
 	Score      string
 	NestedKind string
@@ -194,7 +198,7 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		"conf": map[string]string{"high": "hi", "low": "lo"}[m.Confidence],
 		"via":  det.Via, "kind": det.NestedKind, "panes": "", "focus": focusWord(det),
 		"code": strconv.Itoa(det.Hook.code), "merged": "",
-		"dropped": det.Dropped, "near": det.Near,
+		"dropped": det.Dropped, "near": det.Near, "version": Version,
 		"shape": det.Shape, "glyph": cursorGlyphs[det.Shape], "leader": formatEscape(leader),
 	}
 	if det.InnerPanes > 0 {
@@ -239,6 +243,8 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 			show = det.Remap
 		case "cursor":
 			show = det.Shape != ""
+		case "attach":
+			show = det.Attach
 		case "hook":
 			show = det.Hook.phase != ""
 			key = "hook_" + det.Hook.phase
@@ -351,6 +357,9 @@ func (d *Daemon) publishBadges(panes []tmux.PaneInfo, humans map[string]bool) {
 		st.hook.expire(now)
 		det := st.det
 		det.Hook = st.hook
+		if until, ok := d.attachFlash[p.SessionID]; ok && p.Focused() && now.Before(until) {
+			det.Attach = true
+		}
 		det.Remap = false
 		if ss := d.sessions[p.SessionID]; ss != nil && ss.own != "" && p.Focused() && humans[p.SessionID] &&
 			st.cur.App != "" && ss.own == TableName(st.cur.App) {
@@ -386,4 +395,9 @@ func (d *Daemon) publishBadges(panes []tmux.PaneInfo, humans map[string]bool) {
 		st.badgeVals = vals
 	}
 	d.run(d.runner(), cmds)
+	for sid, until := range d.attachFlash {
+		if !now.Before(until) {
+			delete(d.attachFlash, sid)
+		}
+	}
 }

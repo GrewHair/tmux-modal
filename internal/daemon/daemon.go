@@ -49,6 +49,7 @@ type Daemon struct {
 	// (attachQuiet): reconcileAt is when to try again, attachWait when
 	// the current wait began, lastAttach the latest attach.
 	reconcileAt, attachWait, lastAttach time.Time
+	attachFlash                         map[string]time.Time // session id -> attach badge shows until
 	cpu                                 cpuSample
 	pidOpt                              string
 	forceReconcile                      bool
@@ -430,6 +431,12 @@ func (d *Daemon) attachQuiet(want []string, now time.Time) {
 		d.log.Warnf("attach control client to %s: %v", sid, err)
 	} else {
 		d.conns[sid] = c
+		if d.cfg.AttachFlash > 0 {
+			if d.attachFlash == nil {
+				d.attachFlash = map[string]time.Time{}
+			}
+			d.attachFlash[sid] = now.Add(d.cfg.AttachFlash)
+		}
 		d.log.Debugf("control client attached to %s (waited %v)", sid, now.Sub(d.attachWait).Round(time.Millisecond))
 	}
 	d.attachWait = time.Time{}
@@ -439,6 +446,9 @@ func (d *Daemon) attachQuiet(want []string, now time.Time) {
 }
 
 var attachControl = tmux.Attach // tests replace it
+
+// Version is the daemon's version, shown by the attach badge.
+var Version = "dev"
 
 const (
 	attachQuietFor = 250 * time.Millisecond
