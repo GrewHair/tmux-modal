@@ -125,3 +125,18 @@ from outside. Only revisit if the owner complains.
   fingerprints when the owner meets one (the `NEST <kind>` badge is ready).
 - Confidence is high/low only; a numeric mode confidence was considered
   and dropped (mode rules score 1/1, D37).
+
+## B10. A second tmux 3.4 crash in the output-gate test (open, 2026-10-01)
+
+During one full `go test ./...` run, `TestOutputGateSlowReader` failed:
+its private tmux 3.4 server (Ubuntu 3.4-1ubuntu0.1) segfaulted with
+**pause/continue**, the gating the daemon uses since 1.1.1 (F43). Kernel
+log: `segfault at 20` (a NULL+0x20 read) at binary offset 0x4c675; the
+stack has no libevent frames, unlike the F43 crash (offset 0x4dab1 under
+`event_base_loop`), so it is a different bug. WSL kept the core
+(`%LOCALAPPDATA%\Temp\wsl-crashes\wsl-crash-…-_usr_bin_tmux-11.dmp`); no
+symbols exist for this Ubuntu build (debuginfod 404, no ddeb). Not
+reproduced in 8 isolated runs (5 under full CPU load) nor 3 more full
+runs. Next: rerun the test's loop in the `tmux-modal-tmuxsrc:3.4` image
+(own build, symbols) until it crashes, get a backtrace, see whether 3.5+
+or 3.7 has it, and whether the daemon's real pattern can hit it.
