@@ -439,6 +439,21 @@ while the cursor is hidden). Fixtures: new htop-focused layouts in
 from `tmux-src.Dockerfile`). `TestNestedFocusColour` covers a themed
 colour, cursor/colour disagreement and an all-green border.
 
+## D40. Struck through = read but not in effect — owner, after 1.7.2
+
+The owner asked to find more "detected but useless" findings and strike
+them through like NEST/SPLIT off (D36). Agreed set: a mode the nested
+policy read and dropped (`Result.Dropped`, in the `?` mode badge); the
+closest app that did not reach its threshold, ≥ half of it (`NearApp`,
+`NearScore` from `identify`, in the `?` app badge; a failed *required*
+clause is not a near miss); hook calls with `MODAL_PANE_ACTIVE=0`
+(`hook_*_off`). Not struck: `? mem`/`? policy` — the reason for `?` is
+not a dropped finding, so it is grey, and `?` drops its confidence.
+Considered and left: veto (says itself), cursor glyph on apps that do
+not use it, VIA without nesting, pending confirmations (~30 ms). Same
+release: `fg=colour16` everywhere, because bold `black` is drawn bright
+(grey) by Windows Terminal.
+
 ## D39. The hook follows the terminal typed into — owner, after 1.6.0
 
 The owner's AutoHotkey layer follows the hook; coming back to the

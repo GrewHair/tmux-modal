@@ -199,3 +199,6 @@
 - 1.7.2: owner liked the merged mode badge ("exactly how I wanted");
   asked for NORMAL blue / INSERT green and neighbours re-tuned: MAP
   yellow (was cyan), NEST/SPLIT mauve (was steel blue), indicator too.
+- 1.7.3: owner saw the bold mode word fainter than the rest (bold black
+  drawn bright by Windows Terminal → colour16); asked for "detected but
+  useless" findings struck through: proposed a set, owner took all (D40).

@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"io"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -46,15 +47,21 @@ func TestHookNotes(t *testing.T) {
 func TestHookFlash(t *testing.T) {
 	t0 := time.Now()
 	var f hookFlash
-	f.note(hookNote{ID: 1, Phase: "fired", Mode: "insert", Merged: 3, At: t0}, 1500*time.Millisecond)
+	f.note(hookNote{ID: 1, Phase: "fired", Mode: "insert", Merged: 3, Active: true, At: t0}, 1500*time.Millisecond)
 	f.note(hookNote{ID: 1, Phase: "ok", At: t0.Add(40 * time.Millisecond)}, 1500*time.Millisecond)
 	if f.phase != "ok" || f.merged != 3 {
 		t.Fatalf("after the result: %+v", f)
 	}
 	tpl := parseConfig(map[string]string{}).Badges
 	bs := renderBadges(tpl, modeState{Mode: "none", Bucket: "none"}, detail{Hook: f}, "_")
-	if got := plain(joinBadges(bs)); got != "HOOK ✓ insert ×3" {
+	if got := joinBadges(bs); plain(got) != "HOOK ✓ insert ×3" || strings.Contains(got, "strikethrough") {
 		t.Errorf("badge %q", got)
+	}
+	// The same call for a pane not typed into: struck through.
+	other := f
+	other.active = false
+	if b := renderBadges(tpl, modeState{Mode: "none", Bucket: "none"}, detail{Hook: other}, "_"); !strings.Contains(joinBadges(b), "strikethrough") {
+		t.Errorf("not-active call not struck through: %q", joinBadges(b))
 	}
 	f.expire(t0.Add(1499 * time.Millisecond))
 	if f.phase == "" {

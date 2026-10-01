@@ -62,6 +62,14 @@ type Result struct {
 	// identity not confirmed on this capture), "always" (the spec has one
 	// mode), or "policy" (the nested policy made it unknown).
 	ModeBasis, ModeRule string
+	// Dropped is the mode read but not reported, with how it was
+	// decided ("NORMAL fp:search"), when the nested policy made it
+	// unknown; "" otherwise.
+	Dropped string
+	// NearApp and NearScore are the app that came closest without being
+	// recognised, when no spec claimed the pane: its fingerprint scored
+	// at least half its threshold ("htop", "30/40").
+	NearApp, NearScore string
 }
 
 // Identity is the identity evaluation of one spec on one screen.
@@ -231,11 +239,24 @@ func contains(xs []string, x string) bool {
 // Identify runs full identification across every matchable spec and
 // returns the traces of the specs that claimed the pane, best first.
 func Identify(set *spec.Set, s *screen.Screen) []Trace {
+	claimed, _ := identify(set, s)
+	return claimed
+}
+
+// identify is Identify, plus the closest spec that did not claim the pane
+// (nil when none came within half its threshold).
+func identify(set *spec.Set, s *screen.Screen) ([]Trace, *Trace) {
 	var claimed []Trace
+	var near *Trace
+	best := 0.5
 	for _, sp := range set.Order {
 		t := Classify(sp, s, false)
 		if t.Result.App != "" {
 			claimed = append(claimed, t)
+			continue
+		}
+		if r := nearness(t.Identity); r >= best && r < 1 {
+			best, near = r, &t
 		}
 	}
 	sort.SliceStable(claimed, func(i, j int) bool {
@@ -253,7 +274,29 @@ func Identify(set *spec.Set, s *screen.Screen) []Trace {
 		}
 		return score(a) > score(b)
 	})
-	return claimed
+	return claimed, near
+}
+
+// nearness is how close a spec's screen fingerprint came to firing:
+// score over threshold, or satisfied over all clauses.
+func nearness(id Identity) float64 {
+	r := id.Screen
+	if r == nil || !id.AltOK || r.Fired {
+		return 0
+	}
+	if r.Rule.Threshold > 0 {
+		return r.Score / r.Rule.Threshold
+	}
+	if len(r.Clauses) == 0 {
+		return 0
+	}
+	ok := 0
+	for _, c := range r.Clauses {
+		if c.State == spec.Satisfied {
+			ok++
+		}
+	}
+	return float64(ok) / float64(len(r.Clauses))
 }
 
 func score(t Trace) float64 {
@@ -336,6 +379,10 @@ func PaneWith(set *spec.Set, s *screen.Screen, stickyApp string, opt Options) (R
 	case res.App == "" || res.Mode == spec.ModeUnknown || res.Mode == spec.ModeNone:
 	case (n.Split && n.Focus == nil) || sp == nil || (sp.HasKeys() && !opt.NestedRemap):
 		res.Reason = fmt.Sprintf("nested multiplexer (%s): would be %s, but %s", n.Evidence, res.Mode, nestedWhy(n))
+		res.Dropped = strings.ToUpper(res.Mode) + " " + res.ModeBasis
+		if res.ModeRule != "" {
+			res.Dropped += ":" + res.ModeRule
+		}
 		res.Mode, res.Bucket, res.Confidence, res.ModeBasis, res.ModeRule = spec.ModeUnknown, spec.ModeUnknown, Low, "policy", ""
 	case n.Focus != nil:
 		res.Confidence = Low
@@ -367,9 +414,14 @@ func pane(set *spec.Set, s *screen.Screen, stickyApp string) (Result, []Trace) {
 	if !s.AltScreen && Shells[filepath.Base(s.Command)] {
 		return NoApp(s), nil
 	}
-	traces := Identify(set, s)
+	traces, near := identify(set, s)
 	if len(traces) == 0 {
-		return NoApp(s), nil
+		res := NoApp(s)
+		if near != nil && s.AltScreen {
+			res.NearApp = near.Spec.Name
+			_, res.NearScore = evidence(near.Identity)
+		}
+		return res, nil
 	}
 	return traces[0].Result, traces
 }

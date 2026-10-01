@@ -71,12 +71,12 @@ ALT  VIA ssh  NEST tmux  SPLIT 3 border  htop fp 110/40  NORMAL absence lo  MAP
 |---|---|---|
 | `alt` | the pane is on the alternate screen (a full-screen app runs) | `ALT` |
 | `via` | the pane's command is a remote transport (below) | `VIA ssh`, `VIA docker` |
-| `app` | an app is recognised: its name, how, and the fingerprint score; `?` for a full-screen app nothing recognised (left alone) | `htop cmd+fp 110/40`, `?` |
-| `mode` | an app is recognised: its mode (`?` when this capture does not show it), then how it was decided and the confidence in it (`hi`/`lo`, `lo` in red): `fp:<rule>` a mode rule's fingerprint matched (the rule's name, or its mode when it has none: `fp:search`, `fp:insert`), `absence` no mode fingerprint matched on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `mem` no mode fingerprint and the app only remembered from an earlier capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always `lo` | `NORMAL absence hi` (blue), `INSERT fp:insert hi` (green), `? mem lo` |
+| `app` | an app is recognised: its name, how, and the fingerprint score; `?` for a full-screen app nothing recognised (left alone), followed, struck through, by the app that came closest (its fingerprint scored at least half its threshold) | `htop cmd+fp 110/40`, `?`, `?` ~~`htop 30/40`~~ |
+| `mode` | an app is recognised: its mode (`?` when this capture does not show it), then how it was decided and the confidence in it (`hi`/`lo`, `lo` in red): `fp:<rule>` a mode rule's fingerprint matched (the rule's name, or its mode when it has none: `fp:search`, `fp:insert`), `absence` no mode fingerprint matched on a screen confirmed to be the app's (the default mode), `veto` a second check overruled that default (vim's cursor shape), `mem` no mode fingerprint and the app only remembered from an earlier capture, `always` the app has one mode, `policy` the nested policy made it unknown. Through a remote tmux the confidence is always `lo`. For `?` the reason is grey and has no confidence (`?` is never sure); when the nested policy dropped a mode it did read, that mode follows struck through | `NORMAL absence hi` (blue), `INSERT fp:insert hi` (green), `? mem`, `? policy` ~~`NORMAL fp:search`~~ |
 | `nest` | the pane shows another multiplexer, and which one; grey and struck through when seen on screen but not in effect (no transport, below) | `NEST tmux` |
 | `split` | that multiplexer's window is split: inner panes, and how the focused one was found (`border` colour, `cursor`, `?` none); struck through like `nest` | `SPLIT 3 border` |
 | `map` | keys are being remapped for this pane; `MAP _` while the escape leader waits for its key (the next key goes through unchanged) | `MAP`, `MAP _` |
-| `hook` | the transition hook just ran for this pane: `HOOK …` while it runs, then `HOOK ✓ insert` (exit 0, and the mode it was told), `HOOK ✗ 1` (exit status) or `HOOK ⏱` (killed at `@modal_hook_timeout`); `×3` when three transitions were merged into one call. Gone `@modal_hook_flash` (1.5 s) after the call started, whatever it shows | `HOOK ✓ insert` |
+| `hook` | the transition hook just ran for this pane: `HOOK …` while it runs, then `HOOK ✓ insert` (exit 0, and the mode it was told), `HOOK ✗ 1` (exit status) or `HOOK ⏱` (killed at `@modal_hook_timeout`); `×3` when three transitions were merged into one call; grey and struck through when the call was for a pane you are not typing into (`MODAL_PANE_ACTIVE=0`). Gone `@modal_hook_flash` (1.5 s) after the call started, whatever it shows | `HOOK ✓ insert` |
 | `cursor` | the app set a cursor shape (tmux ≥ 3.5): the cursor drawn as set, block, underline or bar | `█` `▁` `▏` |
 
 How the app was recognised (`app` badge, `@modal_evidence`): `cmd` the
@@ -110,12 +110,12 @@ Each badge is also published on its own (`@modal_badge_alt`,
 `@modal_badge_app`, … `@modal_badge_cursor`) to place anywhere, and each
 has a template option, `@modal_badge_<key>_format`: keys `alt`, `via`,
 `app`, `app_unknown`, `mode_commanding`, `mode_typing`, `mode_unknown`,
-`mode_commanding_low`, `mode_typing_low`, `mode_unknown_low` (low
-confidence), `nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`,
-`hook_fired`, `hook_ok`, `hook_fail`, `hook_timeout`. `off` hides a
+`mode_commanding_low`, `mode_typing_low` (low confidence), `nest`, `nest_off`, `split`, `split_off`, `map`, `cursor`,
+`hook_fired`, `hook_ok`, `hook_fail`, `hook_timeout` and their `_off`
+variants (`hook_ok_off`, …: a call for a pane not typed into). `off` hides a
 badge. Placeholders: `{app}`
 `{APP}` `{mode}` `{MODE}` `{evidence}` `{score}` `{basis}` `{rule}`
-`{confidence}` `{conf}` (`hi`/`lo`) `{code}` `{merged}` `{via}` `{kind}` `{panes}`
+`{confidence}` `{conf}` (`hi`/`lo`) `{dropped}` `{near}` `{code}` `{merged}` `{via}` `{kind}` `{panes}`
 `{focus}` `{shape}` (the word: `block`, `underline`, `bar`) `{glyph}` `{leader}`; `{ name}` / `{:name}` are a space / a colon and the value, or
 nothing when it is empty. Templates may use tmux formats and styles.
 
@@ -168,8 +168,8 @@ Templates, one per bucket (`{MODE}`/`{mode}`, `{APP}`/`{app}`,
 
 | Option | Default | Shown for |
 |---|---|---|
-| `@modal_indicator_commanding` | `#[fg=black,bg=colour75,bold] {MODE} #[default]` | normal, visual, … |
-| `@modal_indicator_typing` | `#[fg=black,bg=colour114,bold] {MODE} #[default]` | insert, command line, prompts |
+| `@modal_indicator_commanding` | `#[fg=colour16,bg=colour75,bold] {MODE} #[default]` | normal, visual, … |
+| `@modal_indicator_typing` | `#[fg=colour16,bg=colour114,bold] {MODE} #[default]` | insert, command line, prompts |
 | `@modal_indicator_unknown` | `#[fg=black,bg=colour244] N/A #[default]` | a full-screen app no spec recognises, or whose mode is not readable (left alone) |
 | `@modal_indicator_none` | *(empty)* | plain shell, no full-screen app |
 

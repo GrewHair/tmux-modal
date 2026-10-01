@@ -47,7 +47,12 @@ func TestBadges(t *testing.T) {
 		{"how the mode was decided", modeState{App: "htop", Mode: "insert", Bucket: "typing", Confidence: "high"},
 			detail{Alt: true, Evidence: "cmd", ModeBasis: "fp", ModeRule: "search"}, "ALT htop cmd INSERT fp:search hi"},
 		{"a low-confidence mode", modeState{App: "vim", Mode: "unknown", Bucket: "unknown", Confidence: "low"},
-			detail{Alt: true, Evidence: "mem", ModeBasis: "mem"}, "ALT vim mem ? mem lo"},
+			detail{Alt: true, Evidence: "mem", ModeBasis: "mem"}, "ALT vim mem ? mem"},
+		{"a mode dropped by the nested policy", modeState{App: "htop", Mode: "unknown", Bucket: "unknown", Confidence: "low"},
+			detail{Alt: true, Via: "ssh", NestedKind: "tmux", Evidence: "fp", ModeBasis: "policy", Dropped: "NORMAL fp:search"},
+			"ALT VIA ssh NEST tmux htop fp ? policy NORMAL fp:search"},
+		{"an app that almost matched", modeState{Mode: "unknown", Bucket: "unknown"},
+			detail{Alt: true, Unknown: true, Near: "htop 30/40"}, "ALT ? htop 30/40"},
 		{"underline cursor", modeState{App: "nvim", Mode: "replace", Bucket: "typing"},
 			detail{Alt: true, Evidence: "cmd", Shape: "underline"}, "ALT nvim cmd REPLACE ▁"},
 	}
@@ -61,6 +66,24 @@ func TestBadges(t *testing.T) {
 		detail{Alt: true, Evidence: "cmd", ModeBasis: "veto"}, "_")
 	if !strings.Contains(low[5], "bg=colour124") || plain(low[5]) != "INSERT veto lo" {
 		t.Errorf("a low confidence is not red, in the mode badge: %q", low[5])
+	}
+
+	// Read but not in effect: struck through.
+	dropped := renderBadges(tpl, modeState{App: "htop", Mode: "unknown", Bucket: "unknown", Confidence: "low"},
+		detail{ModeBasis: "policy", Dropped: "NORMAL absence"}, "_")
+	if !strings.Contains(dropped[5], "#[strikethrough] NORMAL absence#[nostrikethrough]") {
+		t.Errorf("dropped mode not struck through: %q", dropped[5])
+	}
+	near := renderBadges(tpl, modeState{Mode: "unknown", Bucket: "unknown"}, detail{Alt: true, Unknown: true, Near: "htop 30/40"}, "_")
+	if !strings.Contains(near[4], "strikethrough] htop 30/40#[nostrikethrough]") {
+		t.Errorf("near app not struck through: %q", near[4])
+	}
+	// Black text is colour16: bold "black" is drawn grey by terminals
+	// that brighten bold text.
+	for key, t1 := range tpl {
+		if strings.Contains(t1, "fg=black") {
+			t.Errorf("%s uses fg=black: %q", key, t1)
+		}
 	}
 
 	// Seen but not in effect (no transport): the same text, struck through.

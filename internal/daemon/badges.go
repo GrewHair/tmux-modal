@@ -21,38 +21,46 @@ var badgeNames = []string{"alt", "via", "nest", "split", "app", "mode", "map", "
 
 // Default badge templates. Placeholders: {app} {APP} {mode} {MODE}
 // {evidence} {score} {via} {kind} {panes} {focus} {basis} {rule}
-// {confidence} {conf} (hi/lo) {shape} {glyph} {leader}; "{ name}" and
+// {confidence} {conf} (hi/lo) {dropped} {near} {shape} {glyph} {leader}; "{ name}" and
 // "{:name}" are a space or a colon and the value, or nothing when the
 // value is empty.
 var defaultBadges = map[string]string{
-	"alt":         "#[fg=black,bg=colour244] ALT #[default]",
-	"app":         "#[fg=colour255,bg=colour238] {app} {evidence}{ score} #[default]",
-	"app_unknown": "#[fg=colour255,bg=colour238] ? #[default]",
+	"alt": "#[fg=colour16,bg=colour244] ALT #[default]",
+	"app": "#[fg=colour255,bg=colour238] {app} {evidence}{ score} #[default]",
+	// Struck through: the app that came closest without being recognised.
+	"app_unknown": "#[fg=colour255,bg=colour238] ?#[fg=colour246,strikethrough]{ near}#[nostrikethrough] #[default]",
 	// The mode, then how it was decided and the confidence in it (D37);
-	// the _low variants put a low confidence in red.
-	"mode_commanding":     "#[fg=black,bg=colour75,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
-	"mode_typing":         "#[fg=black,bg=colour114,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
-	"mode_unknown":        "#[fg=black,bg=colour244] ?{ basis}{:rule}{ conf} #[default]",
-	"mode_commanding_low": "#[fg=black,bg=colour75,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
-	"mode_typing_low":     "#[fg=black,bg=colour114,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
-	"mode_unknown_low":    "#[fg=black,bg=colour244] ?{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
-	"via":                 "#[fg=black,bg=colour180] VIA {via} #[default]",
-	"nest":                "#[fg=black,bg=colour139] NEST {kind} #[default]",
-	"split":               "#[fg=black,bg=colour139] SPLIT {panes} {focus} #[default]",
+	// the _low variants put a low confidence in red. "?" is never sure:
+	// its reason is grey, and a mode read but not reported (the nested
+	// policy) is struck through.
+	"mode_commanding":     "#[fg=colour16,bg=colour75,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
+	"mode_typing":         "#[fg=colour16,bg=colour114,bold] {MODE}#[nobold]{ basis}{:rule}{ conf} #[default]",
+	"mode_unknown":        "#[fg=colour16,bg=colour244,bold] ?#[nobold,fg=colour237]{ basis}{:rule}#[strikethrough]{ dropped}#[nostrikethrough] #[default]",
+	"mode_commanding_low": "#[fg=colour16,bg=colour75,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
+	"mode_typing_low":     "#[fg=colour16,bg=colour114,bold] {MODE}#[nobold]{ basis}{:rule} #[fg=colour255,bg=colour124,bold] {conf} #[default]",
+	"via":                 "#[fg=colour16,bg=colour180] VIA {via} #[default]",
+	"nest":                "#[fg=colour16,bg=colour139] NEST {kind} #[default]",
+	"split":               "#[fg=colour16,bg=colour139] SPLIT {panes} {focus} #[default]",
 	// Seen on screen but not acted on: no transport in the pane (D36).
 	"nest_off":  "#[fg=colour244,strikethrough] NEST {kind} #[default]",
 	"split_off": "#[fg=colour244,strikethrough] SPLIT {panes} {focus} #[default]",
 	// The escape leader switches the client to a one-shot table; the
 	// daemon never sees that, tmux does when it draws the border.
-	"map": "#[fg=black,bg=colour220,bold] #{?#{m:modal-literal-*,#{client_key_table}},MAP {leader},MAP} #[default]",
+	"map": "#[fg=colour16,bg=colour220,bold] #{?#{m:modal-literal-*,#{client_key_table}},MAP {leader},MAP} #[default]",
 	// The cursor drawn as the app set it: show, don't tell.
 	"cursor": "#[fg=colour255,bg=colour238] {glyph} #[default]",
 	// The transition hook just ran for this pane: shown for
 	// @modal_hook_flash from the moment it fired, then gone.
-	"hook_fired":   "#[fg=black,bg=colour183] HOOK … #[default]",
-	"hook_ok":      "#[fg=black,bg=colour183] HOOK ✓{ mode}{ merged} #[default]",
+	"hook_fired":   "#[fg=colour16,bg=colour183] HOOK … #[default]",
+	"hook_ok":      "#[fg=colour16,bg=colour183] HOOK ✓{ mode}{ merged} #[default]",
 	"hook_fail":    "#[fg=colour255,bg=colour124,bold] HOOK ✗ {code}{ merged} #[default]",
 	"hook_timeout": "#[fg=colour255,bg=colour124,bold] HOOK ⏱{ merged} #[default]",
+	// A call for a pane not typed into (MODAL_PANE_ACTIVE=0): it ran, but
+	// an outer keyboard layer ignores it.
+	"hook_fired_off":   "#[fg=colour244,strikethrough] HOOK … #[default]",
+	"hook_ok_off":      "#[fg=colour244,strikethrough] HOOK ✓{ mode}{ merged} #[default]",
+	"hook_fail_off":    "#[fg=colour244,strikethrough] HOOK ✗ {code}{ merged} #[default]",
+	"hook_timeout_off": "#[fg=colour244,strikethrough] HOOK ⏱{ merged} #[default]",
 }
 
 // badgeOptions are the template options, by badge template key.
@@ -67,6 +75,8 @@ type detail struct {
 	NestedOff  string // inner multiplexer seen but not in effect: the evidence
 	ModeBasis  string
 	ModeRule   string
+	Dropped    string    // mode read but not reported (nested policy)
+	Near       string    // the closest app not recognised, with its score
 	Hook       hookFlash // set by publishBadges while it shows
 	Evidence   string
 	Score      string
@@ -84,6 +94,7 @@ type hookFlash struct {
 	id     uint64
 	phase  string // fired, ok, fail, timeout; "" when not showing
 	mode   string
+	active bool // MODAL_PANE_ACTIVE: the pane typed into
 	code   int
 	merged int
 	until  time.Time
@@ -98,7 +109,7 @@ func (f *hookFlash) note(n hookNote, flash time.Duration) {
 			*f = hookFlash{}
 			return
 		}
-		*f = hookFlash{id: n.ID, phase: "fired", mode: n.Mode, merged: n.Merged, until: n.At.Add(flash)}
+		*f = hookFlash{id: n.ID, phase: "fired", mode: n.Mode, active: n.Active, merged: n.Merged, until: n.At.Add(flash)}
 		return
 	}
 	if n.ID == f.id && f.phase != "" && n.At.Before(f.until) {
@@ -123,9 +134,13 @@ func detailOf(res classify.Result, s *screen.Screen) detail {
 		NestedOff:  res.NestedOff,
 		ModeBasis:  res.ModeBasis,
 		ModeRule:   res.ModeRule,
+		Dropped:    res.Dropped,
 		InnerPanes: res.InnerPanes,
 		FocusBy:    res.FocusBy,
 		Reason:     res.Reason,
+	}
+	if res.NearApp != "" {
+		d.Near = res.NearApp + " " + res.NearScore
 	}
 	if sh := s.Cursor.Shape; sh != "" && sh != "default" {
 		d.Shape = sh
@@ -179,6 +194,7 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		"conf": map[string]string{"high": "hi", "low": "lo"}[m.Confidence],
 		"via":  det.Via, "kind": det.NestedKind, "panes": "", "focus": focusWord(det),
 		"code": strconv.Itoa(det.Hook.code), "merged": "",
+		"dropped": det.Dropped, "near": det.Near,
 		"shape": det.Shape, "glyph": cursorGlyphs[det.Shape], "leader": formatEscape(leader),
 	}
 	if det.InnerPanes > 0 {
@@ -202,8 +218,8 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		case "mode":
 			show = m.App != "" && m.Bucket != spec.ModeNone
 			key = "mode_" + m.Bucket
-			if det.ModeBasis == "" {
-				vals["conf"] = "" // the confidence goes with its basis
+			if det.ModeBasis == "" || m.Bucket == spec.ModeUnknown {
+				vals["conf"] = "" // with its basis; "?" is never sure
 			} else if _, ok := tpl[key+"_low"]; ok && m.Confidence == "low" {
 				key += "_low"
 			}
@@ -226,6 +242,9 @@ func renderBadges(tpl map[string]string, m modeState, det detail, leader string)
 		case "hook":
 			show = det.Hook.phase != ""
 			key = "hook_" + det.Hook.phase
+			if _, ok := tpl[key+"_off"]; ok && !det.Hook.active {
+				key += "_off"
+			}
 			if det.Hook.phase != "" {
 				vals["mode"] = det.Hook.mode // what the hook was told
 			}

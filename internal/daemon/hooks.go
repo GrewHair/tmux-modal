@@ -44,6 +44,7 @@ type hookNote struct {
 	Mode   string
 	Code   int
 	Merged int
+	Active bool
 	At     time.Time
 }
 
@@ -175,7 +176,7 @@ func (h *hookRunner) start(key string) {
 	timeout := h.timeout
 	note := func(phase string, code int) {
 		if h.observe != nil && e.Event != "stop" {
-			h.observe(hookNote{ID: id, Pane: e.Pane, Phase: phase, Mode: e.ModeTo, Code: code, Merged: e.Merged, At: time.Now()})
+			h.observe(hookNote{ID: id, Pane: e.Pane, Phase: phase, Mode: e.ModeTo, Code: code, Merged: e.Merged, Active: e.Active, At: time.Now()})
 		}
 	}
 	note("fired", 0)

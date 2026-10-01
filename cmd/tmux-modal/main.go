@@ -265,6 +265,12 @@ func cmdExplain(args []string) error {
 	if res.InnerPanes > 0 {
 		fmt.Fprintf(out, " split=%d focus=%s", res.InnerPanes, orDash(res.FocusBy))
 	}
+	if res.Dropped != "" {
+		fmt.Fprintf(out, " dropped=%q", res.Dropped)
+	}
+	if res.NearApp != "" {
+		fmt.Fprintf(out, " near=%s(%s)", res.NearApp, res.NearScore)
+	}
 	fmt.Fprintf(out, "\n     %s\n", res.Reason)
 	if sticky != "" {
 		fmt.Fprintf(out, "     (classified as the daemon does, with %s remembered)\n", sticky)

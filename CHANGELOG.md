@@ -2,6 +2,23 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.7.3 — 2026-10-01
+
+- Badge text is `colour16` instead of `black`: terminals that draw bold
+  text bright (Windows Terminal's default) turned the bold mode word
+  grey, fainter than the plain words after it.
+- `?` mode: the reason is grey and the confidence is gone (`? mem`, not
+  `? mem lo`: `?` is never sure).
+- Struck through, the way NEST/SPLIT already are when seen but not in
+  effect:
+  - a mode the nested policy read but dropped: `? policy` ~~`NORMAL fp:search`~~;
+  - an app that came close without being recognised (at least half its
+    fingerprint threshold): `?` ~~`htop 30/40`~~;
+  - the hook badge for a call about a pane you are not typing into
+    (`MODAL_PANE_ACTIVE=0`).
+- `explain` prints `dropped=` and `near=`. New placeholders `{dropped}`,
+  `{near}`; templates `hook_*_off`; `mode_unknown_low` is gone.
+
 ## 1.7.2 — 2026-09-30
 
 - New badge colours (owner's request): commanding modes (`NORMAL`) blue
