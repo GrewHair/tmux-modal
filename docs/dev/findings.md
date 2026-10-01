@@ -454,3 +454,27 @@ handling. Without a colour capture nothing changes.
   server one of two terminals was `focused`, the other not.
 - Tests fake a terminal's focus report by writing the bytes into the
   inner client from the outer server: `send-keys -t <outer pane> -H 1b 5b 49`.
+
+**F49. tmux 3.2–3.6 crash when a broadcast notification reaches a control
+client that is still identifying** (2026-10-01; tmux bug, fixed in 3.7).
+A client's `CLIENT_CONTROL` flag is set on `MSG_IDENTIFY_FLAGS`, but its
+`control_state` only on `MSG_IDENTIFY_DONE` (`control_start`). A
+notification that goes to every control client — `%client-detached`,
+`%client-session-changed`, `%session-*`, `%paste-buffer-changed/deleted`
+(not `%window-renamed` and the like, which skip clients without a
+session) — processed in between calls `control_write` with
+`control_state == NULL`: `TAILQ_EMPTY(&cs->all_blocks)` reads address
+0x20. 3.7 adds `(c)->control_state != NULL` to
+`CONTROL_SHOULD_NOTIFY_CLIENT`. How it was found: `TestOutputGateSlowReader`
+failed once in a full run (it attaches a new control client right after
+the previous one detaches); the WSL core of Ubuntu's 3.4-1ubuntu0.1 was
+symbolised with the 3.4-1build1 dbgsym (identical code bytes):
+`control_write` ← `notify_callback` ← `cmdq_next` ← `server_loop`.
+Reproduced in the tmux-src images under gdb (`set-buffer` in a loop while
+control clients attach and leave): 3.4 and 3.6b die within ~20–40
+attaches, 3.7c survives 1285. Not related to output gating; F43's crash
+is in `control_write_callback`, and the owner's 2026-09-29 core is F43's.
+For the daemon, the risk is each time it attaches a control client
+(start, a session gaining its first human client) while such a
+notification fires; the test now waits 300 ms between its control
+clients.

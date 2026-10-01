@@ -82,6 +82,11 @@ func TestOutputGateSlowReader(t *testing.T) {
 		reading.Store(true)
 		in.Close()
 		cmd.Wait()
+		// Let tmux deliver this client's %client-detached before the next
+		// control client connects: tmux < 3.7 crashes when a broadcast
+		// notification reaches a control client still identifying (F49),
+		// a different bug from the one this test is about.
+		time.Sleep(300 * time.Millisecond)
 		if err := run("has-session", "-t", "s"); err != nil {
 			t.Fatalf("the tmux server died after %d output toggles", toggles)
 		}
