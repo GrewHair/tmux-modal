@@ -30,7 +30,15 @@ func TestOutputGateSlowReader(t *testing.T) {
 	if err := run("new-session", "-d", "-s", "s", "-x", "200", "-y", "50", "while :; do seq 1 200000; done"); err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { run("kill-server") })
+	pid := serverPID(sock)
+	var clients []*exec.Cmd
+	t.Cleanup(func() {
+		for _, c := range clients {
+			c.Process.Kill()
+			c.Wait()
+		}
+		reapServer(sock, pid)
+	})
 	attach := func() (io.WriteCloser, io.ReadCloser, *exec.Cmd) {
 		cmd := exec.Command("tmux", "-L", sock, "-f", "/dev/null", "-C", "attach-session", "-f", "ignore-size", "-t", "s")
 		in, _ := cmd.StdinPipe()
@@ -38,6 +46,7 @@ func TestOutputGateSlowReader(t *testing.T) {
 		if err := cmd.Start(); err != nil {
 			t.Fatal(err)
 		}
+		clients = append(clients, cmd)
 		return in, out, cmd
 	}
 	gate := func(watched bool) string { return tmux.Command("refresh-client", "-A", tmux.OutputGate("%0", watched)) }

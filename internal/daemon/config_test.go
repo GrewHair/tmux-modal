@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"os"
 	"os/exec"
 	"strings"
 	"testing"
@@ -43,7 +44,13 @@ func TestReadConfigRoundTrip(t *testing.T) {
 	if _, err := ex.Run("-f", "/dev/null", "new-session", "-d"); err != nil {
 		t.Fatal(err)
 	}
-	defer ex.Run("kill-server")
+	sock, _ := ex.Run("display-message", "-p", "#{socket_path}")
+	defer func() {
+		ex.Run("kill-server")
+		if len(sock) > 0 {
+			os.Remove(sock[0]) // tmux leaves the socket file behind
+		}
+	}()
 	ex.Run("set-option", "-g", "@modal_log_level", "debug")
 	ex.Run("set-option", "-g", "@modal_scope", "visible")
 	ex.Run("set-option", "-g", "@modal_spec_paths", "/a:/b")

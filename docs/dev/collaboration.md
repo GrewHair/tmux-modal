@@ -103,3 +103,12 @@
   live pane read-only** (`tmux-modal explain %N`, `capture-pane -e`) —
   never saving that capture in the repo — then reproduce it synthetically
   for the test (F46: Claude Code's grey rule).
+- **Be gentle with the machine** (2026-10-01): the owner felt it get
+  sluggish during heavy sessions, and found stray containers. Rules in
+  CLAUDE.md "Machine etiquette": at most 3 heavy jobs at once (half the
+  ~6 this project actually peaked at; halve again if still sluggish),
+  images built one at a time, targeted tests while iterating, long heavy
+  jobs announced, clean up and verify before "done". Leftovers found that
+  day: five hung tmux test servers from repeated gate-test runs (cleanup
+  only sent `kill-server`), a test container, 924 socket files; the
+  harness now reaps by PID and deletes sockets.

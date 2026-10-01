@@ -372,10 +372,11 @@ func TestNestedTmuxInvisible(t *testing.T) {
 func TestNestedLocalTmux(t *testing.T) {
 	h := newHarness(t, opts{cmd: []string{"bash", "--norc"}})
 	third := strings.Replace(h.inner, "mi-", "mt-", 1)
-	t.Cleanup(func() { exec.Command("tmux", "-L", third, "kill-server").Run() })
 	if out, err := run(third, "-f", "/dev/null", "new-session", "-d", "-x", "120", "-y", "40", keyecho); err != nil {
 		t.Fatalf("third server: %v: %s", err, out)
 	}
+	pid := serverPID(third)
+	t.Cleanup(func() { reapServer(third, pid) })
 	run(third, "set-option", "-g", "status", "off")
 	h.startDaemon()
 	h.expectState("main", "/none/none", "")

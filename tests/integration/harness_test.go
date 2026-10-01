@@ -62,8 +62,51 @@ func TestMain(m *testing.M) {
 type harness struct {
 	t            *testing.T
 	inner, outer string
+	pids         []int // the tmux servers, killed in close if kill-server can't reach them
 	logPath      string
 	daemon       *exec.Cmd
+}
+
+// serverPID is the pid of the tmux server on socket label, or 0.
+func serverPID(label string) int {
+	out, err := exec.Command("tmux", "-L", label, "display-message", "-p", "#{pid}").Output()
+	if err != nil {
+		return 0
+	}
+	var pid int
+	fmt.Sscan(string(out), &pid)
+	return pid
+}
+
+// reapServer stops a test's tmux server for good: kill-server, and if the
+// server no longer answers (a wedged server survives kill-server, and a
+// test that left one behind ran its pane forever), SIGKILL by pid.
+func reapServer(label string, pid int) {
+	cmd := exec.Command("tmux", "-L", label, "kill-server")
+	cmd.Start()
+	done := make(chan struct{})
+	go func() { cmd.Wait(); close(done) }()
+	select {
+	case <-done:
+	case <-time.After(3 * time.Second):
+		cmd.Process.Kill()
+	}
+	if pid > 0 && syscall.Kill(pid, 0) == nil {
+		time.Sleep(200 * time.Millisecond)
+		if syscall.Kill(pid, 0) == nil {
+			syscall.Kill(pid, syscall.SIGKILL)
+		}
+	}
+	os.Remove(socketPath(label)) // tmux leaves the socket file behind
+}
+
+// socketPath is where tmux puts the socket for -L label.
+func socketPath(label string) string {
+	dir := os.Getenv("TMUX_TMPDIR")
+	if dir == "" {
+		dir = "/tmp"
+	}
+	return filepath.Join(dir, fmt.Sprintf("tmux-%d", os.Getuid()), label)
 }
 
 type opts struct {
@@ -98,6 +141,7 @@ func newHarness(t *testing.T, o opts) *harness {
 		args = append(args, "-e", e)
 	}
 	h.tmuxIn(append(args, o.cmd...)...)
+	h.pids = append(h.pids, serverPID(h.inner))
 	h.tmuxIn("set-option", "-g", "status", "off")
 	// tmux holds a bare Escape for escape-time (default 500ms) to see if a
 	// sequence follows; that would dominate every Esc transition measured.
@@ -109,6 +153,7 @@ func newHarness(t *testing.T, o opts) *harness {
 	}
 	h.tmuxOut("-f", "/dev/null", "new-session", "-d", "-x", fmt.Sprint(o.w), "-y", fmt.Sprint(o.h),
 		fmt.Sprintf("tmux -L %s attach -t main", h.inner))
+	h.pids = append(h.pids, serverPID(h.outer))
 	h.tmuxOut("set-option", "-g", "status", "off")
 	h.tmuxOut("set-option", "-s", "escape-time", "5")
 	h.waitFor("inner client attached", 5*time.Second, func() bool {
@@ -156,8 +201,8 @@ func (h *harness) close() {
 		}
 		h.t.Logf("final screen:\n%s", h.tmuxIn("capture-pane", "-p", "-t", "main"))
 	}
-	exec.Command("tmux", "-L", h.outer, "kill-server").Run()
-	exec.Command("tmux", "-L", h.inner, "kill-server").Run()
+	reapServer(h.outer, h.pids[len(h.pids)-1])
+	reapServer(h.inner, h.pids[0])
 }
 
 func run(label string, args ...string) (string, error) {
