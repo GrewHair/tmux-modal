@@ -202,3 +202,8 @@
 - 1.7.3: owner saw the bold mode word fainter than the rest (bold black
   drawn bright by Windows Terminal → colour16); asked for "detected but
   useless" findings struck through: proposed a set, owner took all (D40).
+- 1.7.4: dug into B10 with the owner: tmux < 3.7 crashes on a broadcast
+  notification to a control client mid-handshake (F49; core symbolised,
+  reproduced under gdb on 3.4/3.6b, 3.7c clean; our pause/continue soaked
+  4×3000 toggles clean). Owner picked the quiet-spell attach; will move
+  to tmux 3.7 eventually.

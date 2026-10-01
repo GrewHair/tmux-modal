@@ -4,7 +4,8 @@
 tmux server
  ├─ human clients
  └─ tmux-modal daemon  (one per server; flock in $XDG_RUNTIME_DIR/tmux-modal-<uid>/)
-      ├─ control clients: one `-C attach -f ignore-size` per human-attached session
+      ├─ control clients: one `-C attach -f ignore-size` per human-attached session,
+      │     attached one at a time after 250 ms of quiet (F49)
       │     └─ %output / focus notifications ──► events (coalesced, reader goroutines)
       ├─ loop (single goroutine): reconcile ► cycle ► sleep until next due / event
       │     cycle = list-panes -a (tier 1) ► gates ► pipelined capture-pane (tier 2)

@@ -478,3 +478,7 @@ For the daemon, the risk is each time it attaches a control client
 (start, a session gaining its first human client) while such a
 notification fires; the test now waits 300 ms between its control
 clients.
+Since 1.7.4 the daemon attaches control clients one at a time, after
+250 ms without notifications or an attach of its own (`attachQuiet`,
+at most 2 s of waiting). With no control client attached yet it hears
+nothing, so the first attach of all is not delayed.

@@ -44,11 +44,15 @@ type Daemon struct {
 	clients   []clientInfo
 	installed map[string]string // app -> hash of the root table it copied
 
-	throttle       float64
-	cpu            cpuSample
-	pidOpt         string
-	forceReconcile bool
-	lastCPU        float64
+	throttle float64
+	// Control clients are attached one at a time, after a quiet spell
+	// (attachQuiet): reconcileAt is when to try again, attachWait when
+	// the current wait began, lastAttach the latest attach.
+	reconcileAt, attachWait, lastAttach time.Time
+	cpu                                 cpuSample
+	pidOpt                              string
+	forceReconcile                      bool
+	lastCPU                             float64
 
 	hooks        *hookRunner
 	sink         func(*HookEvent) // tests: receives hook events instead of the runner
@@ -67,6 +71,15 @@ type events struct {
 	hooks    []hookNote
 	overflow bool
 	wake     chan struct{}
+	lastNote time.Time // the latest notification other than output
+}
+
+// lastNotification is when tmux last sent a notification other than
+// output.
+func (e *events) lastNotification() time.Time {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.lastNote
 }
 
 func (e *events) onNote(n tmux.Notification) {
@@ -78,6 +91,7 @@ func (e *events) onNote(n tmux.Notification) {
 		}
 	case "begin", "end", "error", "pause", "continue":
 	default:
+		e.lastNote = time.Now()
 		if len(e.notes) < 256 {
 			e.notes = append(e.notes, n)
 		} else {
@@ -217,8 +231,9 @@ func (d *Daemon) loop() error {
 
 	for {
 		now := time.Now()
-		if d.forceReconcile || now.Sub(lastReconcile) >= d.cfg.Idle {
-			d.forceReconcile = false
+		if d.forceReconcile || now.Sub(lastReconcile) >= d.cfg.Idle ||
+			(!d.reconcileAt.IsZero() && !now.Before(d.reconcileAt)) {
+			d.forceReconcile, d.reconcileAt = false, time.Time{}
 			if !d.reconcile() {
 				d.log.Infof("tmux server gone; exiting")
 				d.closeConns()
@@ -372,21 +387,63 @@ func (d *Daemon) reconcile() bool {
 		}
 	}
 	if d.cfg.Enabled {
+		var want []string
 		for sid := range humans {
-			if _, ok := d.conns[sid]; ok {
-				continue
+			if _, ok := d.conns[sid]; !ok {
+				want = append(want, sid)
 			}
-			c, err := tmux.Attach(d.srv, sid, d.ev.onNote)
-			if err != nil {
-				d.log.Warnf("attach control client to %s: %v", sid, err)
-				continue
-			}
-			d.conns[sid] = c
-			d.log.Debugf("control client attached to %s", sid)
 		}
+		sort.Strings(want)
+		d.attachQuiet(want, time.Now())
 	}
 	return true
 }
+
+// attachQuiet attaches a control client to the first of these sessions,
+// once tmux has been quiet for attachQuietFor: no notification, and no
+// attach of our own. tmux < 3.7 crashes when a notification sent to every
+// control client (a client detaching, a session changing, the paste
+// buffer) reaches one still handshaking (F49); a human attaching comes
+// with a burst of them, and so does each control client attaching. The
+// rest wait for the next quiet spell; after attachQuietMax of waiting,
+// attach anyway.
+func (d *Daemon) attachQuiet(want []string, now time.Time) {
+	if len(want) == 0 {
+		d.attachWait = time.Time{}
+		return
+	}
+	if d.attachWait.IsZero() {
+		d.attachWait = now
+	}
+	quiet := d.ev.lastNotification()
+	if d.lastAttach.After(quiet) {
+		quiet = d.lastAttach
+	}
+	if at := quiet.Add(attachQuietFor); now.Before(at) && now.Sub(d.attachWait) < attachQuietMax {
+		d.reconcileAt = at
+		return
+	}
+	sid := want[0]
+	c, err := attachControl(d.srv, sid, d.ev.onNote)
+	d.lastAttach = now
+	if err != nil {
+		d.log.Warnf("attach control client to %s: %v", sid, err)
+	} else {
+		d.conns[sid] = c
+		d.log.Debugf("control client attached to %s (waited %v)", sid, now.Sub(d.attachWait).Round(time.Millisecond))
+	}
+	d.attachWait = time.Time{}
+	if len(want) > 1 {
+		d.reconcileAt = now.Add(attachQuietFor)
+	}
+}
+
+var attachControl = tmux.Attach // tests replace it
+
+const (
+	attachQuietFor = 250 * time.Millisecond
+	attachQuietMax = 2 * time.Second
+)
 
 var clientFormat = "#{client_name}\t#{session_id}\t#{client_control_mode}\t#{client_key_table}\t#{client_flags}"
 

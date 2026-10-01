@@ -2,6 +2,16 @@
 
 Each release's section is also its GitHub release notes.
 
+## 1.7.4 — 2026-10-01
+
+- Fewer chances to hit a tmux < 3.7 crash: tmux 3.2–3.6 crash when a
+  notification meant for every control client (a client detaching, a
+  session changing, the paste buffer) arrives while a control client is
+  still connecting — a tmux bug, fixed in 3.7. The daemon now attaches its
+  control clients one at a time, each after 250 ms without notifications
+  (a human attaching comes with a burst of them), waiting at most 2 s.
+  Upgrading to tmux 3.7 removes the risk.
+
 ## 1.7.3 — 2026-10-01
 
 - Badge text is `colour16` instead of `black`: terminals that draw bold

@@ -126,7 +126,7 @@ from outside. Only revisit if the owner complains.
 - Confidence is high/low only; a numeric mode confidence was considered
   and dropped (mode rules score 1/1, D37).
 
-## B10. A second tmux crash in the output-gate test — diagnosed (F49)
+## B10. A second tmux crash in the output-gate test — diagnosed (F49), mitigated in 1.7.4
 
 Not our gating: tmux < 3.7 dereferences a NULL control_state when a
 broadcast notification reaches a control client mid-handshake (F49).
@@ -135,3 +135,6 @@ narrow its own exposure (it attaches a control client at start and when a
 session gets its first human), e.g. by attaching only after a quiet spell
 of notifications, or by keeping control clients attached longer — the
 owner's call.
+Owner chose the quiet-spell attach (1.7.4); keeping control clients attached
+across a human detach was declined for now (no leak: one per human session,
+closed when the last human leaves, verified live).

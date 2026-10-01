@@ -466,6 +466,9 @@ func (d *Daemon) nextWake(lastReconcile time.Time) time.Duration {
 	if d.forceReconcile {
 		return 0
 	}
+	if !d.reconcileAt.IsZero() && d.reconcileAt.Before(next) {
+		next = d.reconcileAt // a control client waits to attach
+	}
 	for _, st := range d.panes {
 		if st.inScope && st.due.Before(next) {
 			next = st.due
