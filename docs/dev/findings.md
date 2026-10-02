@@ -499,7 +499,9 @@ in 1.2.0 show it: `three-shell` and `two-side-shell` still say `0:htop*`,
 **F51. Claude Code's question dialog and j/k/h/l** (2.1.285 and 2.1.286,
 read from the binary and driven against a mock API in Docker; the rig was
 not kept, see testing.md "Ad-hoc probing recipes").
-- Keys are configurable per context in `~/.claude/keybindings.json`. The
+- Keys are configurable per context in `~/.claude/keybindings.json` (with
+  `CLAUDE_CONFIG_DIR` set, the `keybindings.json` in that directory instead;
+  each config dir needs the change). The
   generic `Select` context binds `j`/`k` (and ctrl+n/p) by default, and
   the AskUserQuestion dialog's option list *does* take j/k. Its question
   tabs are the `Tabs` context (tab/left/right only); adding

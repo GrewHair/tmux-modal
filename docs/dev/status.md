@@ -59,7 +59,9 @@ to move to tmux 3.7 eventually (F43, F49 gone there; Homebrew has 3.7c).
 
 Outside this repo, also done for the owner on 2026-10-01: `h`/`l` added
 to the `Tabs` context of their Claude Code `keybindings.json` (question
-tabs in the AskUserQuestion dialog; F51). Machine etiquette (CLAUDE.md)
+tabs in the AskUserQuestion dialog; F51). On 2026-10-02 the same lines
+went into their second Claude Code config dir (`CLAUDE_CONFIG_DIR`): a
+session started from it read its own file and h/l did nothing. Machine etiquette (CLAUDE.md)
 also lives in their user-level CLAUDE.md for every project.
 
 **History was rewritten once** (after M6, to remove the machine name):
