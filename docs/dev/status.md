@@ -55,7 +55,7 @@ terminal — "it works!"; the merged `NORMAL absence hi` badge; the new
 colours). 1.7.3–1.9.0 (struck-through findings, colour16 text, the
 quiet-spell attach, the `MODAL <version>` attach badge, `tmuxline`) take
 effect at their next restart; expect feedback on how they look. They plan
-to move to tmux 3.7 eventually (F43, F49 gone there; Homebrew has 3.7c).
+to move to tmux 3.7 eventually (F43, F49, F52 gone there; Homebrew has 3.7c). After the F52 crash (2026-10-15) they chose to stay on 3.4 for now and avoid the trigger; an exec-only mode for tmux < 3.7 was offered, not scheduled.
 
 Outside this repo, also done for the owner on 2026-10-01: `h`/`l` added
 to the `Tabs` context of their Claude Code `keybindings.json` (question
