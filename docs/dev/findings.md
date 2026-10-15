@@ -522,3 +522,25 @@ not kept, see testing.md "Ad-hoc probing recipes").
   (`needsGutter`), cosmetic.
 - 2.1.286 defaults to the alternate screen (`tui: "fullscreen"`), prompt
   `❯ `; the dialog's hint is not necessarily on the bottom rows.
+
+## A third tmux < 3.7 control-mode crash (2026-10-15)
+
+**F52. tmux 3.2–3.6 crash when a window loses its last pane while a
+`window-pane-changed` notification is queued, if any control client is
+attached** (tmux bug, fixed in 3.7: `control_notify_window_pane_changed`
+returns when `w->active == NULL`). When the active pane goes,
+`window_lost_pane` picks another pane and queues `window-pane-changed`;
+the notification keeps a reference to the window. If the remaining pane
+goes too before the queue runs (both processes end in the same
+event-loop turn), the window has no panes and `active` is NULL, and the
+notification writes `w->active->id` for every control client: NULL read
+in `notify_callback` (3.4-1ubuntu0.1 offset 0x70b2c). With no control
+client the loop has nothing to notify and never reads it. Found when the
+owner's server died; the core showed the notification for an emptied
+two-pane window. Reproduced on Ubuntu's 3.4: a two-pane window whose
+`sleep` processes one `pkill` ends, in a loop, with `-C attach` running:
+crashes in 2–4 rounds; without the control client 20 rounds survive;
+3.7c (tmux-src image) survives 60. The trigger is ordinary use, so on
+3.2–3.6 any attached control client is exposed; together with F43 and
+F49 this is the third such crash. The daemon has an exec fallback
+(`tmux.Exec`, used whenever no control client is attached).
